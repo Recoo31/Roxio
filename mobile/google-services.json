@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "891755945612",
+    "project_id": "roxio-tv",
+    "storage_bucket": "roxio-tv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891755945612:android:72502b1025b5ac0e2125a9",
+        "android_client_info": {
+          "package_name": "kurd.reco.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWz8tWGORpeafxV7uGvhZZjAlT8BtSojM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
