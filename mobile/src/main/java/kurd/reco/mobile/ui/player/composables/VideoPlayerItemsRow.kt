@@ -36,7 +36,8 @@ fun VideoPlayerItemsRow(
 
     LaunchedEffect(Unit) {
         selected?.let {
-            lazyListState.scrollToItem(itemsContents.indexOf(selected))
+            val selectedIndex = itemsContents.indexOf(selected)
+            lazyListState.scrollToItem(if (selectedIndex == 0) 0 else selectedIndex - 1)
         }
     }
 

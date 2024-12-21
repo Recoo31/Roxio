@@ -1,6 +1,5 @@
 package kurd.reco.mobile.ui.login
 
-import android.content.ClipData
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -96,10 +95,20 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     var isError by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf("") }
 
+//    LaunchedEffect(Unit) {
+//        launch(Dispatchers.IO) {
+//            println(appWithProxy.get(url = "https://pastebin.com").text)
+//        }
+//    }
+
     if (isError) {
-        ErrorShower(errorText) {
-            isError = false
-        }
+        ErrorShower(
+            errorText = errorText,
+            onRetry = {
+                isError = false
+            },
+            onDismiss = { isError = false }
+        )
     }
 
     if (isLoading) {

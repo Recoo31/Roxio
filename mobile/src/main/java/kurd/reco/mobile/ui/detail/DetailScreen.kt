@@ -97,9 +97,14 @@ fun DetailScreenRoot(
         }
 
         if (isError) {
-            ErrorShower(errorText) {
-                isError = false
-            }
+            ErrorShower(
+                errorText = errorText,
+                onRetry = {
+                    isError = false
+                    viewModel.getMovie(id, isSeries)
+                },
+                onDismiss = { isError = false }
+            )
         }
     }
 }
@@ -131,9 +136,13 @@ fun DetailScreen(
 
 
     if (isError) {
-        ErrorShower(errorText) {
-            isError = false
-        }
+        ErrorShower(
+            errorText = errorText,
+            onRetry = {
+                isError = false
+            },
+            onDismiss = { isError = false }
+        )
     }
 
     if (showMultiSelect) {

@@ -1,9 +1,7 @@
 package kurd.reco.mobile.ui.home
 
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kurd.reco.core.api.model.PagerDataClass
 
 @Composable
@@ -62,18 +58,18 @@ fun ViewPager(
        }
    }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(3000)
-            animationScope.launch {
-                val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
-                pagerState.animateScrollToPage(
-                    nextPage,
-                    animationSpec = tween(durationMillis = 1000)
-                )
-            }
-        }
-    }
+//    LaunchedEffect(Unit) {
+//        while (true) {
+//            delay(3000)
+//            animationScope.launch {
+//                val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
+//                pagerState.animateScrollToPage(
+//                    nextPage,
+//                    animationSpec = tween(durationMillis = 1000)
+//                )
+//            }
+//        }
+//    }
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp),

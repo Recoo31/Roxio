@@ -1,6 +1,5 @@
 package kurd.reco.mobile.ui.home
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,12 +37,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.AuthScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kurd.reco.core.AuthVM
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Resource
@@ -57,7 +54,6 @@ import kurd.reco.mobile.common.MovieCard
 import kurd.reco.mobile.common.MovieCategorySelector
 import kurd.reco.mobile.common.ShimmerMovieCard
 import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>
@@ -106,10 +102,14 @@ fun HomeScreenRoot(
         }
 
         if (isError) {
-            ErrorShower(errorText = errorText) {
-                isError = false
-                viewModel.loadMovies()
-            }
+            ErrorShower(
+                errorText = errorText,
+                onRetry = {
+                    isError = false
+                    viewModel.loadMovies()
+                },
+                onDismiss = { isError = false }
+            )
         }
     }
 }
@@ -137,9 +137,13 @@ fun HomeScreen(
     var fetchForPlayer = mainVM.fetchForPlayer
 
     if (isError) {
-        ErrorShower(errorText) {
-            isError = !isError
-        }
+        ErrorShower(
+            errorText = errorText,
+            onRetry = {
+                isError = false
+            },
+            onDismiss = { isError = false }
+        )
     }
 
     LazyColumn(state = lazyListState) {
@@ -182,7 +186,9 @@ fun HomeScreen(
                 )
 
                 IconButton(
-                    modifier = Modifier.padding(end = 16.dp).size(24.dp),
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .size(24.dp),
                     onClick = {
                         if (!isThereSeeMore) {
                             viewModel.setViewAll(movie.contents)
@@ -247,6 +253,7 @@ fun HomeScreen(
                 viewModel.clearClickedItem()
             }
         }
+
         is Resource.Failure -> {
             LaunchedEffect(resource) {
                 isError = true
@@ -260,7 +267,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
-                        .clickable {  },
+                        .clickable { },
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()

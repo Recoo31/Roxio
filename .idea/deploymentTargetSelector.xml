@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="mobile">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-05T11:27:22.619037580Z">
+        <DropdownSelection timestamp="2024-12-21T12:23:09.613501854Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/home/recoo/.android/avd/pixel_33.avd" />
@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="tv">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-05T14:31:47.282353588Z">
+        <DropdownSelection timestamp="2024-12-21T12:23:12.161162115Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/recoo/.android/avd/pixel_33.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/recoo/.android/avd/Television_1080p_API_31.avd" />
             </handle>
           </Target>
         </DropdownSelection>

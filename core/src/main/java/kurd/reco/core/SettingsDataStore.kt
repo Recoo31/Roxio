@@ -22,6 +22,7 @@ class SettingsDataStore(private val context: Context) {
         val EXTERNAL_PLAYER = stringPreferencesKey("external_player")
         val SUBTITLE_SIZE = floatPreferencesKey("subtitle_size")
         val SHOW_TITLE = booleanPreferencesKey("show_title")
+        val USE_VPN = booleanPreferencesKey("use_vpn")
     }
 
     private fun <T> savePreference(key: Preferences.Key<T>, value: T) {
@@ -75,5 +76,14 @@ class SettingsDataStore(private val context: Context) {
 
     fun setShowTitle(enabled: Boolean) {
         savePreference(SHOW_TITLE, enabled)
+    }
+
+    val useVpnEnabled: Flow<Boolean> = context.dataStore.data
+        .map {
+            it[USE_VPN] ?: false
+        }
+
+    fun setUseVpn(enabled: Boolean) {
+        savePreference(USE_VPN, enabled)
     }
 }

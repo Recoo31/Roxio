@@ -1,13 +1,15 @@
 package kurd.reco.core.api
 
 import kurd.reco.core.AppLog
-import kurd.reco.core.api.model.PlayDataModel
+import kurd.reco.core.api.Api.API_URL
+import kurd.reco.core.api.Api.CORS_PROXY
 import kurd.reco.core.api.model.CacheDataModelRoot
+import kurd.reco.core.api.model.PlayDataModel
 
 object Cache {
 
     suspend fun checkCache(id: String): CacheDataModelRoot {
-        val url = "https://recoo.online/cache/api/getcache/$id"
+        val url = "$CORS_PROXY/$API_URL/cache/api/getcache/$id"
         return try {
             app.get(url, timeout = 2L).parsed<CacheDataModelRoot>()
         } catch (t: Throwable) {
@@ -17,7 +19,7 @@ object Cache {
     }
 
     suspend fun saveToCache(id: String, playData: PlayDataModel) {
-        val url = "https://recoo.online/cache/api/setcache"
+        val url = "$CORS_PROXY/$API_URL/cache/api/setcache"
         val requestData = mapOf(
             "id" to id,
             "urls" to playData.urls,
@@ -31,7 +33,7 @@ object Cache {
     }
 
     suspend fun deleteCache(id: String) {
-        val url = "https://recoo.online/cache/api/delete/$id"
+        val url = "$CORS_PROXY/$API_URL/cache/api/delete/$id"
         try {
             val response = app.get(url).parsed<CacheDataModelRoot>()
             if (response.status) {

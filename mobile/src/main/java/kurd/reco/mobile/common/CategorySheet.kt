@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
+import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.mobile.ui.detail.composables.CustomIconButton
 import kurd.reco.mobile.ui.home.HomeVM
 import org.koin.compose.koinInject
@@ -32,10 +34,11 @@ import org.koin.compose.koinInject
 fun CategorySheet(
     title: String,
     navigator: DestinationsNavigator,
-    viewModel: HomeVM = koinInject(),
+    homeVM: HomeVM = koinInject(),
+    mainVM: MainVM = koinInject(),
     onDismiss: () -> Unit,
 ) {
-    val categoryList by viewModel.selectedCategoryList.state.collectAsStateWithLifecycle()
+    val categoryList by homeVM.selectedCategoryList.state.collectAsStateWithLifecycle()
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
@@ -51,7 +54,7 @@ fun CategorySheet(
                     .align(Alignment.TopStart)
                     .padding(8.dp)
             ) {
-                viewModel.resetCategory()
+                homeVM.resetCategory()
                 onDismiss()
             }
 
@@ -72,16 +75,21 @@ fun CategorySheet(
                 }
             }
             is Resource.Success -> {
+                val list = response.value
+
                 LazyVerticalGrid(columns = GridCells.Adaptive(140.dp)) {
-                    items(response.value) { item ->
-                        MovieCard(item = item, showTitle = false) {
-                            if (item.isLiveTv) {
-                                viewModel.getUrl(item.id, item.title)
+                    items(list) { homeItem ->
+                        MovieCard(item = homeItem, showTitle = false) {
+                            mainVM.clickedItem = homeItem
+
+                            if (homeItem.isLiveTv) {
+                                homeVM.getUrl(homeItem.id, homeItem.title)
+                                mainVM.clickedItemRow = HomeScreenModel("", list)
                             } else {
                                 navigator.navigate(
                                     DetailScreenRootDestination(
-                                        item.id.toString(),
-                                        item.isSeries
+                                        homeItem.id.toString(),
+                                        homeItem.isSeries
                                     )
                                 )
                             }

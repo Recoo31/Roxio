@@ -1,5 +1,6 @@
 package kurd.reco.mobile.ui.settings.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +35,7 @@ fun SettingCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                 Text(text = title, fontWeight = FontWeight.Medium, fontSize = 16.sp)
                 description?.let {
                     Text(text = it, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))

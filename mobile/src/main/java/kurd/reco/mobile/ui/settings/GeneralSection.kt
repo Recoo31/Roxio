@@ -11,6 +11,7 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
     val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(false)
     val isMaterialThemeEnabled by settingsDataStore.materialThemeEnabled.collectAsState(false)
     val showTitleEnabled by settingsDataStore.showTitleEnabled.collectAsState(false)
+    val useVpnEnabled by settingsDataStore.useVpnEnabled.collectAsState(false)
 
     SettingCard(
         title = "Dark Theme",
@@ -23,14 +24,21 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
         title = "Material Theme",
         description = "Use material theme for the app",
         isChecked = isMaterialThemeEnabled,
-        onCheckedChange = { settingsDataStore.saveMaterialTheme(it) },
+        onCheckedChange = { settingsDataStore.saveMaterialTheme(it) }
     )
 
     SettingCard(
         title = "Show Title",
         description = "Show title in the home screen",
         isChecked = showTitleEnabled,
-        onCheckedChange = { settingsDataStore.setShowTitle(it) },
-        )
+        onCheckedChange = { settingsDataStore.setShowTitle(it) }
+    )
+
+    SettingCard(
+        title = "Use VPN",
+        description = "Use VPN to stream content",
+        isChecked = useVpnEnabled,
+        onCheckedChange = { settingsDataStore.setUseVpn(it) }
+    )
 
 }

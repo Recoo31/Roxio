@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:debuggable="true"
         android:theme="@style/Theme.Roxio"
         tools:ignore="HardcodedDebugMode">
         <activity

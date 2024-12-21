@@ -2,7 +2,6 @@ package kurd.reco.core
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kurd.reco.core.AppLog
 import kurd.reco.core.api.Resource
 
 class ResourceState<T>(initialValue: Resource<T>) {

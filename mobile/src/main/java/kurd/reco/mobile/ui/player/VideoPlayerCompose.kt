@@ -1,15 +1,9 @@
 package kurd.reco.mobile.ui.player
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.C
 import androidx.media3.common.util.UnstableApi
@@ -23,7 +17,7 @@ import kurd.reco.core.api.model.PlayDataModel
 
 @OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayerCompose(item: PlayDataModel, onItemChange: (HomeItemModel) -> Unit) {
+fun VideoPlayerCompose(item: PlayDataModel, useVpn: Boolean, onItemChange: (HomeItemModel) -> Unit) {
     val context = LocalContext.current
 
     val trackSelector = remember {
@@ -45,7 +39,7 @@ fun VideoPlayerCompose(item: PlayDataModel, onItemChange: (HomeItemModel) -> Uni
             .setTrackSelector(trackSelector)
             .apply {
                 if (item.streamHeaders != null) {
-                    val httpDataSourceFactory = createHttpDataSourceFactory(item.streamHeaders!!)
+                    val httpDataSourceFactory = createHttpDataSourceFactory(item.streamHeaders!!, useVpn)
                     val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
                     setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory).run {
                         if (item.drm?.clearKey != null) {

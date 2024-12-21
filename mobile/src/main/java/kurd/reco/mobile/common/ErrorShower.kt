@@ -17,16 +17,17 @@ import kurd.reco.mobile.ui.theme.RoxioTheme
 @Composable
 fun ErrorShower(
     errorText: String,
+    onRetry: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         confirmButton = {
             Text(
-                text = "Ok",
+                text = "Retry",
                 modifier = Modifier
                     .padding(8.dp)
-                    .clickable { onDismiss() }
+                    .clickable { onRetry() }
             )
         },
         title = { Text(text = "Error") },
@@ -42,6 +43,7 @@ private fun ErrorShowerPreview() {
     RoxioTheme {
         ErrorShower(
             errorText = "Lorem ipsum dolor sit amet, excepteur eiusmod consequat mollit proident commodo duis lorem qui magna proident proident reprehenderit officia commodo culpa lorem pariatur exercitation velit non minim culpa ullamco tempor",
+            {},
             {}
         )
     }

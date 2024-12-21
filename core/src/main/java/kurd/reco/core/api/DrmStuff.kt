@@ -1,14 +1,10 @@
 package kurd.reco.core.api
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kurd.reco.core.api.Api.API_URL
+import kurd.reco.core.api.Api.CORS_PROXY
 import kurd.reco.core.api.model.DrmDataModel
 import kurd.reco.core.api.model.PlayDataModel
-import kurd.reco.core.checkRpd
-import org.koin.core.KoinApplication.Companion.init
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
@@ -77,7 +73,7 @@ object DrmStuff {
     }
 
     private suspend fun sendToCDRM(pssh: String, drmData: DrmDataModel): String? {
-        val api = "https://recoo.online/cdn/"
+        val api = "$CORS_PROXY/$API_URL/cdn/"
 
         val jsonData = mapOf(
             "PSSH" to pssh,
@@ -100,7 +96,7 @@ object DrmStuff {
     }
 
     suspend fun getCacheDrm(pssh: String): String? {
-        val url = "https://recoo.online/cdn/cache"
+        val url = "$CORS_PROXY/$API_URL/cdn/cache"
         val jsonData = mapOf(
             "PSSH" to pssh
         )

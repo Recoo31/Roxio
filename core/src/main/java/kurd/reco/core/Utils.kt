@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Build
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 
 fun isProxyDetected(): Boolean {
     val proxyHost = System.getProperty("http.proxyHost")

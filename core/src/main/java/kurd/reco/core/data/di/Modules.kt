@@ -6,7 +6,6 @@ import kurd.reco.core.data.provideDeletedPluginDao
 import kurd.reco.core.data.provideFavoriteDao
 import kurd.reco.core.data.provideFavoriteDatabase
 import kurd.reco.core.data.providePluginDao
-import kurd.reco.core.plugin.PluginManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

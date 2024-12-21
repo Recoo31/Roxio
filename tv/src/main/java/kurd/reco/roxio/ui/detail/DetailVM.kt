@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kurd.reco.core.AppLog
 import kurd.reco.core.ResourceState
-import kurd.reco.core.api.Cache
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.DetailScreenModel
 import kurd.reco.core.api.model.PlayDataModel

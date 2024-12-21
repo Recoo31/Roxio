@@ -20,26 +20,27 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.HttpDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.drm.DefaultDrmSessionManager
 import androidx.media3.exoplayer.drm.FrameworkMediaDrm
 import androidx.media3.exoplayer.drm.LocalMediaDrmCallback
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import kurd.reco.core.api.ApiUtils.okHttpProxyClient
 import kurd.reco.core.api.model.DrmDataModel
 import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.api.model.SubtitleDataModel
 import java.util.Locale
 
-//@OptIn(UnstableApi::class)
-//fun createHttpDataSourceFactory(headers: Map<String, String>): HttpDataSource.Factory {
-//    return OkHttpDataSource.Factory(clientProxy).apply {
-//        setDefaultRequestProperties(headers)
-//    }
-//}
-
 @OptIn(UnstableApi::class)
-fun createHttpDataSourceFactory(headers: Map<String, String>): HttpDataSource.Factory {
-    return DefaultHttpDataSource.Factory().apply {
-        setDefaultRequestProperties(headers)
+fun createHttpDataSourceFactory(headers: Map<String, String>, useProxy: Boolean): HttpDataSource.Factory {
+    return if (useProxy) {
+        OkHttpDataSource.Factory(okHttpProxyClient).apply {
+            setDefaultRequestProperties(headers)
+        }
+    } else {
+        DefaultHttpDataSource.Factory().apply {
+            setDefaultRequestProperties(headers)
+        }
     }
 }
 
@@ -49,6 +50,7 @@ fun createMediaItem(item: PlayDataModel, url: String): MediaItem {
         when {
             url.contains(".mpd", true) -> setMimeType(MimeTypes.APPLICATION_MPD)
             url.contains(".m3u8", true) -> setMimeType(MimeTypes.APPLICATION_M3U8)
+            url.contains("Manifest", true) -> setMimeType(MimeTypes.APPLICATION_SS)
         }
 
         if (item.drm != null && item.drm!!.clearKey == null) {

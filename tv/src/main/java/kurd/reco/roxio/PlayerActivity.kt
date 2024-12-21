@@ -6,8 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import kurd.reco.core.MainVM
-import kurd.reco.roxio.ui.detail.DetailVM
-import kurd.reco.roxio.ui.home.HomeVM
 import kurd.reco.roxio.ui.player.VideoPlayerScreen
 import kurd.reco.roxio.ui.theme.RoxioTheme
 import org.koin.compose.koinInject

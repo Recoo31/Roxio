@@ -2,16 +2,14 @@ package kurd.reco.core
 
 import android.content.Context
 import android.provider.Settings
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kurd.reco.core.api.Api.API_URL
+import kurd.reco.core.api.Api.CORS_PROXY
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.app
-import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.AuthLoginResponse
 import kurd.reco.core.data.AuthTokenResponse
 
@@ -32,7 +30,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("https://recoo.online/auth/login", json = jsonData).parsed<AuthLoginResponse>()
+                val response = app.post("$CORS_PROXY/$API_URL/auth/login", json = jsonData).parsed<AuthLoginResponse>()
                 if (response.rememberToken != null) {
                     loginState.setSuccess(response.rememberToken)
                 } else {
@@ -53,7 +51,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("https://recoo.online/auth/token", json = jsonData).parsed<AuthTokenResponse>()
+                val response = app.post("$CORS_PROXY/$API_URL/auth/token", json = jsonData).parsed<AuthTokenResponse>()
                 if (response.accessToken != null) {
                     accessToken.setSuccess(response.accessToken)
                 } else {

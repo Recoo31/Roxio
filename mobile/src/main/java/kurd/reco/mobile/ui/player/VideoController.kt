@@ -63,10 +63,10 @@ import kurd.reco.core.api.Cache
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.mobile.R
-import kurd.reco.mobile.ui.player.composables.VideoPlayerItemsRow
 import kurd.reco.mobile.ui.player.composables.GestureAdjuster
 import kurd.reco.mobile.ui.player.composables.SettingsDialog
 import kurd.reco.mobile.ui.player.composables.VideoPlayerBottom
+import kurd.reco.mobile.ui.player.composables.VideoPlayerItemsRow
 import kurd.reco.mobile.ui.player.composables.VideoSeekControls
 import org.koin.compose.koinInject
 
@@ -132,6 +132,8 @@ fun VideoController(
                         onItemChange(it)
                     }
                 }
+
+                Toast.makeText(context, "Error: ${error.errorCodeName}", Toast.LENGTH_SHORT).show()
 
 //                val intent = Intent(Intent.ACTION_VIEW).apply {
 //                    setDataAndType(Uri.parse(item.urls.first().second), "video/*")

@@ -11,7 +11,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,31 +22,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.generated.destinations.AuthScreenDestination
-import kurd.reco.core.AuthVM
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
-import kurd.reco.core.api.Resource
+import kurd.reco.core.api.Api.PLUGIN_URL
+import kurd.reco.core.api.ApiUtils
 import kurd.reco.core.isProxyDetected
 import kurd.reco.core.plugin.PluginManager
-import kurd.reco.mobile.ui.login.AuthScreen
-import kurd.reco.mobile.ui.login.AuthScreenRoot
 import kurd.reco.mobile.ui.plugin.PluginDialog
 import kurd.reco.mobile.ui.theme.RoxioTheme
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
-    private val proxyCheckInterval = 2000L
+    private val proxyCheckInterval = 500L
     val isDebugMode = BuildConfig.DEBUG
 
     private fun startProxyMonitoring() {
@@ -67,12 +63,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
+            val mainVM: MainVM = koinInject()
+            val settingsDataStore: SettingsDataStore = koinInject()
+
+            runBlocking {
+                val useVpnEnabled = withTimeoutOrNull(5000) {
+                    settingsDataStore.useVpnEnabled.first { true }
+                }
+
+                ApiUtils.useProxy = useVpnEnabled == true
+                mainVM.useVpn = useVpnEnabled == true
+            }
+
+
+            val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)
+            val isMaterialThemeEnabled by settingsDataStore.materialThemeEnabled.collectAsState(true)
+            val pluginManager: PluginManager = koinInject()
 
             startProxyMonitoring()
-
-            val mainVM: MainVM = koinInject()
-            val pluginManager: PluginManager = koinInject()
-            val settingsDataStore: SettingsDataStore = koinInject()
 
             val navController = rememberNavController()
             val pluginList = pluginManager.getAllPlugins()
@@ -80,8 +88,6 @@ class MainActivity : ComponentActivity() {
             var showPluginDialog by remember { mutableStateOf(false) }
             val lastPlugin by pluginManager.getSelectedPluginFlow().collectAsState()
 
-            val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)
-            val isMaterialThemeEnabled by settingsDataStore.materialThemeEnabled.collectAsState(true)
 
             val accessToken = mainVM.accessToken
 
@@ -144,9 +150,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun downloadMainPlugins(viewModel: MainVM, context: Context) {
-        val url =
-            "https://raw.githubusercontent.com/Recoo31/Roxio-Test-Plugin/refs/heads/main/version.json"
-        viewModel.downloadPlugins(url, context)
+        viewModel.downloadPlugins(PLUGIN_URL, context)
     }
 
     override fun onDestroy() {

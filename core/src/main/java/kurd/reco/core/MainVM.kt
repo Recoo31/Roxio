@@ -12,7 +12,6 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kurd.reco.core.api.app
@@ -50,7 +49,9 @@ class MainVM(
     var clickedItem by mutableStateOf<HomeItemModel?>(null)
     var fetchForPlayer by mutableStateOf(false)
 
-    private val versionLink = "https://raw.githubusercontent.com/Recoo31/Rokko/master/version.json"
+    private val versionLink = ""
+
+    var useVpn by mutableStateOf(false)
 
     fun checkAppUpdate(context: Context) {
         val currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return

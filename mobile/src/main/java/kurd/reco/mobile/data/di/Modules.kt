@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
+import kurd.reco.core.AuthVM
 import kurd.reco.core.MainVM
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.ui.detail.DetailVM
 import kurd.reco.mobile.ui.downloader.MediaDownloadHelper
 import kurd.reco.mobile.ui.home.HomeVM
-import kurd.reco.core.AuthVM
 import kurd.reco.mobile.ui.search.SearchVM
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel

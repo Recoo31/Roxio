@@ -3,7 +3,6 @@ package kurd.reco.core.data.db.favorite
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import kurd.reco.core.data.db.favorite.Favorite
 
 @Dao
 interface FavoriteDao {
