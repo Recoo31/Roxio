@@ -1,0 +1,38 @@
+package kurd.reco.roxio.ui.settings
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
+import kurd.reco.core.SettingsDataStore
+import kurd.reco.roxio.common.SettingCard
+import kurd.reco.roxio.R
+import kotlin.system.exitProcess
+
+@Composable
+fun GeneralSection(settingsDataStore: SettingsDataStore) {
+    val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(false)
+    val showTitleEnabled by settingsDataStore.showTitleEnabled.collectAsState(true)
+    //val useVpnEnabled by settingsDataStore.useVpnEnabled.collectAsState(false)
+
+    SettingCard(
+        title = stringResource(R.string.dark_theme),
+        description = stringResource(R.string.dark_theme_desc),
+        isChecked = isDarkModeEnabled,
+        onClick = { settingsDataStore.setDarkMode(!isDarkModeEnabled) }
+    )
+
+    SettingCard(
+        title = stringResource(R.string.close_roxio),
+        description = stringResource(R.string.close_roxio_desc),
+        onClick = { exitProcess(0) }
+    )
+
+//    SettingCard(
+//        title = "Use VPN",
+//        description = "Use VPN to stream content",
+//        isChecked = useVpnEnabled,
+//        onCheckedChange = { settingsDataStore.setUseVpn(it) }
+//    )
+
+}
