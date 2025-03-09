@@ -5,7 +5,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,6 +47,7 @@ import androidx.tv.material3.Text
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
@@ -51,6 +55,7 @@ import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.rememberChildPadding
 import kurd.reco.roxio.toMovieList
+import kurd.reco.roxio.ui.settings.PluginSection
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -70,6 +75,8 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
     val isTfFocused by tfInteractionSource.collectIsFocusedAsState()
     val searchText by viewModel.searchTextState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    var showSettings by remember { mutableStateOf(false) }
+
 
     val filteredList = when (selectedFilter) {
         FilterType.MOVIES -> searchList.filter { !it.isSeries }.toMovieList()
@@ -83,9 +90,23 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
         }
     }
 
-    LazyColumn(Modifier.fillMaxSize()) {
+    if (showSettings) {
+        navigator.navigate(SettingsScreenDestination)
+    }
+
+    LazyColumn(Modifier
+        .fillMaxSize()
+        .onKeyEvent {
+            if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_MENU) {
+                showSettings = true
+                true
+            } else {
+                false
+            }
+        }
+    ) {
         item {
-            Box {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
                     shape = ClickableSurfaceDefaults.shape(shape = ShapeDefaults.ExtraSmall),
                     scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),
@@ -117,7 +138,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxSize(0.9f)
                             .padding(vertical = 16.dp)
                             .padding(start = 20.dp),
                         contentAlignment = Alignment.CenterStart
@@ -155,6 +176,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                                 imeAction = ImeAction.Search
                             ),
                             onKeyboardAction = {
+                                viewModel.search(searchState.text.toString())
                                 focusManager.moveFocus(FocusDirection.Down)
                             },
                             interactionSource = tfInteractionSource,
@@ -166,8 +188,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                         if (searchState.text.isEmpty()) {
                             Box(
                                 modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .padding(vertical = 8.dp),
+                                    .align(Alignment.CenterStart),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -177,39 +198,38 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                                 )
                             }
                         }
-
-                    }
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = { isFilterMenuExpanded = true }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_filter_list_24),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
                     }
                 }
-                if (isFilterMenuExpanded) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        FilterMenu(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(end = 16.dp, top = 16.dp),
-                            selectedFilter = selectedFilter,
-                            onSelect = {
-                                viewModel.filterType = it
-                                isFilterMenuExpanded = false
-                            },
-                            onDismiss = { isFilterMenuExpanded = false }
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { isFilterMenuExpanded = !isFilterMenuExpanded }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_baseline_filter_list_24),
+                            contentDescription = null
                         )
                     }
+                }
+
+            }
+            if (isFilterMenuExpanded) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    FilterMenu(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 16.dp, top = 16.dp),
+                        selectedFilter = selectedFilter,
+                        onSelect = {
+                            viewModel.filterType = it
+                            isFilterMenuExpanded = false
+                            focusManager.moveFocus(FocusDirection.Down)
+                        },
+                        onDismiss = { isFilterMenuExpanded = false }
+                    )
                 }
             }
         }

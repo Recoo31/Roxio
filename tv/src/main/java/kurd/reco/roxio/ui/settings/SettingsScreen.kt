@@ -30,8 +30,7 @@ import org.koin.compose.koinInject
 enum class Setting {
     Plugins,
     General,
-    Player,
-    Developer
+    Player
 }
 
 @Destination<RootGraph>
@@ -93,9 +92,6 @@ fun SettingsDetail(setting: Setting, modifier: Modifier = Modifier, settingsData
             Setting.Plugins -> PluginSection()
             Setting.General -> GeneralSection(settingsDataStore)
             Setting.Player -> PlayerSection(settingsDataStore)
-            else -> {
-                Text(text = "Settings Detail for $setting")
-            }
         }
     }
 

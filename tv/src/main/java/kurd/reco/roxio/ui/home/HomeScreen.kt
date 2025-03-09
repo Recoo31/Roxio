@@ -2,6 +2,7 @@ package kurd.reco.roxio.ui.home
 
 import android.app.Activity
 import android.content.Intent
+import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +58,7 @@ import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kurd.reco.core.Global
@@ -130,7 +134,11 @@ fun HandleHome(
     val fetchForPlayer = Global.fetchForPlayer
     var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
     var showMultiSelect by remember { mutableStateOf(false) }
+    var showSettings by remember { mutableStateOf(false) }
 
+    if (showSettings) {
+        navigator.navigate(SettingsScreenDestination)
+    }
 
     if (showMultiSelect) {
         Dialog(
@@ -149,7 +157,16 @@ fun HandleHome(
 
     LazyColumn(
         state = lazyListState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .onKeyEvent {
+                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_MENU) {
+                    showSettings = true
+                    true
+                } else {
+                    false
+                }
+            }
     ) {
 //        item {
 //            viewModel.getCategories()?.let { list ->
@@ -191,7 +208,7 @@ fun HandleHome(
                         val screenWidth = configuration.screenWidthDp.dp
 
                         val imageWidth = screenWidth / 6
-                        val imageHeight = imageWidth * 1.5f
+                        val imageHeight = imageWidth * if (item.isSeries) 1f else 1.5f
 
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -211,16 +228,15 @@ fun HandleHome(
                             ) {
                                 Box(
                                     modifier = Modifier.sizeIn(
-                                        minWidth = imageWidth * 0.75f,
-                                        maxWidth = imageWidth,
                                         minHeight = imageHeight * 0.75f,
                                         maxHeight = imageHeight
-                                    )
+                                    ).aspectRatio(if (item.isSeries) ItemDirection.Horizontal.aspectRatio else ItemDirection.Vertical.aspectRatio)
                                 ) {
                                     AsyncImage(
                                         model = item.poster,
                                         contentDescription = null,
-                                        contentScale = ContentScale.Crop
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                     val progress = if (item.totalDuration > 0) {
                                         item.resumePosition.toFloat() / item.totalDuration

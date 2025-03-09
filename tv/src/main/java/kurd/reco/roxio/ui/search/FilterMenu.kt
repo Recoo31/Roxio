@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 
 @Composable
@@ -68,48 +70,19 @@ fun FilterMenuItem(
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused = interactionSource.collectIsFocusedAsState().value
-
-    val textColor = when {
-        isSelected -> MaterialTheme.colorScheme.primary
-        isFocused -> MaterialTheme.colorScheme.onSurface
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    val backgroundColor = when {
-        isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-        isFocused -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-        else -> Color.Transparent
-    }
-
-    Box(
+    Surface(
         modifier = Modifier
-            .padding(8.dp)
-            .selectable(
-                selected = isSelected,
-                onClick = onClick,
-                interactionSource = interactionSource,
-                indication = null
-            )
-            .background(
-                color = backgroundColor,
-                shape = MaterialTheme.shapes.medium
-            )
-            .border(
-                width = if (isFocused) 2.dp else 0.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.medium
-            )
-            .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        contentAlignment = Alignment.CenterStart
+            .padding(8.dp),
+        onClick = onClick,
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else Color.Transparent
+        )
     ) {
         Text(
             text = text,
-            color = textColor,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

@@ -314,7 +314,7 @@ fun VideoPlayerControls(
     }
 
     var showSettings by remember { mutableStateOf(false) }
-    var isMoreFocused by remember { mutableStateOf(false) } // "More" focus kontrolü
+    var isMoreFocused by remember { mutableStateOf(false) }
 
     VideoPlayerMainFrame(
         mediaTitle = {
