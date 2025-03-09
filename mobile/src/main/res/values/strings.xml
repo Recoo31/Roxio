@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Roxio-Test</string>
+    <string name="app_name">Roxio</string>
     <string name="title_activity_player">PlayerActivity</string>
     <string name="plugins_downloaded">Plugins Downloaded</string>
     <string name="downloading_main_plugins">Downloading Main Plugins…</string>

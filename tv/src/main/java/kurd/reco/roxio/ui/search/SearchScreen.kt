@@ -49,8 +49,10 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
+import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.rememberChildPadding
@@ -76,7 +78,8 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
     val searchText by viewModel.searchTextState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     var showSettings by remember { mutableStateOf(false) }
-
+    var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
+    var showFavoriteDialog by remember { mutableStateOf(false) }
 
     val filteredList = when (selectedFilter) {
         FilterType.MOVIES -> searchList.filter { !it.isSeries }.toMovieList()
@@ -251,16 +254,27 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                         .padding(top = childPadding.top * 2),
                     movieList = filteredList,
                     itemDirection = ItemDirection.Horizontal,
-                ) {
-                    navigator.navigate(
-                        DetailScreenRootDestination(
-                            id = it.id.toString(),
-                            isSeries = it.isSeries
+                    onMovieSelected = {
+                        navigator.navigate(
+                            DetailScreenRootDestination(
+                                id = it.id.toString(),
+                                isSeries = it.isSeries
+                            )
                         )
-                    )
-                }
+                    },
+                    onLongClick = {
+                        currentFavoriteItem = it
+                        showFavoriteDialog = true
+                    }
+                )
             }
-
         }
+    }
+
+    if (showFavoriteDialog && currentFavoriteItem != null) {
+        FavoriteDialog(
+            item = currentFavoriteItem!!,
+            onDismiss = { showFavoriteDialog = false }
+        )
     }
 }

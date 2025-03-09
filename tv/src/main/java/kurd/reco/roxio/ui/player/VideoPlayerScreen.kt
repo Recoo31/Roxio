@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -98,7 +101,9 @@ fun VideoPlayerScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val videoPlayerState = rememberVideoPlayerState(hideSeconds = 4)
-    val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(true)
+    val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(
+        true
+    )
 
     var shouldObserve by remember { mutableStateOf(false) }
 
@@ -143,7 +148,8 @@ fun VideoPlayerScreen(
             .apply {
                 if (item.streamHeaders != null) {
                     val httpDataSourceFactory = createHttpDataSourceFactory(item.streamHeaders!!)
-                    val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+                    val dataSourceFactory =
+                        DefaultDataSource.Factory(context, httpDataSourceFactory)
                     setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory).run {
                         if (item.drm?.clearKey != null) {
                             val drmSessionManager = clearKey(item.drm!!) ?: return@run this
@@ -190,7 +196,8 @@ fun VideoPlayerScreen(
                                 resumePosition = exoPlayer.currentPosition,
                                 totalDuration = exoPlayer.duration,
                                 pluginId = Global.currentPlugin!!.id,
-                                itemsRow = if (lastItem.isSeries) itemRow ?: Global.clickedItemRow else null
+                                itemsRow = if (lastItem.isSeries) itemRow
+                                    ?: Global.clickedItemRow else null
                             )
                         )
                     }
@@ -208,6 +215,7 @@ fun VideoPlayerScreen(
 
     var contentCurrentPosition by remember { mutableLongStateOf(0L) }
     var isPlaying: Boolean by remember { mutableStateOf(exoPlayer.isPlaying) }
+    var resizeMode by remember { mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT) }
 
     // TODO: Update in a more thoughtful manner
 
@@ -251,15 +259,20 @@ fun VideoPlayerScreen(
                 pulseState
             )
             .focusable()
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
     ) {
         AndroidView(
             factory = {
                 PlayerView(context).apply {
                     useController = false
-                    resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                    this.resizeMode = resizeMode
                 }
             },
-            update = { it.player = exoPlayer },
+            update = {
+                it.player = exoPlayer
+                it.resizeMode = resizeMode
+            },
             onRelease = { exoPlayer.release() }
         )
 
@@ -279,7 +292,11 @@ fun VideoPlayerScreen(
                     videoPlayerState,
                     focusRequester,
                     trackSelector,
-                    onItemChange = onItemChange
+                    resizeMode,
+                    onItemChange = onItemChange,
+                    onResizeClick = {
+                        resizeMode = it
+                    }
                 )
             }
         )
@@ -296,6 +313,8 @@ fun VideoPlayerControls(
     state: VideoPlayerState,
     focusRequester: FocusRequester,
     defaultTrackSelector: DefaultTrackSelector,
+    resizeMode: Int,
+    onResizeClick: (Int) -> Unit = {},
     onItemChange: (HomeItemModel) -> Unit
 ) {
     val context = LocalContext.current
@@ -348,6 +367,29 @@ fun VideoPlayerControls(
                         focusManager.moveFocus(FocusDirection.Left)
                     } else {
                         focusRequester.requestFocus()
+                    }
+                }
+
+                VideoPlayerControlsIcon(
+                    modifier = Modifier.padding(start = 12.dp),
+                    icon = R.drawable.baseline_aspect_ratio_24,
+                    state = state,
+                    isPlaying = isPlaying
+                ) {
+                    when (resizeMode) {
+                        AspectRatioFrameLayout.RESIZE_MODE_FIT -> onResizeClick(
+                            AspectRatioFrameLayout.RESIZE_MODE_FILL
+                        )
+
+                        AspectRatioFrameLayout.RESIZE_MODE_FILL -> onResizeClick(
+                            AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                        )
+
+                        AspectRatioFrameLayout.RESIZE_MODE_ZOOM -> onResizeClick(
+                            AspectRatioFrameLayout.RESIZE_MODE_FIT
+                        )
+
+                        else -> onResizeClick(AspectRatioFrameLayout.RESIZE_MODE_FILL)
                     }
                 }
             }
@@ -405,9 +447,11 @@ fun VideoPlayerControls(
                 }
 
                 AnimatedVisibility(
-                    modifier = Modifier.fillMaxWidth().onFocusChanged {
-                        isMoreFocused = it.hasFocus
-                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged {
+                            isMoreFocused = it.hasFocus
+                        },
                     visible = isMoreFocused,
                     enter = slideInVertically { it } + fadeIn(),
                     exit = slideOutVertically { it } + fadeOut()
@@ -421,7 +465,9 @@ fun VideoPlayerControls(
                             isMoreFocused = false
                         },
                         focusRequester = focusRequester,
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester)
                     )
                 }
             }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Roxio-Test</string>
+    <string name="app_name">Roxio</string>
     <string name="title_activity_player" translatable="false">PlayerActivity</string>
     <string name="downloading_main_plugins">Ana Eklentiler İndiriliyor…</string>
     <string name="play_text">Oynat</string>
