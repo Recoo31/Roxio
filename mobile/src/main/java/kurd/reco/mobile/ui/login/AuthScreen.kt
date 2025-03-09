@@ -125,7 +125,6 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
-    val focusManager = LocalFocusManager.current
 
     if (errorModel.isError) {
         ErrorShower(
@@ -195,10 +194,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
             },
             singleLine = true,
             shape = MaterialTheme.shapes.medium,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) }
-            )
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -212,10 +208,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
             },
             singleLine = true,
             shape = MaterialTheme.shapes.medium,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
-            )
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -247,5 +240,4 @@ fun AuthScreen(navigator: DestinationsNavigator) {
             CircularProgressIndicator()
         }
     }
-
 }

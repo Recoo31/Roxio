@@ -48,7 +48,7 @@ import androidx.compose.ui.window.Dialog
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.DetailScreenModel
 import kurd.reco.core.api.model.HomeItemModel
@@ -124,7 +124,6 @@ fun DetailScreen(
     item: DetailScreenModel,
     viewModel: DetailVM,
     navigator: DestinationsNavigator,
-    mainVM: MainVM = koinInject(),
     pluginDao: PluginDao = koinInject(),
     favoriteDao: FavoriteDao = koinInject()
 ) {
@@ -135,7 +134,7 @@ fun DetailScreen(
 
     val clickedItem by viewModel.clickedItem.state.collectAsState()
 
-    val fetchForPlayer = mainVM.fetchForPlayer
+    val fetchForPlayer = Global.fetchForPlayer
 
     var expanded by remember { mutableStateOf(false) }
     var selectedSeason by rememberSaveable { mutableIntStateOf(0) }
@@ -157,7 +156,7 @@ fun DetailScreen(
 
     if (showMultiSelect) {
         Dialog(onDismissRequest = { showMultiSelect = false }) {
-            MultiSourceDialog(mainVM.playDataModel, context) { mainVM.playDataModel = it }
+            MultiSourceDialog(Global.playDataModel, context) { Global.playDataModel = it }
         }
     }
 
@@ -221,6 +220,13 @@ fun DetailScreen(
                                 Button(
                                     onClick = {
                                         isLoading = true
+                                        Global.clickedItem = HomeItemModel(
+                                            id = item.id,
+                                            title = item.title,
+                                            poster = item.image,
+                                            isSeries = false,
+                                            isLiveTv = false
+                                        )
                                         viewModel.getUrl(item.id, item.title)
                                     },
                                     modifier = Modifier
@@ -241,9 +247,9 @@ fun DetailScreen(
                         viewModel.seriesList?.let { season ->
                             val episodes = season[selectedSeason].episodes
                             items(episodes) { episode ->
-                                SeasonItem(item = episode) { item ->
+                                SeasonItem(item = episode) { clicked ->
                                     isLoading = true
-                                    viewModel.getUrl(item.id, item.title)
+                                    viewModel.getUrl(clicked.id, clicked.title)
 
                                     val contents = episodes.map {
                                         HomeItemModel(
@@ -254,14 +260,14 @@ fun DetailScreen(
                                             isLiveTv = false
                                         )
                                     }
-                                    mainVM.clickedItem = HomeItemModel(
-                                        id = item.id,
-                                        title = item.title,
-                                        poster = item.poster,
+                                    Global.clickedItem = HomeItemModel(
+                                        id = clicked.id,
+                                        title = clicked.title,
+                                        poster = clicked.poster,
                                         isSeries = true,
                                         isLiveTv = false
                                     )
-                                    mainVM.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
+                                    Global.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
                                     selectedEpisode = episode
                                 }
                             }
@@ -303,9 +309,9 @@ fun DetailScreen(
                         }
 
                         items(episodes) { episode ->
-                            SeasonItem(item = episode) { item ->
+                            SeasonItem(item = episode) { clicked ->
                                 isLoading = true
-                                viewModel.getUrl(item.id, item.title)
+                                viewModel.getUrl(clicked.id, clicked.title)
 
                                 val contents = episodes.map {
                                     HomeItemModel(
@@ -316,14 +322,14 @@ fun DetailScreen(
                                         isLiveTv = false
                                     )
                                 }
-                                mainVM.clickedItem = HomeItemModel(
-                                    id = item.id,
-                                    title = item.title,
-                                    poster = item.poster,
+                                Global.clickedItem = HomeItemModel(
+                                    id = clicked.id,
+                                    title = clicked.title,
+                                    poster = clicked.poster,
                                     isSeries = true,
                                     isLiveTv = false
                                 )
-                                mainVM.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
+                                Global.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
                                 selectedEpisode = episode
                             }
                         }
@@ -333,6 +339,13 @@ fun DetailScreen(
                         Button(
                             onClick = {
                                 isLoading = true
+                                Global.clickedItem = HomeItemModel(
+                                    id = item.id,
+                                    title = item.title,
+                                    poster = item.image,
+                                    isSeries = false,
+                                    isLiveTv = false
+                                )
                                 viewModel.getUrl(item.id, item.title)
                             },
                             modifier = Modifier
@@ -399,7 +412,7 @@ fun DetailScreen(
         is Resource.Success -> {
             val playData = resource.value
 
-            mainVM.playDataModel = if (item.isSeries) {
+            Global.playDataModel = if (item.isSeries) {
                 playData.copy(title = "${item.title} | ${selectedEpisode?.title}")
             } else playData.copy(title = item.title)
 
@@ -438,7 +451,7 @@ fun DetailScreen(
     if (fetchForPlayer) {
 
         isLoading = true
-        val selectedItem = mainVM.clickedItem
+        val selectedItem = Global.clickedItem
         selectedItem?.let {
             viewModel.getUrl(it.id, it.title)
             selectedEpisode = SeriesItem(
@@ -449,6 +462,6 @@ fun DetailScreen(
             )
         }
 
-        mainVM.fetchForPlayer = false
+        Global.fetchForPlayer = false
     }
 }

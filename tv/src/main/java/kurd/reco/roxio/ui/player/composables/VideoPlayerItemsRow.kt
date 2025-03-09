@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,6 +42,7 @@ import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.roxio.common.VideoPlayerState
 import kurd.reco.roxio.defaultBorder
+import kurd.reco.roxio.ui.player.ifElse
 
 @Composable
 fun VideoPlayerItemsRow(
@@ -52,15 +55,21 @@ fun VideoPlayerItemsRow(
 ) {
     val lazyListState = rememberLazyListState()
     val itemsContents = items.contents
-    val selected = itemsContents.find { it == selectedItem }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(selectedItem) {
+        selectedItem?.id?.let { selectedItemId ->
+            val selectedIndex = itemsContents.indexOfFirst { it.id == selectedItemId }
 
-        selected?.let {
-            val index = itemsContents.indexOf(selected)
-            lazyListState.scrollToItem(index)
+            if (selectedIndex != -1) {
+                val middleItemOffset = (lazyListState.layoutInfo.viewportEndOffset - lazyListState.layoutInfo.viewportStartOffset) / 3
+                lazyListState.scrollToItem(
+                    index = selectedIndex,
+                    scrollOffset = -middleItemOffset
+                )
+            }
         }
+
+        focusRequester.requestFocus()
     }
 
     LaunchedEffect(true) {
@@ -85,13 +94,14 @@ fun VideoPlayerItemsRow(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(itemsContents) { item ->
-                val isSelected = item == selectedItem
-                var isFocused by remember { mutableStateOf(false) }
+                val isSelected = item.id == selectedItem?.id
+                val isFocused by remember { mutableStateOf(false) }
 
                 if (item.isSeries) {
                     CompactCard(
                         modifier = Modifier
-                            .heightIn(max = 160.dp),
+                            .sizeIn(maxHeight = 160.dp, maxWidth = 300.dp)
+                            .run { if (isSelected) focusRequester(focusRequester) else this },
                         onClick = {
                             onItemClick(item)
                         },

@@ -43,9 +43,9 @@ import kurd.reco.mobile.ui.theme.RoxioTheme
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
+/*
     private val handler = Handler(Looper.getMainLooper())
     private val proxyCheckInterval = 500L
-    val isDebugMode = BuildConfig.DEBUG
 
     private fun startProxyMonitoring() {
         handler.post(object : Runnable {
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         })
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,6 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
 
             FridaUtil.isFridaEnabled(context)
-            startProxyMonitoring()
 
             val mainVM: MainVM = koinInject()
             val settingsDataStore: SettingsDataStore = koinInject()
@@ -84,7 +83,7 @@ class MainActivity : ComponentActivity() {
                             subtitles = null,
                             streamHeaders = null
                         )
-                        mainVM.playDataModel = playData
+                        Global.playDataModel = playData
                         val intent = Intent(context, PlayerActivity::class.java)
                         context.startActivity(intent)*/
 
@@ -214,11 +213,6 @@ class MainActivity : ComponentActivity() {
 
     private fun downloadMainPlugins(viewModel: MainVM, context: Context) {
         viewModel.downloadPlugins(PLUGIN_URL, context)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacksAndMessages(null)
     }
 
 }

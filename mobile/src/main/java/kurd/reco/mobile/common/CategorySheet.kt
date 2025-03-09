@@ -26,12 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
-import kurd.reco.core.data.db.plugin.PluginDao
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.data.ErrorModel
 import kurd.reco.mobile.ui.detail.composables.CustomIconButton
@@ -44,7 +43,6 @@ fun CategorySheet(
     title: String,
     navigator: DestinationsNavigator,
     homeVM: HomeVM = koinInject(),
-    mainVM: MainVM = koinInject(),
     favoriteDao: FavoriteDao = koinInject(),
     pluginManager: PluginManager = koinInject(),
     onDismiss: () -> Unit,
@@ -113,11 +111,11 @@ fun CategorySheet(
                             item = homeItem,
                             showTitle = showTitle,
                             onItemClick = {
-                                mainVM.clickedItem = homeItem
+                                Global.clickedItem = homeItem
 
                                 if (homeItem.isLiveTv) {
                                     homeVM.getUrl(homeItem.id, homeItem.title)
-                                    mainVM.clickedItemRow = HomeScreenModel("", list)
+                                    Global.clickedItemRow = HomeScreenModel("", list)
                                 } else {
                                     navigator.navigate(
                                         DetailScreenRootDestination(

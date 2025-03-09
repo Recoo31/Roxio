@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.mobile.ui.player.VideoPlayerCompose
 import kurd.reco.mobile.ui.player.hideSystemBars
@@ -29,11 +29,11 @@ class PlayerActivity : ComponentActivity() {
             RoxioTheme {
                 Surface {
                     val context = this
-                    val mainVM: MainVM = koinInject()
+//                    val mainVM: MainVM = koinInject()
                     val settingsDataStore: SettingsDataStore = koinInject()
 
-                    val playDataModel = mainVM.playDataModel
-                    val useVpn = mainVM.useVpn
+                    val playDataModel = Global.playDataModel
+                    val useVpn = false//mainVM.useVpn
 
                     val externalPlayer by settingsDataStore.externalPlayer.collectAsState("")
                     var oldOrientation by rememberSaveable { mutableIntStateOf(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) }
@@ -59,9 +59,9 @@ class PlayerActivity : ComponentActivity() {
                             finishAndRemoveTask()
                         } else {
                             VideoPlayerCompose(it, useVpn) { homeItem ->
-                                mainVM.playDataModel = null
-                                mainVM.fetchForPlayer = true
-                                mainVM.clickedItem = homeItem
+                                Global.playDataModel = null
+                                Global.fetchForPlayer = true
+                                Global.clickedItem = homeItem
                                 finishAndRemoveTask()
                             }
                         }

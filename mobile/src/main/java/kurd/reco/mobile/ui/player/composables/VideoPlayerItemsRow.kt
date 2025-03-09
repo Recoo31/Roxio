@@ -17,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.mobile.common.ImageOverlayCard
@@ -35,9 +33,10 @@ fun VideoPlayerItemsRow(
     val itemsContents = items.contents
 
     LaunchedEffect(selectedItem) {
-        selectedItem?.let {
-            val selectedIndex = itemsContents.indexOf(selectedItem)
-            if (selectedIndex >= 0) {
+        selectedItem?.id?.let { selectedItemId ->
+            val selectedIndex = itemsContents.indexOfFirst { it.id == selectedItemId }
+
+            if (selectedIndex != -1) {
                 val middleItemOffset = (lazyListState.layoutInfo.viewportEndOffset - lazyListState.layoutInfo.viewportStartOffset) / 3
                 lazyListState.scrollToItem(
                     index = selectedIndex,
@@ -57,8 +56,8 @@ fun VideoPlayerItemsRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items(itemsContents) { item ->
-                val isSelected = item == selectedItem
+            items(itemsContents, key = {item -> item.id}) { item ->
+                val isSelected = item.id == selectedItem?.id
 
                 ImageOverlayCard(
                     modifier = Modifier

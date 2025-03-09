@@ -55,6 +55,7 @@ import coil.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kurd.reco.core.Global
 import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.DetailScreenModel
@@ -98,8 +99,7 @@ fun DetailScreen(
     homeID: String,
     item: DetailScreenModel,
     viewModel: DetailVM,
-    navigator: DestinationsNavigator,
-    mainVM: MainVM = koinInject(),
+    navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -114,7 +114,7 @@ fun DetailScreen(
 
     val clickedItem by viewModel.clickedItem.state.collectAsStateWithLifecycle()
     val seasons = viewModel.seriesList
-    val fetchForPlayer = mainVM.fetchForPlayer
+    val fetchForPlayer = Global.fetchForPlayer
     val isSeries = item.isSeries
 
     LaunchedEffect(Unit) {
@@ -123,7 +123,7 @@ fun DetailScreen(
 
     if (showMultiSelect) {
         Dialog(onDismissRequest = { showMultiSelect = false }) {
-            MultiSourceDialog(mainVM.playDataModel, context) { mainVM.playDataModel = it }
+            MultiSourceDialog(Global.playDataModel, context) { Global.playDataModel = it }
         }
     }
 
@@ -180,7 +180,7 @@ fun DetailScreen(
                                             isLiveTv = false
                                         )
                                     }
-                                    mainVM.clickedItem = HomeItemModel(
+                                    Global.clickedItem = HomeItemModel(
                                         id = episode.id,
                                         title = episode.title,
                                         poster = episode.poster,
@@ -189,7 +189,7 @@ fun DetailScreen(
                                     )
 
                                     selectedEpisode = episode
-                                    mainVM.clickedItemRow = HomeScreenModel("Episodes", contents)
+                                    Global.clickedItemRow = HomeScreenModel("Episodes", contents)
                                 },
                                 focusRequester = focus,
                             )
@@ -215,7 +215,7 @@ fun DetailScreen(
                 val playData = resource.value.copy(
                     title = if (item.isSeries) "${item.title} | ${selectedEpisode?.title}" else item.title
                 )
-                mainVM.playDataModel = playData
+                Global.playDataModel = playData
 
                 LaunchedEffect(resource) {
                     if (playData.urls.size > 1) {
@@ -247,7 +247,7 @@ fun DetailScreen(
     if (fetchForPlayer) {
 
         isLoading = true
-        val selectedItem = mainVM.clickedItem
+        val selectedItem = Global.clickedItem
         selectedItem?.let {
             viewModel.getUrl(it.id, it.title)
             selectedEpisode = SeriesItem(
@@ -257,7 +257,7 @@ fun DetailScreen(
                 description = null
             )
         }
-        mainVM.fetchForPlayer = false
+        Global.fetchForPlayer = false
     }
 }
 

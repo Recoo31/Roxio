@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.AppLog
+import kurd.reco.core.Global
 import kurd.reco.core.MainVM
 import kurd.reco.core.api.RemoteRepo
 import kurd.reco.core.api.app
@@ -97,6 +98,7 @@ import kurd.reco.core.data.db.plugin.PluginDao
                     loadClass?.getAccessToken(it)
                 }
             }
+            Global.currentPlugin = plugin
 
             loadClass
         }.onFailure { e ->

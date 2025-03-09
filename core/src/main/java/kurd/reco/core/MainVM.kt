@@ -39,14 +39,9 @@ class MainVM(
     var changeLog: List<String> = emptyList()
     private var appLink: String? = null
 
-    var playDataModel by mutableStateOf<PlayDataModel?>(null)
-    var clickedItemRow: HomeScreenModel? = null
-    var clickedItem by mutableStateOf<HomeItemModel?>(null)
-    var fetchForPlayer by mutableStateOf(false)
-
     private val versionLink = ""
 
-    var useVpn by mutableStateOf(false)
+    //var useVpn by mutableStateOf(false)
 
     fun checkAppUpdate(context: Context) {
         val currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return

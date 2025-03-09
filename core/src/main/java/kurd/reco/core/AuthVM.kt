@@ -38,6 +38,7 @@ class AuthVM: ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                loginState.setFailure(e.localizedMessage ?: e.message ?: "Unknown error")
             }
         }
     }
@@ -59,7 +60,7 @@ class AuthVM: ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                accessToken.setFailure("Failed to get token")
+                accessToken.setFailure(e.localizedMessage ?: e.message ?: "Unknown error")
             }
         }
     }

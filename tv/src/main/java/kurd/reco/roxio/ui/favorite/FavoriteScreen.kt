@@ -62,6 +62,7 @@ import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootD
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
@@ -85,8 +86,7 @@ fun FavoritesScreen(
     navigator: DestinationsNavigator,
     favoriteDao: FavoriteDao = koinInject(),
     pluginManager: PluginManager = koinInject(),
-    homeVM: HomeVM = koinInject(),
-    mainVM: MainVM = koinInject()
+    homeVM: HomeVM = koinInject()
 ) {
     val context = LocalContext.current
     val favoriteList = favoriteDao.getAllFavorites()
@@ -144,6 +144,7 @@ fun FavoritesScreen(
                         shape = ClickableSurfaceDefaults.shape(shape = MaterialTheme.shapes.medium),
                         onClick = {
                             isClicked = true
+                            Global.clickedItem = favorite.toHomeItemModel()
 
                             if (favorite.pluginID != currentPlugin?.id) {
                                 pluginManager.selectPlugin(favorite.pluginID)
@@ -190,10 +191,10 @@ fun FavoritesScreen(
 
                 val playData = resource.value
 
-                mainVM.playDataModel = playData
+                Global.playDataModel = playData
 
                 LaunchedEffect(resource) {
-                    mainVM.playDataModel = playData
+                    Global.playDataModel = playData
                     val intent = Intent(context, PlayerActivity::class.java)
                     context.startActivity(intent)
                     homeVM.clearClickedItem()

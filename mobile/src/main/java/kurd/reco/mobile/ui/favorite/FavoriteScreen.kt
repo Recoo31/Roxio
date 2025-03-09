@@ -48,10 +48,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
-import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
-import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.PlayerActivity
@@ -59,7 +57,6 @@ import kurd.reco.mobile.R
 import kurd.reco.mobile.common.FavoriteDialog
 import kurd.reco.mobile.common.ImageOverlayCard
 import kurd.reco.mobile.ui.home.HomeVM
-import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -69,8 +66,7 @@ fun FavoritesScreen(
     navigator: DestinationsNavigator,
     favoriteDao: FavoriteDao = koinInject(),
     pluginManager: PluginManager = koinInject(),
-    homeVM: HomeVM = koinInject(),
-    mainVM: MainVM = koinInject()
+    homeVM: HomeVM = koinInject()
 ) {
     val context = LocalContext.current
     val favoriteList = favoriteDao.getAllFavorites()
@@ -125,6 +121,7 @@ fun FavoritesScreen(
                         .combinedClickable(
                             onClick = {
                                 isClicked = true
+                                Global.clickedItem = movie.toHomeItemModel()
 
                                 if (movie.pluginID != currentPlugin?.id) {
                                     pluginManager.selectPlugin(movie.pluginID)
@@ -170,10 +167,10 @@ fun FavoritesScreen(
 
                 val playData = resource.value
 
-                mainVM.playDataModel = playData
+                Global.playDataModel = playData
 
                 LaunchedEffect(resource) {
-                    mainVM.playDataModel = playData
+                    Global.playDataModel = playData
                     val intent = Intent(context, PlayerActivity::class.java)
                     context.startActivity(intent)
                     homeVM.clearClickedItem()

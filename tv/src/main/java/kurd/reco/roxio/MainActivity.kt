@@ -35,22 +35,6 @@ import kurd.reco.roxio.ui.theme.RoxioTheme
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
-    private val handler = Handler(Looper.getMainLooper())
-    private val proxyCheckInterval = 500L
-    val isDebugMode = BuildConfig.DEBUG
-
-    private fun startProxyMonitoring() {
-        handler.post(object : Runnable {
-            override fun run() {
-                if (isProxyDetected() && !isDebugMode) {
-                    finishAffinity()
-                } else {
-                    handler.postDelayed(this, proxyCheckInterval)
-                }
-            }
-        })
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -60,7 +44,6 @@ class MainActivity : ComponentActivity() {
             val settingsDataStore: SettingsDataStore = koinInject()
 
             FridaUtil.isFridaEnabled(context)
-            startProxyMonitoring()
 
             val navController = rememberNavController()
 

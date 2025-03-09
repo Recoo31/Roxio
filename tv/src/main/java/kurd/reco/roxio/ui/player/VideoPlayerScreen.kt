@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -38,6 +39,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
@@ -62,7 +66,10 @@ import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Cache
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.PlayDataModel
+import kurd.reco.core.data.db.watched.WatchedItemDao
+import kurd.reco.core.data.db.watched.WatchedItemModel
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.VideoPlayerState
 import kurd.reco.roxio.common.rememberVideoPlayerState
@@ -85,14 +92,26 @@ fun VideoPlayerScreen(
     item: PlayDataModel,
     onItemChange: (HomeItemModel) -> Unit,
     onBackPressed: () -> Unit,
-    mainVM: MainVM = koinInject(),
-    settingsDataStore: SettingsDataStore = koinInject()
+    settingsDataStore: SettingsDataStore = koinInject(),
+    watchedItemDao: WatchedItemDao = koinInject()
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val videoPlayerState = rememberVideoPlayerState(hideSeconds = 4)
     val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(true)
 
-    val lastRowItem = mainVM.clickedItem
+    var shouldObserve by remember { mutableStateOf(false) }
+
+    val lastItem = Global.clickedItem!!
+    var itemRow: HomeScreenModel? = null
+    val isWatched = watchedItemDao.getWatchedItemById(lastItem.id.toString())
+
+    if (isWatched?.itemsRow != null && isWatched.isSeries) {
+        Global.clickedItemRow = isWatched.itemsRow
+        itemRow = isWatched.itemsRow
+    } else if (!lastItem.isSeries) {
+        Global.clickedItemRow = null
+    }
 
     BackHandler(onBack = onBackPressed)
 
@@ -140,7 +159,50 @@ fun VideoPlayerScreen(
         val mediaItem = createMediaItem(item, item.urls.first().second)
         exoPlayer.setMediaItem(mediaItem)
         exoPlayer.prepare()
+        if (isWatched != null) exoPlayer.seekTo(isWatched.resumePosition)
         exoPlayer.playWhenReady = true
+    }
+
+    LaunchedEffect(Unit) {
+        delay(30_000)
+        shouldObserve = true
+    }
+
+
+    DisposableEffect(item) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+
+
+    if (shouldObserve) {
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                    if (!lastItem.isLiveTv) {
+                        watchedItemDao.insertOrUpdateWatchedItem(
+                            WatchedItemModel(
+                                id = lastItem.id.toString(),
+                                title = item.title,
+                                poster = lastItem.poster,
+                                isSeries = lastItem.isSeries,
+                                resumePosition = exoPlayer.currentPosition,
+                                totalDuration = exoPlayer.duration,
+                                pluginId = Global.currentPlugin!!.id,
+                                itemsRow = if (lastItem.isSeries) itemRow ?: Global.clickedItemRow else null
+                            )
+                        )
+                    }
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+                exoPlayer.release()
+            }
+        }
     }
 
 
@@ -165,7 +227,7 @@ fun VideoPlayerScreen(
                     runBlocking {
                         Cache.deleteCache(item.id)
                     }
-                    lastRowItem?.let {
+                    Global.clickedItem?.let {
                         onItemChange(it)
                     }
                 }
@@ -217,8 +279,7 @@ fun VideoPlayerScreen(
                     videoPlayerState,
                     focusRequester,
                     trackSelector,
-                    onItemChange = onItemChange,
-                    mainVM = mainVM
+                    onItemChange = onItemChange
                 )
             }
         )
@@ -235,15 +296,14 @@ fun VideoPlayerControls(
     state: VideoPlayerState,
     focusRequester: FocusRequester,
     defaultTrackSelector: DefaultTrackSelector,
-    onItemChange: (HomeItemModel) -> Unit,
-    mainVM: MainVM = koinInject()
+    onItemChange: (HomeItemModel) -> Unit
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val videoSize by remember { mutableStateOf(exoPlayer.videoSize) }
 
-    val rowItems = mainVM.clickedItemRow
-    val lastRowItem = mainVM.clickedItem
+    val rowItems = Global.clickedItemRow
+    val lastRowItem = Global.clickedItem
 
     val onPlayPauseToggle = { shouldPlay: Boolean ->
         if (shouldPlay) {

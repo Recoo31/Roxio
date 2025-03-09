@@ -59,4 +59,5 @@
     <string name="add_fav_desc">" favorilere eklensin mi?"</string>
     <string name="delete_fav">Favorilerden Çıkar</string>
     <string name="add_fav">Favorilere Ekle</string>
+    <string name="recently_watched">Son Izlenenler</string>
 </resources>

@@ -1,5 +1,6 @@
 package kurd.reco.core.api
 
+import androidx.annotation.Keep
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -9,10 +10,8 @@ import com.lagradost.nicehttp.Requests
 import com.lagradost.nicehttp.ResponseParser
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.EncryptionUtil
+import kurd.reco.core.HttpClient.httpClient
 import kurd.reco.core.api.ApiUtils.requests
-import okhttp3.OkHttpClient
-import java.net.InetSocketAddress
-import java.net.Proxy
 import kotlin.reflect.KClass
 
 sealed class Resource<out T> {
@@ -51,15 +50,17 @@ object ApiUtils {
     }
 
     val requests: Requests by lazy {
-        Requests(responseParser = responseParser)
+        Requests(responseParser = responseParser, baseClient = httpClient)
     }
 }
 
 val app = requests
 
 object Api {
-    private const val GT_API = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/bmrNnZy6kQP4loOsh6T6Br2i2itjMfjdOlFpOJrnc0bvVaMaK6YriI0m0nEWbTZ54="
-    private const val ENCRYPTED_PLUGIN_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/Z6lAm199kzu8dsrEjGSbcUtQivaBnGiNxjq0fWA1m/kWt8S25RtWAqSCErUMsa/V+0M1sJXJFdAle0qmTeM/wD"
+    private const val GT_API =
+        "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/bmrNnZy6kQP4loOsh6T6Br2i2itjMfjdOlFpOJrnc0bvVaMaK6YriI0m0nEWbTZ54="
+    private const val ENCRYPTED_PLUGIN_URL =
+        "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/Z6lAm199kzu8dsrEjGSbcUtQivaBnGiNxjq0fWA1m/kWt8S25RtWAqSCErUMsa/V+0M1sJXJFdAle0qmTeM/wD"
 
     private fun getGT(): String {
         return EncryptionUtil.decrypt(GT_API)

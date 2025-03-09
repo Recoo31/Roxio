@@ -1,24 +1,37 @@
 package kurd.reco.mobile.ui.home
 
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,25 +43,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
+import kurd.reco.core.data.db.watched.WatchedItemDao
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
@@ -59,6 +79,7 @@ import kurd.reco.mobile.common.MovieCard
 import kurd.reco.mobile.common.MovieCategorySelector
 import kurd.reco.mobile.common.ShimmerMovieCard
 import kurd.reco.mobile.data.ErrorModel
+import kurd.reco.mobile.ui.detail.DetailVM
 import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
 import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
 import org.koin.compose.koinInject
@@ -103,27 +124,30 @@ fun HomeScreenRoot(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     movieList: ImmutableList<HomeScreenModel>,
     viewModel: HomeVM,
     navigator: DestinationsNavigator,
     pluginManager: PluginManager = koinInject(),
-    mainVM: MainVM = koinInject(),
     settingsDataStore: SettingsDataStore = koinInject(),
     favoriteDao: FavoriteDao = koinInject(),
+    watchedItemDao: WatchedItemDao = koinInject()
 ) {
     val context = LocalContext.current
     val clickedItem by viewModel.clickedItem.state.collectAsState()
     val showTitleEnabled by settingsDataStore.showTitleEnabled.collectAsState(true)
     val externalPlayer by settingsDataStore.externalPlayer.collectAsState("")
+    val watchedItems by watchedItemDao.getAllWatchedItems().collectAsState(emptyList())
+
     var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
     var isClicked by remember { mutableStateOf(false) }
     val isThereSeeMore = remember { viewModel.isThereSeeMore() }
     val lazyListState = rememberLazyListState()
     var showCategorySheet by remember { mutableStateOf(false) }
     var categoryTitle by remember { mutableStateOf("") }
-    val fetchForPlayer = mainVM.fetchForPlayer
+    val fetchForPlayer = Global.fetchForPlayer
     var showMultiSelect by remember { mutableStateOf(false) }
     var showFavoriteDialog by remember { mutableStateOf(false) }
     var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
@@ -141,8 +165,17 @@ fun HomeScreen(
     }
 
     if (showMultiSelect) {
-        Dialog(onDismissRequest = { showMultiSelect = false }) {
-            MultiSourceDialog(mainVM.playDataModel, context) { mainVM.playDataModel = it }
+        Dialog(
+            onDismissRequest = {
+                showMultiSelect = false
+                viewModel.clearClickedItem()
+            }
+        ) {
+            MultiSourceDialog(Global.playDataModel, context) {
+                Global.playDataModel = it
+                showMultiSelect = false
+                viewModel.clearClickedItem()
+            }
         }
     }
 
@@ -167,6 +200,114 @@ fun HomeScreen(
                         DetailScreenRootDestination(it.id.toString(), it.isSeries)
                     )
                 }
+            }
+        }
+
+        item {
+            if (watchedItems.isNotEmpty()) {
+                val items = watchedItems
+                    .filter { it.pluginId == Global.currentPlugin?.id }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.recently_watched),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.54f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    IconButton(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(24.dp),
+                        onClick = {
+                            viewModel.setViewAll(items.map { it.toHomeItemModel() })
+                            categoryTitle = context.getString(R.string.recently_watched)
+                            showCategorySheet = !showCategorySheet
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.arrow_right),
+                            contentDescription = "See More",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                LazyRow {
+                    items(items) { item ->
+                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                            val width = if (item.isSeries) 280.dp else 150.dp
+                            val itemModifier = if (item.isSeries) {
+                                Modifier.sizeIn(minHeight = 90.dp, maxWidth = width)
+                            } else {
+                                Modifier.sizeIn(maxHeight = 200.dp, maxWidth = width, minHeight = 90.dp)
+                            }
+                            Box(
+                                modifier = itemModifier
+                                    .padding(8.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .combinedClickable(
+                                        onClick = {
+                                            Global.clickedItem = item.toHomeItemModel()
+                                            viewModel.getUrl(item.id, item.title)
+                                        },
+                                        onLongClick = {
+                                            watchedItemDao.deleteWatchedItemById(item.id)
+                                        }
+                                    )
+                            ) {
+                                AsyncImage(
+                                    model = item.poster,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = itemModifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(18.dp))
+                                )
+
+                                val progress = if (item.totalDuration > 0) {
+                                    item.resumePosition.toFloat() / item.totalDuration
+                                } else {
+                                    0f
+                                }
+
+                                if (progress > 0.96f && !item.isSeries) {
+                                    watchedItemDao.deleteWatchedItemById(item.id)
+                                }
+
+                                LinearProgressIndicator(
+                                    progress = { progress },
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(50))
+                                        .height(4.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+
+                            Text(
+                                text = item.title!!,
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .widthIn(max = width),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+                }
+            }
+            LaunchedEffect(watchedItems) {
+                lazyListState.animateScrollToItem(0)
             }
         }
 
@@ -217,8 +358,8 @@ fun HomeScreen(
 
                             if (homeItem.isLiveTv) {
                                 viewModel.getUrl(homeItem.id, homeItem.title)
-                                mainVM.clickedItemRow = movie
-                                mainVM.clickedItem = homeItem
+                                Global.clickedItemRow = movie
+                                Global.clickedItem = homeItem
                             } else {
                                 navigator.navigate(
                                     DetailScreenRootDestination(
@@ -249,7 +390,13 @@ fun HomeScreen(
     }
 
     if (showCategorySheet) {
-        CategorySheet(title = categoryTitle, navigator = navigator, viewModel, mainVM, favoriteDao, pluginManager) {
+        CategorySheet(
+            title = categoryTitle,
+            navigator = navigator,
+            viewModel,
+            favoriteDao,
+            pluginManager
+        ) {
             showCategorySheet = !showCategorySheet
         }
     }
@@ -261,7 +408,7 @@ fun HomeScreen(
 
                 val playData = resource.value
 
-                mainVM.playDataModel = playData
+                Global.playDataModel = playData
 
                 if (playData.urls.size > 1) {
                     showMultiSelect = true
@@ -273,7 +420,7 @@ fun HomeScreen(
                             playerPackageName = externalPlayer
                         )
                     } else {
-                        mainVM.playDataModel = playData
+                        Global.playDataModel = playData
                         val intent = Intent(context, PlayerActivity::class.java)
                         context.startActivity(intent)
                         viewModel.clearClickedItem()
@@ -305,11 +452,11 @@ fun HomeScreen(
 
     if (fetchForPlayer) {
         isClicked = true
-        val homeItem = mainVM.clickedItem
+        val homeItem = Global.clickedItem
         homeItem?.let {
             viewModel.getUrl(it.id, it.title)
         }
-        mainVM.fetchForPlayer = false
+        Global.fetchForPlayer = false
     }
 }
 

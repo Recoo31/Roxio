@@ -22,7 +22,7 @@ nicehttp = "0.4.11"
 jacksonModuleKotlin = "2.13.1"
 jacksonAnnotations = "2.13.1"
 destinationsCore = "2.1.0-beta03"
-roomRuntime = "2.6.1"
+room = "2.6.1"
 runtimeAndroid = "1.7.5"
 media3Exoplayer = "1.5.1"
 paletteKtx = "1.0.0"
@@ -31,6 +31,7 @@ paletteKtx = "1.0.0"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-media3-exoplayer-smoothstreaming = { module = "androidx.media3:media3-exoplayer-smoothstreaming", version.ref = "media3Exoplayer" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -60,8 +61,8 @@ jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
 destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "destinationsCore" }
 destinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "destinationsCore" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-media3-common = { module = "androidx.media3:media3-common", version.ref = "media3Exoplayer" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3Exoplayer" }

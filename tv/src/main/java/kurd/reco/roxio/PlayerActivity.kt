@@ -5,6 +5,7 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import kurd.reco.core.Global
 import kurd.reco.core.MainVM
 import kurd.reco.roxio.ui.player.VideoPlayerScreen
 import kurd.reco.roxio.ui.theme.RoxioTheme
@@ -16,16 +17,14 @@ class PlayerActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RoxioTheme {
-                val mainVM: MainVM = koinInject()
-
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-                mainVM.playDataModel?.let {
+                Global.playDataModel?.let {
                     VideoPlayerScreen(
                         item = it,
                         onItemChange = { clickedItem ->
-                            mainVM.fetchForPlayer = true
-                            mainVM.clickedItem = clickedItem
+                            Global.fetchForPlayer = true
+                            Global.clickedItem = clickedItem
                             finish()
                         },
                         onBackPressed = { finish() }

@@ -130,7 +130,7 @@ fun MoviesRow(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun MoviesRowItem(
+fun MoviesRowItem(
     index: Int,
     movie: HomeItemModel,
     onMovieSelected: (HomeItemModel) -> Unit,
@@ -231,7 +231,7 @@ private fun MoviesRowItemImage(
 
 
 @Composable
-private fun MoviesRowItemText(
+fun MoviesRowItemText(
     showItemTitle: Boolean,
     isItemFocused: Boolean,
     movie: HomeItemModel,

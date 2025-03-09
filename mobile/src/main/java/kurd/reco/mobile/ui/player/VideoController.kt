@@ -56,9 +56,8 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kurd.reco.core.Global
 import kurd.reco.core.AppLog
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Cache
 import kurd.reco.core.api.model.HomeItemModel
@@ -70,7 +69,6 @@ import kurd.reco.mobile.ui.player.composables.SettingsDialog
 import kurd.reco.mobile.ui.player.composables.VideoPlayerBottom
 import kurd.reco.mobile.ui.player.composables.VideoPlayerItemsRow
 import kurd.reco.mobile.ui.player.composables.VideoSeekControls
-import org.koin.compose.koinInject
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -79,14 +77,13 @@ fun VideoController(
     item: PlayDataModel,
     trackSelector: DefaultTrackSelector,
     settingsDataStore: SettingsDataStore,
-    mainVM: MainVM = koinInject(),
-    onItemChange: (HomeItemModel) -> Unit,
+    onItemChange: (HomeItemModel) -> Unit
 ) {
     val context = LocalContext.current
     val TAG = "VideoControlBar"
 
-    val rowItems = mainVM.clickedItemRow
-    val lastRowItem = mainVM.clickedItem
+    val rowItems = Global.clickedItemRow
+    val lastRowItem = Global.clickedItem
 
     var currentTime by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(exoPlayer.duration) }

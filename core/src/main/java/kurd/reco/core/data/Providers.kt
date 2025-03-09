@@ -2,12 +2,13 @@ package kurd.reco.core.data
 
 import android.app.Application
 import androidx.room.Room
+import kurd.reco.core.data.db.AppDatabase
 import kurd.reco.core.data.db.favorite.FavoriteDao
-import kurd.reco.core.data.db.favorite.FavoriteDatabase
 import kurd.reco.core.data.db.plugin.DeletedPluginDao
 import kurd.reco.core.data.db.plugin.MIGRATION_1_2
 import kurd.reco.core.data.db.plugin.PluginDao
 import kurd.reco.core.data.db.plugin.PluginDatabase
+import kurd.reco.core.data.db.watched.WatchedItemDao
 
 
 fun provideDatabase(application: Application): PluginDatabase =
@@ -22,11 +23,12 @@ fun providePluginDao(pluginDataBase: PluginDatabase): PluginDao = pluginDataBase
 fun provideDeletedPluginDao(pluginDataBase: PluginDatabase): DeletedPluginDao = pluginDataBase.deletedPluginDao()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-fun provideFavoriteDatabase(application: Application): FavoriteDatabase =
+fun provideAppDatabase(application: Application): AppDatabase =
     Room.databaseBuilder(
         application,
-        FavoriteDatabase::class.java,
-        "favorite_database"
-    ).allowMainThreadQueries().build()
+        AppDatabase::class.java,
+        "app_database"
+    ).fallbackToDestructiveMigration().allowMainThreadQueries().build()
 
-fun provideFavoriteDao(favoriteDatabase: FavoriteDatabase): FavoriteDao = favoriteDatabase.favoriteDao()
+fun provideFavoriteDao(appDatabase: AppDatabase): FavoriteDao = appDatabase.favoriteDao()
+fun provideWatchedItemDao(appDatabase: AppDatabase): WatchedItemDao = appDatabase.watchedItemDao()

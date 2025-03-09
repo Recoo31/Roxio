@@ -21,6 +21,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import kurd.reco.core.Global
 import kurd.reco.core.MainVM
 import kurd.reco.roxio.ui.player.createMediaItem
 import org.koin.compose.koinInject
@@ -29,11 +30,10 @@ import org.koin.compose.koinInject
 fun VideoPlayerSources(
     exoPlayer: ExoPlayer,
     focusRequester: FocusRequester,
-    viewModel: MainVM = koinInject(),
     onBack: () -> Unit
 ) {
 
-    val urls = viewModel.playDataModel?.urls
+    val urls = Global.playDataModel?.urls
     if (urls.isNullOrEmpty()) return
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -70,7 +70,7 @@ fun VideoPlayerSources(
 
                 VideoPlayerSettingItem(focusRequester, text = item.first, isSelect = selected) {
                     val mediaItem =
-                        createMediaItem(viewModel.playDataModel!!, item.second)
+                        createMediaItem(Global.playDataModel!!, item.second)
                     exoPlayer.setMediaItem(mediaItem)
                     onBack()
                 }

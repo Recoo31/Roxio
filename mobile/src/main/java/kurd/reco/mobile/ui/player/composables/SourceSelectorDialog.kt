@@ -19,19 +19,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.media3.exoplayer.ExoPlayer
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.mobile.R
 import kurd.reco.mobile.ui.player.createMediaItem
-import org.koin.compose.koinInject
 
 @Composable
 fun SourceSelectorDialog(
     exoPlayer: ExoPlayer,
     onDismiss: () -> Unit
 ) {
-    val viewModel: MainVM = koinInject()
-
-    val urls = viewModel.playDataModel?.urls
+    val urls = Global.playDataModel?.urls
     if (urls.isNullOrEmpty()) return
 
     Dialog(onDismissRequest = onDismiss) {
@@ -62,7 +59,7 @@ fun SourceSelectorDialog(
                             selected = selected,
                             onClick = {
                                 val mediaItem =
-                                    createMediaItem(viewModel.playDataModel!!, item.second)
+                                    createMediaItem(Global.playDataModel!!, item.second)
                                 exoPlayer.setMediaItem(mediaItem)
                                 onDismiss()
                             }

@@ -4,8 +4,9 @@ import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.data.provideDatabase
 import kurd.reco.core.data.provideDeletedPluginDao
 import kurd.reco.core.data.provideFavoriteDao
-import kurd.reco.core.data.provideFavoriteDatabase
+import kurd.reco.core.data.provideAppDatabase
 import kurd.reco.core.data.providePluginDao
+import kurd.reco.core.data.provideWatchedItemDao
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -14,8 +15,9 @@ val dataBaseModule = module {
     single { providePluginDao(get()) }
     single { provideDeletedPluginDao(get()) }
 
-    single { provideFavoriteDatabase(get()) }
+    single { provideAppDatabase(get()) }
     single { provideFavoriteDao(get()) }
+    single { provideWatchedItemDao(get()) }
 
     single { SettingsDataStore(androidContext()) }
 }

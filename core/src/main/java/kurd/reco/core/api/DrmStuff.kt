@@ -1,5 +1,6 @@
 package kurd.reco.core.api
 
+import androidx.annotation.Keep
 import com.fasterxml.jackson.annotation.JsonProperty
 import kurd.reco.core.api.Api.API_URL
 import kurd.reco.core.api.Api.CORS_PROXY
@@ -117,6 +118,7 @@ object DrmStuff {
         } ?: "{}" // Return an empty JSON object if headers are null
     }
 
+    @Keep
     data class CDRMResponse(
         @JsonProperty("Message")
         val message: String,
