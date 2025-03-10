@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     single { MainVM(get(), get()) }
-    single { PluginManager(get(), get(), androidContext(), get()) }
+    single { PluginManager(get(), get(), androidContext()) }
     single { HomeVM(get()) }
     viewModel { DetailVM(get()) }
     single { SearchVM(get()) }

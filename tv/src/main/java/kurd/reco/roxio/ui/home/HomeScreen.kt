@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,6 +50,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.tv.material3.Button
+import androidx.tv.material3.Card
+import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
@@ -135,6 +139,8 @@ fun HandleHome(
     var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
     var showMultiSelect by remember { mutableStateOf(false) }
     var showSettings by remember { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
+
 
     if (showSettings) {
         navigator.navigate(SettingsScreenDestination)
@@ -155,18 +161,53 @@ fun HandleHome(
         }
     }
 
+    BackHandler {
+        showExitDialog = !showExitDialog
+    }
+
+    if (showExitDialog) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Dialog(
+                onDismissRequest = { showExitDialog = false }
+            ) {
+                Surface(
+                    modifier = Modifier.size(width = 400.dp, height = 200.dp),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.exit_app_dialog),
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        Row(modifier = Modifier.padding(16.dp)) {
+                            Button(
+                                onClick = { showExitDialog = false },
+                                modifier = Modifier.padding(end = 16.dp)
+                            ) {
+                                Text("Cancel")
+                            }
+                            Button(onClick = {
+                                (context as Activity).finish()
+                                exitProcess(0)
+                            }) {
+                                Text("Exit")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
             .fillMaxSize()
-            .onKeyEvent {
-                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_MENU) {
-                    showSettings = true
-                    true
-                } else {
-                    false
-                }
-            }
     ) {
 //        item {
 //            viewModel.getCategories()?.let { list ->
@@ -227,10 +268,12 @@ fun HandleHome(
                                 modifier = Modifier.padding(horizontal = 8.dp)
                             ) {
                                 Box(
-                                    modifier = Modifier.sizeIn(
-                                        minHeight = imageHeight * 0.75f,
-                                        maxHeight = imageHeight
-                                    ).aspectRatio(if (item.isSeries) ItemDirection.Horizontal.aspectRatio else ItemDirection.Vertical.aspectRatio)
+                                    modifier = Modifier
+                                        .sizeIn(
+                                            minHeight = imageHeight * 0.75f,
+                                            maxHeight = imageHeight
+                                        )
+                                        .aspectRatio(if (item.isSeries) ItemDirection.Horizontal.aspectRatio else ItemDirection.Vertical.aspectRatio)
                                 ) {
                                     AsyncImage(
                                         model = item.poster,

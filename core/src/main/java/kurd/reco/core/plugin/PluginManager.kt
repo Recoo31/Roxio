@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import dalvik.system.PathClassLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,8 +24,7 @@ import kurd.reco.core.data.db.plugin.PluginDao
 @Keep class PluginManager(
     private val pluginDao: PluginDao,
     private val deletedPluginDao: DeletedPluginDao,
-    private val context: Context,
-    private val mainVM: MainVM
+    private val context: Context
 ) : ViewModel() {
 
     private var pluginInstance: RemoteRepo? = null
@@ -92,14 +92,7 @@ import kurd.reco.core.data.db.plugin.PluginDao
         return runCatching {
             val loadClass = loader.loadClass(className).getDeclaredConstructor().newInstance() as? RemoteRepo
 
-            runCatching {
-                val token = mainVM.accessToken
-                token?.let {
-                    loadClass?.getAccessToken(it)
-                }
-            }
             Global.currentPlugin = plugin
-
             loadClass
         }.onFailure { e ->
             Log.e("PluginManager", "Error loading plugin", e)
@@ -115,5 +108,6 @@ import kurd.reco.core.data.db.plugin.PluginDao
     }
 
     fun getAllPlugins(): List<Plugin> = pluginDao.getAllPlugins()
+    fun getAllPluginsFlow(): Flow<List<Plugin>> = pluginDao.getAllPluginsFlow()
 }
 

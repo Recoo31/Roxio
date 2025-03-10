@@ -4,12 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface PluginDao {
     @Query("SELECT * FROM plugins")
     fun getAllPlugins(): List<Plugin>
+
+    @Query("SELECT * FROM plugins")
+    fun getAllPluginsFlow(): Flow<List<Plugin>>
 
     @Query("SELECT * FROM plugins WHERE id = :pluginId")
     fun getPluginById(pluginId: String): Plugin?

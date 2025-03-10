@@ -16,8 +16,11 @@ object Global {
     var fetchRetryCount = 0
     var loginTryCount = 0
 
+    var accessToken by mutableStateOf<String?>(null)
+
     var pluginLoaded by mutableStateOf(false)
     var currentPlugin by mutableStateOf<Plugin?>(null)
+    var showPluginDialog by mutableStateOf(false)
 
     var fetchForPlayer by mutableStateOf(false)
     var playDataModel by mutableStateOf<PlayDataModel?>(null)

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kurd.reco.core.AppLog
+import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.ResourceState
 import kurd.reco.core.api.Cache.checkCache
@@ -35,6 +36,11 @@ class HomeVM(private val pluginManager: PluginManager) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             moviesList.setLoading()
             val result = runCatching {
+                runCatching {
+                    Global.accessToken?.let {
+                        pluginManager.getSelectedPlugin().getAccessToken(it)
+                    }
+                }
                 pluginManager.getSelectedPlugin().getHomeScreenItems()
             }.getOrElse {
                 val message = it.localizedMessage

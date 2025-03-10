@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +53,8 @@ fun PluginDialog(
     var isDeleteMode by remember { mutableStateOf(false) }
     var pluginToDelete by remember { mutableStateOf<Plugin?>(null) }
     val textTitle = if (isDeleteMode) stringResource(R.string.delete_plugin) else stringResource(R.string.select_plugin)
-    var plugins = pluginManager.getAllPlugins().filter { it.active }
+    val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(emptyList())
+    var plugins = pluginsState.filter { it.active }
 
     if (showAddDialog) {
         DownloadDialog(viewModel) { showAddDialog = false }

@@ -21,6 +21,7 @@ import androidx.tv.material3.Surface
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
+import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             val pluginList = pluginManager.getAllPlugins()
-            val accessToken = mainVM.accessToken
+            val accessToken = Global.accessToken
 
             val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)
             val lastPlugin by pluginManager.getSelectedPluginFlow().collectAsState()

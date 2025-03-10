@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +44,7 @@ import kurd.reco.core.AuthVM
 import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
 import kurd.reco.core.copyText
+import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.CustomTextField
 import org.koin.androidx.compose.koinViewModel
@@ -53,7 +55,6 @@ import org.koin.compose.koinInject
 fun AuthScreenRoot(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val authVM: AuthVM = koinViewModel()
-    val mainVM: MainVM = koinInject()
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
     val rememberTokenFromPrefs = sharedPreferences.getString("remember_token", null)
@@ -78,7 +79,7 @@ fun AuthScreenRoot(navigator: DestinationsNavigator) {
             }
 
             is Resource.Success -> {
-                mainVM.accessToken = resource.value
+                Global.accessToken = resource.value
                 navigator.navigate(HomeScreenDestination)
             }
         }
@@ -92,7 +93,6 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val viewModel: AuthVM = koinViewModel()
-    val mainVM: MainVM = koinInject()
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
 
@@ -137,7 +137,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                     }
                 }
                 is Resource.Success -> {
-                    mainVM.accessToken = token.value
+                    Global.accessToken = token.value
                     navigator.navigate(HomeScreenDestination)
                 }
             }
@@ -163,7 +163,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                 .padding(16.dp),
             value = username,
             onValueChange = { username = it },
-            placeholder = "Username",
+            placeholder = stringResource(id = R.string.username),
             leadingIcon = { Icon(Icons.Default.Person, null, modifier = Modifier.padding(end = 16.dp)) },
             placeholderStyle = MaterialTheme.typography.titleLarge,
             focusRequester = focusRequester,
@@ -178,7 +178,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                 .padding(16.dp),
             value = password,
             onValueChange = { password = it },
-            placeholder = "Password",
+            placeholder = stringResource(id = R.string.password),
             leadingIcon = { Icon(Icons.Default.Lock, null, modifier = Modifier.padding(end = 16.dp)) },
             placeholderStyle = MaterialTheme.typography.titleLarge,
             singleLine = true,
@@ -189,10 +189,10 @@ fun AuthScreen(navigator: DestinationsNavigator) {
         Button(
             onClick = {
                 if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(context, "Please enter username and password", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.enter_username_and_password), Toast.LENGTH_SHORT).show()
                     return@Button
                 } else if (Global.loginTryCount >= 3) {
-                    Toast.makeText(context, "Too many login attempts", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.too_many_attempts), Toast.LENGTH_SHORT).show()
                     return@Button
                 } else {
                     Global.loginTryCount++
@@ -202,7 +202,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                 }
             },
         ) {
-            Text("Login")
+            Text(stringResource(id = R.string.login))
         }
 
     }

@@ -86,7 +86,7 @@ fun AuthScreenRoot(navigator: DestinationsNavigator) {
                 }
             }
             is Resource.Success -> {
-                mainVM.accessToken = resource.value
+                Global.accessToken = resource.value
                 navigator.navigate(HomeScreenRootDestination)
             }
         }
@@ -169,7 +169,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                     }
                 }
                 is Resource.Success -> {
-                    mainVM.accessToken = token.value
+                    Global.accessToken = token.value
                     navigator.navigate(HomeScreenRootDestination)
                 }
             }

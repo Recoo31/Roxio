@@ -31,6 +31,8 @@ import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
+import kurd.reco.core.Global
+import kurd.reco.core.Global.showPluginDialog
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Api.PLUGIN_URL
@@ -106,12 +108,11 @@ class MainActivity : ComponentActivity() {
             val pluginList = pluginManager.getAllPlugins()
             var showFab by remember { mutableStateOf(true) }
             var showSideBar by remember { mutableStateOf(true) }
-            var showPluginDialog by remember { mutableStateOf(false) }
             val lastPlugin by pluginManager.getSelectedPluginFlow().collectAsState()
             val configuration = LocalConfiguration.current
             val isWideScreen = configuration.screenWidthDp > 600
 
-            val accessToken = mainVM.accessToken
+            val accessToken = Global.accessToken
 
             LaunchedEffect(accessToken) {
                 if (pluginList.isEmpty() && accessToken != null) {
@@ -131,7 +132,6 @@ class MainActivity : ComponentActivity() {
                     showFab =
                         it.destination.route == "home_screen_root" || it.destination.route == "search_screen"
                     showSideBar = it.destination.route != "detail_screen_root/{id}/{isSeries}"
-                    println(it.destination.route)
                 }
             }
 

@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kurd.reco.core.AppLog
+import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.ResourceState
 import kurd.reco.core.api.Cache.checkCache
@@ -39,11 +40,22 @@ class HomeVM(private val pluginManager: PluginManager) : ViewModel() {
         currentJob = viewModelScope.launch(Dispatchers.IO) {
             moviesList.setLoading()
             val result = runCatching {
+                runCatching {
+                    Global.accessToken?.let {
+                        pluginManager.getSelectedPlugin().getAccessToken(it)
+                    }
+                }
+
                 pluginManager.getSelectedPlugin().getHomeScreenItems()
             }.getOrElse {
                 val message = it.localizedMessage
                 if (message == "StandaloneCoroutine was cancelled") return@getOrElse Resource.Loading
-                Resource.Failure(message ?: "Select Plugin")
+                if (message != null) {
+                    Resource.Failure(message)
+                } else {
+                    Global.showPluginDialog = true
+                    Resource.Failure("Select Plugin")
+                }
             }
             pluginLoaded = true
             moviesList.update(result)

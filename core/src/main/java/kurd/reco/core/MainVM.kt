@@ -32,8 +32,6 @@ class MainVM(
     private val deletedPluginDao: DeletedPluginDao
 ) : ViewModel() {
 
-    var accessToken by mutableStateOf<String?>(null)
-
     var showUpdateDialog by mutableStateOf(false)
     var downloadProgress by mutableFloatStateOf(0f)
     var changeLog: List<String> = emptyList()
