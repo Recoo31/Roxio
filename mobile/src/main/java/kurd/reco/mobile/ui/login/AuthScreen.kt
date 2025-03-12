@@ -57,7 +57,6 @@ import org.koin.compose.koinInject
 fun AuthScreenRoot(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val authVM: AuthVM = koinViewModel()
-    val mainVM: MainVM = koinInject()
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
     val rememberTokenFromPrefs = sharedPreferences.getString("remember_token", null)
@@ -113,11 +112,9 @@ fun AuthScreenRoot(navigator: DestinationsNavigator) {
 fun AuthScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
     val viewModel: AuthVM = koinViewModel()
-    val mainVM: MainVM = koinInject()
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
 
-    val androidID = viewModel.getAndroidID(context)
     val loginStatus by viewModel.loginState.state.collectAsStateWithLifecycle()
     val accessToken by viewModel.accessToken.state.collectAsStateWithLifecycle()
 
@@ -125,6 +122,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
+    val androidID = remember { viewModel.getAndroidID(context) }
 
     if (errorModel.isError) {
         ErrorShower(

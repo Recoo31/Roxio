@@ -1,8 +1,10 @@
 package kurd.reco.roxio.ui.settings
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.roxio.common.SettingCard
@@ -11,6 +13,8 @@ import kotlin.system.exitProcess
 
 @Composable
 fun GeneralSection(settingsDataStore: SettingsDataStore) {
+    val context = LocalContext.current
+
     val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(false)
     val showTitleEnabled by settingsDataStore.showTitleEnabled.collectAsState(true)
     //val useVpnEnabled by settingsDataStore.useVpnEnabled.collectAsState(false)
@@ -25,7 +29,10 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
     SettingCard(
         title = stringResource(R.string.close_roxio),
         description = stringResource(R.string.close_roxio_desc),
-        onClick = { exitProcess(0) }
+        onClick = {
+            (context as Activity).finishAffinity()
+            exitProcess(0)
+        }
     )
 
 //    SettingCard(

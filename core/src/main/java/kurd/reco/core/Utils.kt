@@ -6,8 +6,13 @@ import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import java.io.ByteArrayInputStream
+import java.io.File
 import java.security.MessageDigest
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 
 fun isVpnDetectedSimple(): Boolean {
     try {

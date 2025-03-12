@@ -96,7 +96,6 @@ fun AuthScreen(navigator: DestinationsNavigator) {
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
 
-    val androidID = viewModel.getAndroidID(context)
 
     val loginStatus by viewModel.loginState.state.collectAsStateWithLifecycle()
     val accessToken by viewModel.accessToken.state.collectAsStateWithLifecycle()
@@ -104,6 +103,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     var isLoading by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val androidID = remember { viewModel.getAndroidID(context) }
 
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
