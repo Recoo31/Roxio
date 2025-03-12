@@ -78,7 +78,11 @@ fun VideoPlayerQuality(
         LazyColumn {
             items(videoTracks) { trackGroup ->
                 val formats = (0 until trackGroup.mediaTrackGroup.length)
+                    .asSequence()
                     .map { trackGroup.mediaTrackGroup.getFormat(it) }
+                    .groupBy { it.height }
+                    .map { (_, formats) -> formats.maxByOrNull { it.bitrate } }
+                    .filterNotNull()
                     .sortedByDescending { it.height }
 
                 formats.forEach { format ->

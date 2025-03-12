@@ -70,7 +70,6 @@ fun QualitySelectorDialog(
                         .map { (_, formats) -> formats.maxByOrNull { it.bitrate } }
                         .filterNotNull()
                         .sortedByDescending { it.height }
-                        .toList()
 
                     formats.forEach { format ->
                         val width = format.width
