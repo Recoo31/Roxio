@@ -2,6 +2,10 @@ package kurd.reco.core
 
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +20,10 @@ import kurd.reco.core.data.AuthTokenResponse
 class AuthVM: ViewModel() {
     var loginState = ResourceState<String>(Resource.Loading)
     var accessToken = ResourceState<String>(Resource.Loading)
+    private lateinit var appSignature: String
 
     fun getAndroidID(context: Context): String {
+        appSignature = getAppSignature(context)
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
@@ -30,7 +36,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("$CORS_PROXY/$API_URL/auth/login", json = jsonData).parsed<AuthLoginResponse>()
+                val response = app.post("$CORS_PROXY/$API_URL/auth/login", mapOf("app-sg" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
                 if (response.rememberToken != null) {
                     loginState.setSuccess(response.rememberToken)
                 } else {

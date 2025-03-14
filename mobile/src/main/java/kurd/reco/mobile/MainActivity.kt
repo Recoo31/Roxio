@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
@@ -36,7 +38,6 @@ import kurd.reco.core.Global.showPluginDialog
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Api.PLUGIN_URL
-import kurd.reco.core.isProxyDetected
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.ui.AppUpdateDialog
 import kurd.reco.mobile.ui.home.HomeVM
@@ -66,7 +67,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
-
+            Firebase.crashlytics.isCrashlyticsCollectionEnabled = !Global.isDebugMode
             FridaUtil.isFridaEnabled(context)
 
             val mainVM: MainVM = koinInject()
@@ -90,14 +91,6 @@ class MainActivity : ComponentActivity() {
                         context.startActivity(intent)*/
 
 
-//            runBlocking {
-//                val useVpnEnabled = withTimeoutOrNull(5000) {
-//                    settingsDataStore.useVpnEnabled.first { true }
-//                }
-//
-//                ApiUtils.useProxy = useVpnEnabled == true
-//                mainVM.useVpn = useVpnEnabled == true
-//            }
 
 
             val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)
@@ -200,7 +193,9 @@ class MainActivity : ComponentActivity() {
                         SideBar(navController)
                     }
 
-                    Box(modifier = Modifier.padding(innerPadding).padding(start = if (isWideScreen && showSideBar) 80.dp else 0.dp)) {
+                    Box(modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(start = if (isWideScreen && showSideBar) 80.dp else 0.dp)) {
                         DestinationsNavHost(
                             navGraph = NavGraphs.root,
                             navController = navController

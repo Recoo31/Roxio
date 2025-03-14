@@ -53,7 +53,7 @@ fun PluginDialog(
     var isDeleteMode by remember { mutableStateOf(false) }
     var pluginToDelete by remember { mutableStateOf<Plugin?>(null) }
     val textTitle = if (isDeleteMode) stringResource(R.string.delete_plugin) else stringResource(R.string.select_plugin)
-    val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(emptyList())
+    val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(initial = pluginManager.getAllPlugins())
     var plugins = pluginsState.filter { it.active }
 
     if (showAddDialog) {

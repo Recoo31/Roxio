@@ -56,7 +56,7 @@ fun VideoPlayerCompose(
     if (isWatched?.itemsRow != null && isWatched.isSeries) {
         Global.clickedItemRow = isWatched.itemsRow
         itemRow = isWatched.itemsRow
-    } else if (!lastItem.isSeries) {
+    } else if (!lastItem.isSeries && !lastItem.isLiveTv) {
         Global.clickedItemRow = null
     }
 
