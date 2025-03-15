@@ -1,8 +1,11 @@
 package kurd.reco.core
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kurd.reco.core.Global.isDebugMode
 import kurd.reco.core.api.model.DetailScreenModel
 import kurd.reco.core.api.model.HomeItemModel
@@ -14,8 +17,6 @@ import okhttp3.Request
 import kotlin.system.exitProcess
 
 object Global {
-    var accessToken by mutableStateOf<String?>(null)
-
     var fetchRetryCount = 0
     var loginTryCount = 0
 
@@ -32,6 +33,10 @@ object Global {
     val isDebugMode = BuildConfig.DEBUG
 }
 
+object User {
+    var accessToken by mutableStateOf<String?>(null)
+}
+
 object HttpClient {
     val httpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val request: Request = chain.request()
@@ -43,4 +48,12 @@ object HttpClient {
 
         chain.proceed(request)
     }.build()
+}
+
+object SGCheck {
+    init {
+        System.loadLibrary("core")
+    }
+    external fun getSG(context: Context): String
+    external fun checkSGIntegrity()
 }

@@ -24,7 +24,7 @@ jacksonAnnotations = "2.13.1"
 destinationsCore = "2.1.0-beta03"
 room = "2.6.1"
 runtimeAndroid = "1.7.5"
-media3Exoplayer = "1.5.1"
+media3Exoplayer = "1.6.0-rc01"
 paletteKtx = "1.0.0"
 
 [libraries]

@@ -2,8 +2,6 @@ package kurd.reco.mobile
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -37,6 +35,8 @@ import kurd.reco.core.Global
 import kurd.reco.core.Global.showPluginDialog
 import kurd.reco.core.MainVM
 import kurd.reco.core.SettingsDataStore
+import kurd.reco.core.SGCheck
+import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.ui.AppUpdateDialog
@@ -68,10 +68,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             Firebase.crashlytics.isCrashlyticsCollectionEnabled = !Global.isDebugMode
-            FridaUtil.isFridaEnabled(context)
 
             val mainVM: MainVM = koinInject()
             val settingsDataStore: SettingsDataStore = koinInject()
+            FridaUtil.isFridaEnabled(context)
+            SGCheck.checkSGIntegrity()
 
 
             /*            val playData = PlayDataModel(
@@ -105,7 +106,7 @@ class MainActivity : ComponentActivity() {
             val configuration = LocalConfiguration.current
             val isWideScreen = configuration.screenWidthDp > 600
 
-            val accessToken = Global.accessToken
+            val accessToken = User.accessToken
 
             LaunchedEffect(accessToken) {
                 if (pluginList.isEmpty() && accessToken != null) {

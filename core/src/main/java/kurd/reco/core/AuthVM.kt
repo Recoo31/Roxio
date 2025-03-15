@@ -23,7 +23,7 @@ class AuthVM: ViewModel() {
     private lateinit var appSignature: String
 
     fun getAndroidID(context: Context): String {
-        appSignature = getAppSignature(context)
+        appSignature = SGCheck.getSG(context)
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
@@ -36,7 +36,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("$CORS_PROXY/$API_URL/auth/login", mapOf("app-sg" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
+                val response = app.post("$CORS_PROXY/$API_URL/auth/login", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
                 if (response.rememberToken != null) {
                     loginState.setSuccess(response.rememberToken)
                 } else {
@@ -58,7 +58,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("$CORS_PROXY/$API_URL/auth/token", json = jsonData).parsed<AuthTokenResponse>()
+                val response = app.post("$CORS_PROXY/$API_URL/auth/token", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthTokenResponse>()
                 if (response.accessToken != null) {
                     accessToken.setSuccess(response.accessToken)
                 } else {

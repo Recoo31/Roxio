@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kurd.reco.core.Global
 import kurd.reco.core.AuthVM
 import kurd.reco.core.MainVM
+import kurd.reco.core.User
 import kurd.reco.core.api.Resource
 import kurd.reco.core.copyText
 import kurd.reco.roxio.R
@@ -79,7 +80,7 @@ fun AuthScreenRoot(navigator: DestinationsNavigator) {
             }
 
             is Resource.Success -> {
-                Global.accessToken = resource.value
+                User.accessToken = resource.value
                 navigator.navigate(HomeScreenDestination)
             }
         }
@@ -96,7 +97,6 @@ fun AuthScreen(navigator: DestinationsNavigator) {
 
     val sharedPreferences = context.getSharedPreferences("roxio_auth", Context.MODE_PRIVATE)
 
-
     val loginStatus by viewModel.loginState.state.collectAsStateWithLifecycle()
     val accessToken by viewModel.accessToken.state.collectAsStateWithLifecycle()
 
@@ -105,49 +105,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
     var password by remember { mutableStateOf("") }
     val androidID = remember { viewModel.getAndroidID(context) }
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    }
-
-    when (val resource = loginStatus) {
-        is Resource.Failure -> {
-            Toast.makeText(context, "Error: ${resource.error}", Toast.LENGTH_SHORT).show()
-            if (resource.error.contains("hwid limit")) {
-                copyText(androidID, "HWID copied / $androidID",context)
-            }
-        }
-        is Resource.Success -> {
-            val rememberToken = resource.value
-
-            LaunchedEffect(Unit) {
-                viewModel.getToken(rememberToken, androidID)
-                sharedPreferences.edit().putString("remember_token", rememberToken).apply()
-            }
-
-            when (val token = accessToken) {
-                is Resource.Failure -> {
-                    Toast.makeText(context, "Error: ${token.error}", Toast.LENGTH_LONG).show()
-                    navigator.navigate(AuthScreenDestination)
-                }
-                Resource.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is Resource.Success -> {
-                    Global.accessToken = token.value
-                    navigator.navigate(HomeScreenDestination)
-                }
-            }
-        }
-        Resource.Loading -> {}
-    }
-
-
     val focusRequester = remember { FocusRequester() }
-
 
     Column(
         modifier = Modifier
@@ -191,20 +149,60 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(context, context.getString(R.string.enter_username_and_password), Toast.LENGTH_SHORT).show()
                     return@Button
-                } else if (Global.loginTryCount >= 3) {
-                    Toast.makeText(context, context.getString(R.string.too_many_attempts), Toast.LENGTH_SHORT).show()
-                    return@Button
                 } else {
                     Global.loginTryCount++
                     isLoading = true
 
+                    viewModel.resetLoginState()
                     viewModel.login(username, password, androidID)
                 }
             },
         ) {
             Text(stringResource(id = R.string.login))
         }
+    }
 
+    when (val resource = loginStatus) {
+        is Resource.Failure -> {
+            isLoading = false
+            Toast.makeText(context, "Error: ${resource.error}", Toast.LENGTH_SHORT).show()
+            if (resource.error.contains("hwid limit")) {
+                copyText(androidID, "HWID copied / $androidID",context)
+            }
+            viewModel.resetLoginState()
+        }
+        is Resource.Success -> {
+            val rememberToken = resource.value
+            isLoading = false
+
+            LaunchedEffect(Unit) {
+                viewModel.getToken(rememberToken, androidID)
+                sharedPreferences.edit().putString("remember_token", rememberToken).apply()
+            }
+
+            when (val token = accessToken) {
+                is Resource.Failure -> {
+                    Toast.makeText(context, "Error: ${token.error}", Toast.LENGTH_LONG).show()
+                    navigator.navigate(AuthScreenDestination)
+                }
+                Resource.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is Resource.Success -> {
+                    User.accessToken = token.value
+                    navigator.navigate(HomeScreenDestination)
+                }
+            }
+        }
+        Resource.Loading -> {
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
     }
 }
 

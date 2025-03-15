@@ -11,7 +11,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -24,11 +26,10 @@ import kurd.reco.core.FridaUtil
 import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.MainVM
+import kurd.reco.core.SGCheck
 import kurd.reco.core.SettingsDataStore
+import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
-import kurd.reco.core.api.model.DrmDataModel
-import kurd.reco.core.api.model.PlayDataModel
-import kurd.reco.core.isProxyDetected
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.roxio.ui.RoxioNavigationDrawer
 import kurd.reco.roxio.ui.home.HomeVM
@@ -45,11 +46,12 @@ class MainActivity : ComponentActivity() {
             val settingsDataStore: SettingsDataStore = koinInject()
 
             FridaUtil.isFridaEnabled(context)
+            SGCheck.checkSGIntegrity()
 
             val navController = rememberNavController()
 
             val pluginList = pluginManager.getAllPlugins()
-            val accessToken = Global.accessToken
+            val accessToken by remember { derivedStateOf { User.accessToken } }
 
             val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)
             val lastPlugin by pluginManager.getSelectedPluginFlow().collectAsState()

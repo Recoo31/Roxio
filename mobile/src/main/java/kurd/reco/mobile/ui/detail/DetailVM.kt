@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kurd.reco.core.AppLog
+import kurd.reco.core.Global
 import kurd.reco.core.ResourceState
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.DetailScreenModel
@@ -41,7 +42,9 @@ class DetailVM(private val pluginManager: PluginManager) : ViewModel() {
             try {
                 pluginManager.getSelectedPlugin().getUrl(id, title).also {
                     clickedItem.update(it)
-                    AppLog.i("DetailVM", "$it")
+                    if (Global.currentPlugin?.id?.matches(Regex("filmbol|emby")) == true) {
+                        AppLog.i("DetailVM", "$it")
+                    }
                 }
             } catch (t: Throwable) {
                 clickedItem.handleError(t, TAG)

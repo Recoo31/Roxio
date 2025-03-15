@@ -9,6 +9,7 @@ import kurd.reco.core.AppLog
 import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.ResourceState
+import kurd.reco.core.User
 import kurd.reco.core.api.Cache.checkCache
 import kurd.reco.core.api.Cache.saveToCache
 import kurd.reco.core.api.Resource
@@ -37,7 +38,7 @@ class HomeVM(private val pluginManager: PluginManager) : ViewModel() {
             moviesList.setLoading()
             val result = runCatching {
                 runCatching {
-                    Global.accessToken?.let {
+                    User.accessToken?.let {
                         pluginManager.getSelectedPlugin().getAccessToken(it)
                     }
                 }

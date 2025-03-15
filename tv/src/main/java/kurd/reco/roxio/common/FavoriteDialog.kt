@@ -2,6 +2,7 @@ package kurd.reco.roxio.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -54,19 +55,17 @@ fun FavoriteDialog(
                         )
                     }
                 )
-                Box(
-                    modifier = Modifier.width(350.dp).padding(top = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        model = item.poster,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .sizeIn(maxHeight = 500.dp, minHeight = 300.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                    )
-                }
+                AsyncImage(
+                    model = item.poster,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(350.dp)
+                        .fillMaxHeight(0.6f)
+                        .padding(16.dp)
+                        .clip(MaterialTheme.shapes.medium)
+
+                )
             }
         },
         onConfirm = {

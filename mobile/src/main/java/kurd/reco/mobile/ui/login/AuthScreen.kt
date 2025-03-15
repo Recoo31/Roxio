@@ -44,6 +44,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kurd.reco.core.AuthVM
 import kurd.reco.core.Global
 import kurd.reco.core.MainVM
+import kurd.reco.core.User
 import kurd.reco.core.api.Resource
 import kurd.reco.core.copyText
 import kurd.reco.mobile.R
@@ -85,7 +86,7 @@ fun AuthScreenRoot(navigator: DestinationsNavigator) {
                 }
             }
             is Resource.Success -> {
-                Global.accessToken = resource.value
+                User.accessToken = resource.value
                 navigator.navigate(HomeScreenRootDestination)
             }
         }
@@ -167,7 +168,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                     }
                 }
                 is Resource.Success -> {
-                    Global.accessToken = token.value
+                    User.accessToken = token.value
                     navigator.navigate(HomeScreenRootDestination)
                 }
             }
