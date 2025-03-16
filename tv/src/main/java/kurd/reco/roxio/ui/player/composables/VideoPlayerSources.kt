@@ -22,9 +22,7 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kurd.reco.core.Global
-import kurd.reco.core.MainVM
 import kurd.reco.roxio.ui.player.createMediaItem
-import org.koin.compose.koinInject
 
 @Composable
 fun VideoPlayerSources(

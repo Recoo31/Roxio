@@ -1,4 +1,4 @@
-package kurd.reco.mobile.ui
+package kurd.reco.mobile.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,15 +10,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kurd.reco.core.MainVM
+import kurd.reco.mobile.R
 import java.io.File
 
 @Composable
 fun AppUpdateDialog(viewModel: MainVM, onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val outputFilePath = File(context.filesDir, "apk-update.apk")
+    val outputFilePath = File(context.filesDir, "roxio_${viewModel.currentVersion}.apk")
     val downloadProgress = viewModel.downloadProgress
     val changeLog = viewModel.changeLog
 
@@ -30,27 +32,27 @@ fun AppUpdateDialog(viewModel: MainVM, onDismiss: () -> Unit) {
                     TextButton(onClick = {
                         viewModel.downloadApk(outputFilePath)
                     }) {
-                        Text(text = "Update")
+                        Text(text = stringResource(R.string.update))
                     }
                 }
                 100f -> {
                     TextButton(onClick = {
                         viewModel.installUpdate(outputFilePath, context)
                     }) {
-                        Text(text = "Install")
+                        Text(text = stringResource(R.string.install))
                     }
                 }
                 else -> Text(text = "Downloading: ${viewModel.downloadProgress.toInt()}%")
             }
         },
-        title = { Text(text = "App Update", style = MaterialTheme.typography.titleLarge) },
+        title = { Text(text = stringResource(R.string.app_update), style = MaterialTheme.typography.titleLarge) },
         text = {
             Column {
-                Text(text = "New version available", style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(R.string.new_version_available), style = MaterialTheme.typography.bodyLarge)
 
                 if (changeLog.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Change Log:", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(text = stringResource(R.string.change_log), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
 
                     Spacer(modifier = Modifier.height(4.dp))
                     changeLog.forEach { log ->

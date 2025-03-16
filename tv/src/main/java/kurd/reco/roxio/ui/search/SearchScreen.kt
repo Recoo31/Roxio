@@ -5,10 +5,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,7 +55,6 @@ import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.rememberChildPadding
 import kurd.reco.roxio.toMovieList
-import kurd.reco.roxio.ui.settings.PluginSection
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalComposeUiApi::class)

@@ -2,6 +2,9 @@ package kurd.reco.core
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.Keep
 import androidx.compose.runtime.getValue
@@ -32,17 +35,19 @@ class MainVM(
     private val deletedPluginDao: DeletedPluginDao
 ) : ViewModel() {
 
+    var currentVersion = 1.0
     var showUpdateDialog by mutableStateOf(false)
     var downloadProgress by mutableFloatStateOf(0f)
     var changeLog: List<String> = emptyList()
     private var appLink: String? = null
 
-    private val versionLink = ""
+    private val versionLink = "https://raw.githubusercontent.com/Recoo31/Roxio/refs/heads/master/version.json"
 
     //var useVpn by mutableStateOf(false)
 
     fun checkAppUpdate(context: Context) {
-        val currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return
+        currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return
+        checkInstallAppPermission(context)
         viewModelScope.launch {
             runCatching { app.get(versionLink).parsed<VersionData>() }
                 .onSuccess { response ->
@@ -53,10 +58,25 @@ class MainVM(
         }
     }
 
+    private fun checkInstallAppPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (!context.packageManager.canRequestPackageInstalls()) {
+                // Navigate directly to the app's specific permission request section
+                val intent = Intent().apply {
+                    action = Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES
+                    data = Uri.parse("package:${context.packageName}")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+                Toast.makeText(context, "Please enable 'Install from Unknown Sources' for Roxio", Toast.LENGTH_LONG).show()
+                return
+            }
+        }
+    }
+
     private fun getCurrentAppVersion(context: Context): String {
         return context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "Unknown"
     }
-
 
     fun downloadApk(outputFilePath: File) {
         viewModelScope.launch(Dispatchers.IO) {

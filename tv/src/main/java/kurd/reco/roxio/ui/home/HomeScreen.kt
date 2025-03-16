@@ -2,11 +2,9 @@ package kurd.reco.roxio.ui.home
 
 import android.app.Activity
 import android.content.Intent
-import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,24 +33,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Button
-import androidx.tv.material3.Card
-import androidx.tv.material3.CardDefaults
 import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
@@ -66,13 +55,10 @@ import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDes
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kurd.reco.core.Global
-import kurd.reco.core.Global.pluginLoaded
-import kurd.reco.core.MainVM
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.watched.WatchedItemDao
-import kurd.reco.core.plugin.PluginManager
 import kurd.reco.roxio.PlayerActivity
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
@@ -81,8 +67,6 @@ import kurd.reco.roxio.common.Error
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
-import kurd.reco.roxio.common.MoviesRowItem
-import kurd.reco.roxio.common.TvAlertDialog
 import kurd.reco.roxio.defaultBorder
 import kurd.reco.roxio.ui.detail.MultiSourceDialog
 import org.koin.compose.koinInject
@@ -189,13 +173,13 @@ fun HandleHome(
                                 onClick = { showExitDialog = false },
                                 modifier = Modifier.padding(end = 16.dp)
                             ) {
-                                Text("Cancel")
+                                Text(stringResource(R.string.cancel))
                             }
                             Button(onClick = {
                                 (context as Activity).finish()
                                 exitProcess(0)
                             }) {
-                                Text("Exit")
+                                Text(stringResource(R.string.exit))
                             }
                         }
                     }

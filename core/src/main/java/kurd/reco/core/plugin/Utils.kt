@@ -25,7 +25,7 @@ data class PluginResponse(
     val id: String,
     val name: String,
     val url: String,
-    val image: String,
+    val image: String?,
     val version: String,
     val active: Boolean
 )
@@ -35,7 +35,7 @@ private val TAG = "PluginManagerUtils"
 fun getPluginFromManifest(
     filePath: String,
     url: String,
-    image: String,
+    image: String?,
     version: String,
     active: Boolean
 ): Plugin? {

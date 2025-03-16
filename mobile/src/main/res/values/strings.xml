@@ -60,4 +60,9 @@
     <string name="delete_fav">Remove from Favorites</string>
     <string name="add_fav">Add to Favorites</string>
     <string name="recently_watched">Son Izlenenler</string>
+    <string name="update">Update</string>
+    <string name="install">Install</string>
+    <string name="app_update">App Update</string>
+    <string name="new_version_available">New version available</string>
+    <string name="change_log">Change Log:</string>
 </resources>

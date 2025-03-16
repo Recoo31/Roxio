@@ -39,9 +39,8 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AuthScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kurd.reco.core.Global
 import kurd.reco.core.AuthVM
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.User
 import kurd.reco.core.api.Resource
 import kurd.reco.core.copyText
@@ -49,7 +48,6 @@ import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.CustomTextField
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 
 @Destination<RootGraph>(start = true)
 @Composable

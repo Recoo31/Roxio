@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +45,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -63,9 +61,8 @@ import androidx.tv.material3.Text
 import io.github.anilbeesetti.nextlib.media3ext.ffdecoder.NextRenderersFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kurd.reco.core.Global
 import kurd.reco.core.AppLog
-import kurd.reco.core.MainVM
+import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Cache
 import kurd.reco.core.api.model.HomeItemModel
@@ -114,7 +111,7 @@ fun VideoPlayerScreen(
     if (isWatched?.itemsRow != null && isWatched.isSeries) {
         Global.clickedItemRow = isWatched.itemsRow
         itemRow = isWatched.itemsRow
-    } else if (!lastItem.isSeries) {
+    } else if (!lastItem.isSeries && !lastItem.isLiveTv) {
         Global.clickedItemRow = null
     }
 
@@ -420,7 +417,7 @@ fun VideoPlayerControls(
             Box(
                 modifier = Modifier
             ) {
-                if (!isMoreFocused) {
+                if (!isMoreFocused && rowItems != null) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
@@ -445,30 +442,31 @@ fun VideoPlayerControls(
                         )
                     }
                 }
-
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .onFocusChanged {
-                            isMoreFocused = it.hasFocus
-                        },
-                    visible = isMoreFocused,
-                    enter = slideInVertically { it } + fadeIn(),
-                    exit = slideOutVertically { it } + fadeOut()
-                ) {
-                    VideoPlayerItemsRow(
-                        state = state,
-                        items = rowItems!!,
-                        selectedItem = lastRowItem,
-                        onItemClick = {
-                            onItemChange(it)
-                            isMoreFocused = false
-                        },
-                        focusRequester = focusRequester,
+                rowItems?.let {
+                    AnimatedVisibility(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(focusRequester)
-                    )
+                            .onFocusChanged {
+                                isMoreFocused = it.hasFocus
+                            },
+                        visible = isMoreFocused,
+                        enter = slideInVertically { it } + fadeIn(),
+                        exit = slideOutVertically { it } + fadeOut()
+                    ) {
+                        VideoPlayerItemsRow(
+                            state = state,
+                            items = rowItems,
+                            selectedItem = lastRowItem,
+                            onItemClick = {
+                                onItemChange(it)
+                                isMoreFocused = false
+                            },
+                            focusRequester = focusRequester,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester)
+                        )
+                    }
                 }
             }
         }

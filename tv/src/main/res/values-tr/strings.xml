@@ -64,4 +64,10 @@
     <string name="delete_fav">Favorilerden Çıkar</string>
     <string name="add_fav">Favorilere Ekle</string>
     <string name="exit_app_dialog">Çıkmak istediğinize emin misiniz?</string>
+    <string name="update">Güncelle</string>
+    <string name="install">Yükle</string>
+    <string name="app_update">Uygulama Güncellemesi</string>
+    <string name="new_version_available">Yeni Versiyon Mevcut</string>
+    <string name="change_log">Değişiklikler:</string>
+    <string name="exit">Çıkış</string>
 </resources>

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kurd.reco.core.AppLog
-import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.ResourceState
 import kurd.reco.core.User

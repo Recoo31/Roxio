@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ fun PluginDialog(
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var isDeleteMode by remember { mutableStateOf(false) }
+    var showHiddenPlugins by remember { mutableStateOf(false) }
     var pluginToDelete by remember { mutableStateOf<Plugin?>(null) }
     val textTitle = if (isDeleteMode) stringResource(R.string.delete_plugin) else stringResource(R.string.select_plugin)
     val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(initial = pluginManager.getAllPlugins())
@@ -100,6 +102,14 @@ fun PluginDialog(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_plugin))
                     }
+                    IconButton(
+                        onClick = { showHiddenPlugins = !showHiddenPlugins },
+                    ) {
+                        Icon(
+                            painterResource(if (showHiddenPlugins) R.drawable.outline_remove_eye_24 else R.drawable.baseline_remove_eye_24),
+                            contentDescription = null
+                        )
+                    }
                 }
 
                 LazyVerticalGrid(
@@ -129,14 +139,22 @@ fun PluginDialog(
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            AsyncImage(
-                                model = plugin.image,
-                                contentDescription = plugin.name,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .size(64.dp)
-                            )
+                            if (plugin.image != null) {
+                                AsyncImage(
+                                    model = plugin.image,
+                                    contentDescription = plugin.name,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .size(64.dp)
+                                )
+                            } else if (showHiddenPlugins) {
+                                Text(
+                                    text = plugin.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
                         }
                     }
                 }

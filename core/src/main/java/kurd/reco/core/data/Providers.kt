@@ -5,7 +5,7 @@ import androidx.room.Room
 import kurd.reco.core.data.db.AppDatabase
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.data.db.plugin.DeletedPluginDao
-import kurd.reco.core.data.db.plugin.MIGRATION_1_2
+import kurd.reco.core.data.db.plugin.MIGRATION_2_3
 import kurd.reco.core.data.db.plugin.PluginDao
 import kurd.reco.core.data.db.plugin.PluginDatabase
 import kurd.reco.core.data.db.watched.WatchedItemDao
@@ -16,7 +16,7 @@ fun provideDatabase(application: Application): PluginDatabase =
         application,
         PluginDatabase::class.java,
         "plugin_database"
-    ).allowMainThreadQueries().addMigrations(MIGRATION_1_2).build()
+    ).allowMainThreadQueries().addMigrations(MIGRATION_2_3).build()
 
 fun providePluginDao(pluginDataBase: PluginDatabase): PluginDao = pluginDataBase.pluginDao()
 

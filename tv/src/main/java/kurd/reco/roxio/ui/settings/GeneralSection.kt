@@ -7,8 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import kurd.reco.core.SettingsDataStore
-import kurd.reco.roxio.common.SettingCard
 import kurd.reco.roxio.R
+import kurd.reco.roxio.common.SettingCard
 import kotlin.system.exitProcess
 
 @Composable

@@ -20,11 +20,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import io.github.anilbeesetti.nextlib.media3ext.ffdecoder.NextRenderersFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.model.HomeItemModel

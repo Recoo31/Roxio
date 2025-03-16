@@ -1,12 +1,9 @@
 package kurd.reco.roxio.ui.theme
 
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.MaterialTheme.colorScheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
 

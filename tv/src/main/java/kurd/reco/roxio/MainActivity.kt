@@ -1,10 +1,7 @@
 package kurd.reco.roxio
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +20,6 @@ import androidx.tv.material3.Surface
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
-import kurd.reco.core.Global
 import kurd.reco.core.Global.pluginLoaded
 import kurd.reco.core.MainVM
 import kurd.reco.core.SGCheck
@@ -31,6 +27,7 @@ import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.roxio.common.AppUpdateDialog
 import kurd.reco.roxio.ui.RoxioNavigationDrawer
 import kurd.reco.roxio.ui.home.HomeVM
 import kurd.reco.roxio.ui.theme.RoxioTheme
@@ -71,6 +68,7 @@ class MainActivity : ComponentActivity() {
                     if (currentPlugin == null) {
                         currentPlugin = lastPlugin
                     }
+                    mainVM.checkAppUpdate(context)
                 }
 
                 LaunchedEffect(lastPlugin) {
@@ -86,6 +84,12 @@ class MainActivity : ComponentActivity() {
             RoxioTheme(
                 darkTheme = isDarkModeEnabled,
             ) {
+//                if (mainVM.showUpdateDialog) {
+//                    AppUpdateDialog(mainVM) {
+//                        mainVM.showUpdateDialog = false
+//                    }
+//                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     shape = RectangleShape

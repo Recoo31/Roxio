@@ -60,4 +60,9 @@
     <string name="delete_fav">Favorilerden Çıkar</string>
     <string name="add_fav">Favorilere Ekle</string>
     <string name="recently_watched">Son Izlenenler</string>
+    <string name="update">Güncelle</string>
+    <string name="install">Yükle</string>
+    <string name="app_update">Uygulama Güncellemesi</string>
+    <string name="new_version_available">Yeni Versiyon Mevcut</string>
+    <string name="change_log">Değişiklikler:</string>
 </resources>

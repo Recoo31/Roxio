@@ -12,7 +12,7 @@ data class Plugin(
     val filePath: String,
     val version: String,
     val downloadUrl: String = "",
-    val image: String = "",
+    val image: String? = null,
     val active: Boolean,
     val isSelected: Boolean = false
 )

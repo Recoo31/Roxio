@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.widthIn
@@ -171,8 +172,8 @@ fun MoviesRowItem(
     ) {
         MoviesRowItemImage(
             modifier = Modifier.run {
-                if (movie.isLiveTv) sizeIn(
-                    maxHeight = imageHeight / 2
+                if (movie.isLiveTv) height(
+                    height = imageHeight / 2,
                 ) else sizeIn(
                     minWidth = imageWidth * 0.75f,
                     maxWidth = imageWidth,

@@ -2,7 +2,6 @@ package kurd.reco.roxio.ui.home
 
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,30 +23,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import androidx.tv.material3.Border
-import androidx.tv.material3.Button
-import androidx.tv.material3.Card
 import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.Glow
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.OutlinedButton
-import androidx.tv.material3.ShapeDefaults
 import androidx.tv.material3.Surface
-import androidx.tv.material3.Text
-import androidx.tv.material3.WideButton
-import androidx.tv.material3.WideButtonDefaults
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -55,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kurd.reco.core.api.model.PagerDataClass
 import kurd.reco.roxio.defaultBorder
-import kurd.reco.roxio.ui.theme.RoxioTheme
 
 @Composable
 fun ViewPager(
