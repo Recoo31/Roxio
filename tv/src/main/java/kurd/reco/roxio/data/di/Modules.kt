@@ -1,10 +1,10 @@
 package kurd.reco.roxio.data.di
 
-import kurd.reco.core.AuthVM
-import kurd.reco.core.MainVM
+import kurd.reco.core.viewmodels.AuthVM
+import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.plugin.PluginManager
-import kurd.reco.roxio.ui.detail.DetailVM
-import kurd.reco.roxio.ui.home.HomeVM
+import kurd.reco.core.viewmodels.DetailVM
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.roxio.ui.search.SearchVM
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel

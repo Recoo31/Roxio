@@ -61,6 +61,7 @@ import kurd.reco.core.api.model.DetailScreenModel
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.SeriesItem
+import kurd.reco.core.viewmodels.DetailVM
 import kurd.reco.roxio.PlayerActivity
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator

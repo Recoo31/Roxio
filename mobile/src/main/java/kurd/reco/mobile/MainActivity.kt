@@ -33,14 +33,14 @@ import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
 import kurd.reco.core.Global
 import kurd.reco.core.Global.showPluginDialog
-import kurd.reco.core.MainVM
+import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.SGCheck
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.common.AppUpdateDialog
-import kurd.reco.mobile.ui.home.HomeVM
 import kurd.reco.mobile.ui.plugin.PluginDialog
 import kurd.reco.mobile.ui.theme.RoxioTheme
 import org.koin.compose.koinInject

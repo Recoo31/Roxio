@@ -20,7 +20,7 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
-import kurd.reco.core.MainVM
+import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.roxio.R
 import java.io.File
 

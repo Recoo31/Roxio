@@ -57,6 +57,7 @@ import kurd.reco.core.api.model.SeriesItem
 import kurd.reco.core.data.db.favorite.Favorite
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.data.db.plugin.PluginDao
+import kurd.reco.core.viewmodels.DetailVM
 import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.ErrorShower

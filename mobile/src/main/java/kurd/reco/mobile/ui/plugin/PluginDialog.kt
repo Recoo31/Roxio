@@ -36,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import kurd.reco.core.MainVM
+import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.data.db.plugin.Plugin
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.R

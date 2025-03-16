@@ -1,4 +1,4 @@
-package kurd.reco.core
+package kurd.reco.core.viewmodels
 
 import android.content.Context
 import android.content.Intent
@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
-import androidx.annotation.Keep
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -18,9 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kurd.reco.core.api.app
-import kurd.reco.core.api.model.HomeItemModel
-import kurd.reco.core.api.model.HomeScreenModel
-import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.data.VersionData
 import kurd.reco.core.data.db.plugin.DeletedPlugin
 import kurd.reco.core.data.db.plugin.DeletedPluginDao

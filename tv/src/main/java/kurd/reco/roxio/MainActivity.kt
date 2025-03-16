@@ -21,15 +21,14 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import kurd.reco.core.FridaUtil
 import kurd.reco.core.Global.pluginLoaded
-import kurd.reco.core.MainVM
+import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.SGCheck
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.plugin.PluginManager
-import kurd.reco.roxio.common.AppUpdateDialog
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.roxio.ui.RoxioNavigationDrawer
-import kurd.reco.roxio.ui.home.HomeVM
 import kurd.reco.roxio.ui.theme.RoxioTheme
 import org.koin.compose.koinInject
 

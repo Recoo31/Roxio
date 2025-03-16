@@ -45,12 +45,12 @@ import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.roxio.PlayerActivity
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.ImageOverlayCard
 import kurd.reco.roxio.defaultBorder
-import kurd.reco.roxio.ui.home.HomeVM
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>

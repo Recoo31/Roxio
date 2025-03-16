@@ -32,9 +32,9 @@ import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.data.ErrorModel
 import kurd.reco.mobile.ui.detail.composables.CustomIconButton
-import kurd.reco.mobile.ui.home.HomeVM
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -52,11 +52,11 @@ import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.FavoriteDialog
 import kurd.reco.mobile.common.ImageOverlayCard
-import kurd.reco.mobile.ui.home.HomeVM
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalFoundationApi::class)

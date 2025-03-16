@@ -38,7 +38,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AuthScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kurd.reco.core.AuthVM
+import kurd.reco.core.viewmodels.AuthVM
 import kurd.reco.core.Global
 import kurd.reco.core.User
 import kurd.reco.core.api.Resource

@@ -62,6 +62,7 @@ import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.data.db.watched.WatchedItemDao
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.CategorySheet
