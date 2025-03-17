@@ -1,6 +1,7 @@
 package kurd.reco.core.api
 
 import kurd.reco.core.AppLog
+import kurd.reco.core.User
 import kurd.reco.core.api.Api.API_URL
 import kurd.reco.core.api.Api.CORS_PROXY
 import kurd.reco.core.api.model.CacheDataModelRoot
@@ -8,11 +9,12 @@ import kurd.reco.core.api.model.DeletedCache
 import kurd.reco.core.api.model.PlayDataModel
 
 object Cache {
+    private val headers = mapOf("Authorization" to "${User.accessToken}")
 
     suspend fun checkCache(id: String): CacheDataModelRoot {
         val url = "$CORS_PROXY/$API_URL/cache/api/getcache/$id"
         return try {
-            app.get(url, timeout = 2L).parsed<CacheDataModelRoot>()
+            app.get(url, headers, timeout = 2L).parsed<CacheDataModelRoot>()
         } catch (t: Throwable) {
             t.printStackTrace()
             CacheDataModelRoot(false, null)
@@ -29,14 +31,14 @@ object Cache {
             "subtitles" to playData.subtitles,
             "stream_headers" to playData.streamHeaders
         )
-        val response = app.post(url, json = requestData)
+        val response = app.post(url,  headers, json = requestData)
         AppLog.d("Cache", "saveToCache: $response")
     }
 
     suspend fun deleteCache(id: String) {
         val url = "$CORS_PROXY/$API_URL/cache/api/delete/$id"
         try {
-            val response = app.get(url).parsed<DeletedCache>()
+            val response = app.get(url, headers).parsed<DeletedCache>()
             if (response.status) {
                 AppLog.i("Cache", "Cache cache deleted | $id")
             } else {

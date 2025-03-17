@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
             val mainVM: MainVM = koinInject()
             val settingsDataStore: SettingsDataStore = koinInject()
             FridaUtil.isFridaEnabled(context)
-            SGCheck.checkSGIntegrity()
+            //SGCheck.checkSGIntegrity()
 
 
             /*            val playData = PlayDataModel(

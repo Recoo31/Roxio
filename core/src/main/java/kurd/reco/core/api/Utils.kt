@@ -1,6 +1,5 @@
 package kurd.reco.core.api
 
-import androidx.annotation.Keep
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,6 +10,7 @@ import com.lagradost.nicehttp.ResponseParser
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.EncryptionUtil
 import kurd.reco.core.HttpClient.httpClient
+import kurd.reco.core.SGCheck
 import kurd.reco.core.api.ApiUtils.requests
 import kotlin.reflect.KClass
 
@@ -57,10 +57,14 @@ object ApiUtils {
 val app = requests
 
 object Api {
-    private const val GT_API =
-        "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/bmrNnZy6kQP4loOsh6T6Br2i2itjMfjdOlFpOJrnc0bvVaMaK6YriI0m0nEWbTZ54="
-    private const val ENCRYPTED_PLUGIN_URL =
-        "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/Z6lAm199kzu8dsrEjGSbcUtQivaBnGiNxjq0fWA1m/kWt8S25RtWAqSCErUMsa/V+0M1sJXJFdAle0qmTeM/wD"
+    private var apiData: Array<String>? = null
+
+    init {
+        apiData = SGCheck.checkSGIntegrity()
+    }
+
+    private val GT_API = apiData?.get(0) ?: throw IllegalStateException("API not initialized")
+    private val ENCRYPTED_PLUGIN_URL = apiData?.get(1) ?: throw IllegalStateException("API not initialized")
 
     private fun getGT(): String {
         return EncryptionUtil.decrypt(GT_API)

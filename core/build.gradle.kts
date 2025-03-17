@@ -19,6 +19,7 @@ android {
                 cppFlags += ""
             }
         }
+        buildConfigField("String", "ENCRYPTION_KEY", project.findProperty("ENCRYPTION_KEY").toString())
     }
 
     buildFeatures {

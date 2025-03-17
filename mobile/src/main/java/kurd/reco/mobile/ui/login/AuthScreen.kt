@@ -213,7 +213,7 @@ fun AuthScreen(navigator: DestinationsNavigator) {
                     Toast.makeText(context,
                         context.getString(R.string.enter_username_and_password), Toast.LENGTH_SHORT).show()
                     return@Button
-                } else if (Global.loginTryCount >= 3) {
+                } else if (Global.loginTryCount >= 6) {
                     Toast.makeText(context,
                         context.getString(R.string.too_many_attempts), Toast.LENGTH_SHORT).show()
                     return@Button

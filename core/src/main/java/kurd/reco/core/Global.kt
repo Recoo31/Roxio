@@ -55,5 +55,5 @@ object SGCheck {
         System.loadLibrary("core")
     }
     external fun getSG(context: Context): String
-    external fun checkSGIntegrity()
+    external fun checkSGIntegrity(): Array<String>?
 }

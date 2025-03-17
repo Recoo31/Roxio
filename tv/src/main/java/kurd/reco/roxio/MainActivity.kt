@@ -42,7 +42,6 @@ class MainActivity : ComponentActivity() {
             val settingsDataStore: SettingsDataStore = koinInject()
 
             FridaUtil.isFridaEnabled(context)
-            SGCheck.checkSGIntegrity()
 
             val navController = rememberNavController()
 

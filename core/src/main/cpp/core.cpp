@@ -3,8 +3,13 @@
 #include <jni.h>
 #include <cstdio>
 #include <string>
+#include <dirent.h>
+#include <dlfcn.h>
 
-// Yardımcı fonksiyon: Belirtilen mesajla java/lang/Throwable fırlatır.
+// Critical API data that will be embedded in the binary
+static const char* ENC_API_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/bmrNnZy6kQP4loOsh6T6Br2i2itjMfjdOlFpOJrnc0bvVaMaK6YriI0m0nEWbTZ54=";
+static const char* ENC_PLUGIN_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/Z6lAm199kzu8dsrEjGSbcUtQivaBnGiNxjq0fWA1m/kWt8S25RtWAqSCErUMsa/V+0M1sJXJFdAle0qmTeM/wD";
+
 void th(JNIEnv *env, const char* message) {
     jclass throwableClass = env->FindClass("java/lang/Throwable");
     if (throwableClass != nullptr) {
@@ -12,104 +17,188 @@ void th(JNIEnv *env, const char* message) {
     }
 }
 
+// Frida detection functions
+static bool checkFridaProcess() {
+    FILE* file = fopen("/proc/self/maps", "r");
+    if (file == nullptr) return false;
+
+    char line[512];
+    bool found = false;
+    while (fgets(line, sizeof(line), file)) {
+        if (strstr(line, "frida") || strstr(line, "gum-js-loop") || strstr(line, "gmain")) {
+            found = true;
+            break;
+        }
+    }
+    fclose(file);
+    return found;
+}
+
+static bool checkFridaThreads() {
+    DIR* dir = opendir("/proc/self/task");
+    if (dir == nullptr) return false;
+
+    struct dirent* entry;
+    bool found = false;
+    while ((entry = readdir(dir)) != nullptr) {
+        if (entry->d_type == DT_DIR && isdigit(entry->d_name[0])) {
+            char path[256];
+            snprintf(path, sizeof(path), "/proc/self/task/%s/status", entry->d_name);
+            FILE* file = fopen(path, "r");
+            if (file) {
+                char line[256];
+                while (fgets(line, sizeof(line), file)) {
+                    if (strstr(line, "frida") || strstr(line, "gum-js-loop")) {
+                        found = true;
+                        break;
+                    }
+                }
+                fclose(file);
+            }
+        }
+    }
+    closedir(dir);
+    return found;
+}
+
+static bool checkFridaPorts() {
+    FILE* file = fopen("/proc/net/tcp", "r");
+    if (file == nullptr) return false;
+
+    char line[256];
+    bool found = false;
+    // Skip header line
+    fgets(line, sizeof(line), file);
+    while (fgets(line, sizeof(line), file)) {
+        if (strstr(line, ":27042") || strstr(line, ":8888")) {  // Common Frida ports
+            found = true;
+            break;
+        }
+    }
+    fclose(file);
+    return found;
+}
+
+static bool checkFridaLibraries() {
+    void* handle = dlopen("libfrida-agent.so", RTLD_NOW);
+    if (handle != nullptr) {
+        dlclose(handle);
+        return true;
+    }
+    return false;
+}
+
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jobjectArray JNICALL
 Java_kurd_reco_core_SGCheck_checkSGIntegrity(JNIEnv *env, jobject thiz) {
-    // 1. PackageInfo sınıfını bul
+    // Check for Frida
+    if (checkFridaProcess() || checkFridaThreads() || checkFridaPorts() || checkFridaLibraries()) {
+        th(env, "Security check failed");
+        return nullptr;
+    }
+
+    // 1. PackageInfo class check
     jclass packageInfoClass = env->FindClass("android/content/pm/PackageInfo");
     if (packageInfoClass == nullptr) {
         th(env, "PackageInfo class not found");
-        return;
+        return nullptr;
     }
 
-    // 2. PackageInfo'dan statik CREATOR alanını elde et
+    // 2. Get CREATOR field from PackageInfo
     jfieldID creatorFieldID = env->GetStaticFieldID(packageInfoClass, "CREATOR", "Landroid/os/Parcelable$Creator;");
     if (creatorFieldID == nullptr) {
         th(env, "CREATOR field not found");
-        return;
+        return nullptr;
     }
     jobject creator = env->GetStaticObjectField(packageInfoClass, creatorFieldID);
     if (creator == nullptr) {
         th(env, "CREATOR is null");
-        return;
+        return nullptr;
     }
 
-    // 3. CREATOR nesnesinin android/os/Parcelable$Creator arayüzünden türediğini kontrol et.
+    // 3. Check if CREATOR is instance of Parcelable.Creator
     jclass parcelableCreatorClass = env->FindClass("android/os/Parcelable$Creator");
     if (!env->IsInstanceOf(creator, parcelableCreatorClass)) {
         th(env, "CREATOR is not instance of Parcelable.Creator");
-        return;
+        return nullptr;
     }
 
-    // 4. CREATOR'ın sınıf adını elde etmek için getClass() ve getName() metotlarını kullan.
+    // 4. Get CREATOR's class name
     jclass objectClass = env->FindClass("java/lang/Object");
     jmethodID getClassMethod = env->GetMethodID(objectClass, "getClass", "()Ljava/lang/Class;");
     if (getClassMethod == nullptr) {
         th(env, "getClass method not found");
-        return;
+        return nullptr;
     }
     jobject creatorClassObj = env->CallObjectMethod(creator, getClassMethod);
     if (creatorClassObj == nullptr) {
         th(env, "Could not obtain CREATOR's class");
-        return;
+        return nullptr;
     }
     jclass classClass = env->FindClass("java/lang/Class");
     jmethodID getNameMethod = env->GetMethodID(classClass, "getName", "()Ljava/lang/String;");
     if (getNameMethod == nullptr) {
         th(env, "getName method not found");
-        return;
+        return nullptr;
     }
     auto creatorClassNameString = (jstring)env->CallObjectMethod(creatorClassObj, getNameMethod);
     if (creatorClassNameString == nullptr) {
         th(env, "Could not get CREATOR class name");
-        return;
+        return nullptr;
     }
     const char* creatorClassNameCStr = env->GetStringUTFChars(creatorClassNameString, nullptr);
     const char* expectedSubstring = "android.content.pm.PackageInfo";
     if (strstr(creatorClassNameCStr, expectedSubstring) == nullptr) {
         env->ReleaseStringUTFChars(creatorClassNameString, creatorClassNameCStr);
         th(env, "CREATOR class name does not contain expected substring");
-        return;
+        return nullptr;
     }
     env->ReleaseStringUTFChars(creatorClassNameString, creatorClassNameCStr);
 
-    // 5. CREATOR'ın bir proxy instance olup olmadığını kontrol et.
+    // 5. Check if CREATOR is a proxy
     jclass proxyClass = env->FindClass("java/lang/reflect/Proxy");
     if (proxyClass == nullptr) {
         th(env, "Proxy class not found");
-        return;
+        return nullptr;
     }
     jmethodID isProxyClassMethod = env->GetStaticMethodID(proxyClass, "isProxyClass", "(Ljava/lang/Class;)Z");
     if (isProxyClassMethod == nullptr) {
         th(env, "isProxyClass method not found");
-        return;
+        return nullptr;
     }
     jboolean isProxy = env->CallStaticBooleanMethod(proxyClass, isProxyClassMethod, creatorClassObj);
     if (isProxy == JNI_TRUE) {
         th(env, "CREATOR is a proxy instance");
-        return;
+        return nullptr;
     }
 
-    // 6. CREATOR'ın toString() sonucu içindeki stringin beklenen alt dizgeyi içerdiğini kontrol et.
+    // 6. Check CREATOR's toString() result
     jmethodID toStringMethod = env->GetMethodID(objectClass, "toString", "()Ljava/lang/String;");
     if (toStringMethod == nullptr) {
         th(env, "toString method not found");
-        return;
+        return nullptr;
     }
     auto creatorString = (jstring)env->CallObjectMethod(creator, toStringMethod);
     if (creatorString == nullptr) {
         th(env, "toString() returned null");
-        return;
+        return nullptr;
     }
     const char* creatorStringCStr = env->GetStringUTFChars(creatorString, nullptr);
     if (strstr(creatorStringCStr, expectedSubstring) == nullptr) {
         env->ReleaseStringUTFChars(creatorString, creatorStringCStr);
         th(env, "CREATOR toString() does not contain expected substring");
-        return;
+        return nullptr;
     }
     env->ReleaseStringUTFChars(creatorString, creatorStringCStr);
 
-    // Tüm kontroller başarıyla geçti.
+    // All checks passed, return the encrypted API data
+    jclass stringClass = env->FindClass("java/lang/String");
+    jobjectArray result = env->NewObjectArray(2, stringClass, nullptr);
+    
+    env->SetObjectArrayElement(result, 0, env->NewStringUTF(ENC_API_URL));
+    env->SetObjectArrayElement(result, 1, env->NewStringUTF(ENC_PLUGIN_URL));
+
+    return result;
 }
 
 
