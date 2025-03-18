@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.tv.material3.Icon
@@ -22,6 +23,7 @@ import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kurd.reco.core.Global
+import kurd.reco.roxio.R
 import kurd.reco.roxio.ui.player.createMediaItem
 
 @Composable
@@ -54,7 +56,7 @@ fun VideoPlayerSources(
                 )
             }
             Text(
-                "Sources",
+                stringResource(R.string.sources_settings),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(start = 8.dp)
             )

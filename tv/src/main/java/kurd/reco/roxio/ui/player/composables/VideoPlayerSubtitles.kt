@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.Tracks
@@ -28,6 +29,7 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import kurd.reco.roxio.R
 import kurd.reco.roxio.ui.player.applySelectedTrack
 import kurd.reco.roxio.ui.player.getName
 
@@ -67,7 +69,7 @@ fun VideoPlayerSubtitles(
                 )
             }
             Text(
-                "Subtitles",
+                stringResource(R.string.subtitle_settings),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(start = 8.dp)
             )
