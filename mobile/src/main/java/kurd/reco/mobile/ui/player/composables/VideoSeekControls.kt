@@ -31,7 +31,7 @@ import kotlinx.coroutines.delay
 import kurd.reco.mobile.R
 
 @Composable
-fun VideoSeekControls(modifier: Modifier = Modifier, exoPlayer: ExoPlayer) {
+fun VideoSeekControls(modifier: Modifier = Modifier, exoPlayer: ExoPlayer, isLoading: Boolean = true) {
     var isRewinding by remember { mutableStateOf(false) }
     var isForwarding by remember { mutableStateOf(false) }
     var exoPlayStatus by remember { mutableStateOf(exoPlayer.isPlaying) }
@@ -103,14 +103,17 @@ fun VideoSeekControls(modifier: Modifier = Modifier, exoPlayer: ExoPlayer) {
             },
             modifier = Modifier.size(80.dp)
         ) {
-            val playIcon =
-                if (exoPlayStatus) R.drawable.netflix_pause else R.drawable.netflix_play
+            if (!isLoading) {
+                val playIcon =
+                    if (exoPlayStatus) R.drawable.netflix_pause else R.drawable.netflix_play
 
-            Icon(
-                painter = painterResource(id = playIcon),
-                contentDescription = "Pause/Play",
-                tint = Color.White
-            )
+                Icon(
+                    painter = painterResource(id = playIcon),
+                    contentDescription = "Pause/Play",
+                    tint = Color.White
+                )
+            }
+
         }
 
         Spacer(modifier = Modifier.padding(horizontal = 40.dp))

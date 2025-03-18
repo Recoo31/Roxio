@@ -45,14 +45,14 @@ fun VideoPlayerCompose(
     val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(true)
     var shouldObserve by remember { mutableStateOf(false) }
 
-    val lastItem = Global.clickedItem!!
+    val lastItem = Global.clickedItem
     var itemRow: HomeScreenModel? = null
-    val isWatched = watchedItemDao.getWatchedItemById(lastItem.id.toString())
+    val isWatched = watchedItemDao.getWatchedItemById(lastItem?.id.toString())
 
     if (isWatched?.itemsRow != null && isWatched.isSeries) {
         Global.clickedItemRow = isWatched.itemsRow
         itemRow = isWatched.itemsRow
-    } else if (!lastItem.isSeries && !lastItem.isLiveTv) {
+    } else if (lastItem != null && !lastItem.isSeries && !lastItem.isLiveTv) {
         Global.clickedItemRow = null
     }
 
@@ -115,7 +115,7 @@ fun VideoPlayerCompose(
         DisposableEffect(lifecycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
-                    if (!lastItem.isLiveTv) {
+                    if (lastItem != null && !lastItem.isLiveTv) {
                         watchedItemDao.insertOrUpdateWatchedItem(
                             WatchedItemModel(
                                 id = lastItem.id.toString(),

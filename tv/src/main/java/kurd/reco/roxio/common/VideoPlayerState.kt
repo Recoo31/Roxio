@@ -27,7 +27,6 @@ class VideoPlayerState internal constructor(
 
     fun hideControls() {
         _controlsVisible = false
-        channel.trySend(0)
     }
 
     private val channel = Channel<Int>(CONFLATED)

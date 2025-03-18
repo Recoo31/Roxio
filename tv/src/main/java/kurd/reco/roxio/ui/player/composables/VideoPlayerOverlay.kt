@@ -63,14 +63,6 @@ fun VideoPlayerOverlay(
         }
     }
 
-    LaunchedEffect(isPlaying) {
-        if (!isPlaying) {
-            state.showControls(seconds = Int.MAX_VALUE)
-        } else {
-            state.showControls()
-        }
-    }
-
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

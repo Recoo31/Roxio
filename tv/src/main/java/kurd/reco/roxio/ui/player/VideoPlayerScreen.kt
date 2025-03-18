@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -71,6 +73,7 @@ import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.data.db.watched.WatchedItemDao
 import kurd.reco.core.data.db.watched.WatchedItemModel
 import kurd.reco.roxio.R
+import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.VideoPlayerState
 import kurd.reco.roxio.common.rememberVideoPlayerState
 import kurd.reco.roxio.ui.player.composables.VideoPlayerControlsIcon
@@ -104,14 +107,14 @@ fun VideoPlayerScreen(
 
     var shouldObserve by remember { mutableStateOf(false) }
 
-    val lastItem = Global.clickedItem!!
+    val lastItem = Global.clickedItem
     var itemRow: HomeScreenModel? = null
-    val isWatched = watchedItemDao.getWatchedItemById(lastItem.id.toString())
+    val isWatched = watchedItemDao.getWatchedItemById(lastItem?.id.toString())
 
     if (isWatched?.itemsRow != null && isWatched.isSeries) {
         Global.clickedItemRow = isWatched.itemsRow
         itemRow = isWatched.itemsRow
-    } else if (!lastItem.isSeries && !lastItem.isLiveTv) {
+    } else if (lastItem != null && !lastItem.isSeries && !lastItem.isLiveTv) {
         Global.clickedItemRow = null
     }
 
@@ -142,6 +145,8 @@ fun VideoPlayerScreen(
         ExoPlayer.Builder(context)
             .setTrackSelector(trackSelector)
             .setRenderersFactory(renderersFactory)
+            .setSeekBackIncrementMs(10000)
+            .setSeekForwardIncrementMs(10000)
             .apply {
                 if (item.streamHeaders != null) {
                     val httpDataSourceFactory = createHttpDataSourceFactory(item.streamHeaders!!)
@@ -183,7 +188,7 @@ fun VideoPlayerScreen(
         DisposableEffect(lifecycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
-                    if (!lastItem.isLiveTv) {
+                    if (lastItem != null && !lastItem.isLiveTv) {
                         watchedItemDao.insertOrUpdateWatchedItem(
                             WatchedItemModel(
                                 id = lastItem.id.toString(),
@@ -213,6 +218,8 @@ fun VideoPlayerScreen(
     var contentCurrentPosition by remember { mutableLongStateOf(0L) }
     var isPlaying: Boolean by remember { mutableStateOf(exoPlayer.isPlaying) }
     var resizeMode by remember { mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT) }
+    var isBuffering by remember { mutableStateOf(false) }
+    var isInitialLoading by remember { mutableStateOf(true) }
 
     // TODO: Update in a more thoughtful manner
 
@@ -234,6 +241,25 @@ fun VideoPlayerScreen(
                     }
                     Global.clickedItem?.let {
                         onItemChange(it)
+                    }
+                }
+            }
+
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_READY -> {
+                        isInitialLoading = false
+                        isBuffering = false
+                    }
+                    Player.STATE_BUFFERING -> {
+                        isBuffering = true
+                    }
+                    Player.STATE_ENDED -> {
+                        isBuffering = false
+                    }
+
+                    Player.STATE_IDLE -> {
+                        isBuffering = false
                     }
                 }
             }
@@ -272,6 +298,40 @@ fun VideoPlayerScreen(
             },
             onRelease = { exoPlayer.release() }
         )
+
+        if (isInitialLoading || isBuffering) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.3f),
+                                Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp
+                    )
+                    if (isInitialLoading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Loading...",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
+        }
 
         val focusRequester = remember { FocusRequester() }
         VideoPlayerOverlay(

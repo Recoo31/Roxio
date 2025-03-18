@@ -28,6 +28,7 @@ import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.core.viewmodels.HomeVM
+import kurd.reco.roxio.common.AppUpdateDialog
 import kurd.reco.roxio.ui.RoxioNavigationDrawer
 import kurd.reco.roxio.ui.theme.RoxioTheme
 import org.koin.compose.koinInject
@@ -82,11 +83,11 @@ class MainActivity : ComponentActivity() {
             RoxioTheme(
                 darkTheme = isDarkModeEnabled,
             ) {
-//                if (mainVM.showUpdateDialog) {
-//                    AppUpdateDialog(mainVM) {
-//                        mainVM.showUpdateDialog = false
-//                    }
-//                }
+                if (mainVM.showUpdateDialog) {
+                    AppUpdateDialog(mainVM) {
+                        mainVM.showUpdateDialog = false
+                    }
+                }
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),

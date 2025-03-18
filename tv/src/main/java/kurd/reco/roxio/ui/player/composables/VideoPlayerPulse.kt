@@ -56,7 +56,7 @@ fun VideoPlayerPulse(
             painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier
-                .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                .background(Color.Black.copy(alpha = 0.3f), CircleShape)
                 .size(88.dp)
                 .wrapContentSize()
                 .size(48.dp),

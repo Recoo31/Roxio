@@ -1,6 +1,7 @@
 package kurd.reco.mobile.ui.player
 
 import android.app.Activity
+import android.util.Log
 import android.util.TypedValue
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
@@ -16,14 +17,18 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,13 +37,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -69,6 +77,9 @@ import kurd.reco.mobile.ui.player.composables.SettingsDialog
 import kurd.reco.mobile.ui.player.composables.VideoPlayerBottom
 import kurd.reco.mobile.ui.player.composables.VideoPlayerItemsRow
 import kurd.reco.mobile.ui.player.composables.VideoSeekControls
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -100,12 +111,29 @@ fun VideoController(
     var isPressing by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     val subtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 16f)
+    var isBuffering by remember { mutableStateOf(true) }
+    var showSeekIndicator by remember { mutableStateOf(false) }
+    var totalDragAmount by remember { mutableFloatStateOf(0f) }
+    var seekSeconds by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
-                    duration = exoPlayer.duration
+                when (playbackState) {
+                    Player.STATE_READY -> {
+                        isBuffering = false
+                        duration = exoPlayer.duration
+                    }
+                    Player.STATE_BUFFERING -> {
+                        isBuffering = true
+                    }
+                    Player.STATE_ENDED -> {
+                        isBuffering = false
+                    }
+
+                    Player.STATE_IDLE -> {
+                        isBuffering = false
+                    }
                 }
             }
 
@@ -135,7 +163,9 @@ fun VideoController(
         }
         exoPlayer.addListener(listener)
         while (true) {
-            currentTime = exoPlayer.currentPosition
+            currentTime = withContext(Dispatchers.Main) {
+                exoPlayer.currentPosition
+            }
             delay(1000L)
         }
     }
@@ -181,6 +211,32 @@ fun VideoController(
             }
         )
 
+        if (isBuffering) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Black.copy(alpha = 0.3f),
+                                Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 4.dp
+                    )
+                }
+            }
+        }
+        val scope = rememberCoroutineScope()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -197,10 +253,35 @@ fun VideoController(
                         onLongPress = {
                             exoPlayer.setPlaybackSpeed(2f)
                             isPressing = true
-
                         },
                         onTap = {
+                            showChannelSelector = false
                             showControls = !showControls
+                        }
+                    )
+                }
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            if (!showControls && seekSeconds != 0) {
+                                val currentPosition = exoPlayer.currentPosition
+                                val newPosition = currentPosition + (seekSeconds * 1000L)
+                                exoPlayer.seekTo(newPosition.coerceIn(0, exoPlayer.duration))
+                            }
+                            scope.launch {
+                                delay(200)
+                                showSeekIndicator = false
+                                totalDragAmount = 0f
+                                seekSeconds = 0
+                            }
+                        },
+                        onHorizontalDrag = { _, dragAmount ->
+                            if (!showControls) {
+                                totalDragAmount += dragAmount
+                                val sensitivity = 0.06f
+                                seekSeconds = (totalDragAmount * sensitivity).toInt()
+                                showSeekIndicator = true
+                            }
                         }
                     )
                 }
@@ -209,6 +290,27 @@ fun VideoController(
                 GestureAdjuster()
             }
 
+            AnimatedVisibility(
+                visible = showSeekIndicator && !showControls,
+                modifier = Modifier.align(Alignment.Center),
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = Color.Black.copy(alpha = 0.5f),
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .padding(horizontal = 24.dp, vertical = 12.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "${if (seekSeconds > 0) "+" else ""}${seekSeconds}s",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
 
             AnimatedVisibility(
                 modifier = Modifier
@@ -230,12 +332,7 @@ fun VideoController(
                 }
             }
 
-
-            AnimatedVisibility(
-                visible = showControls,
-                enter = fadeIn(tween(100)),
-                exit = fadeOut(tween(100))
-            ) {
+            if (showControls) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -243,7 +340,7 @@ fun VideoController(
                         .padding(bottom = bottomPadding)
                 ) {
 
-                    VideoSeekControls(modifier = Modifier.align(Alignment.Center), exoPlayer)
+                    VideoSeekControls(modifier = Modifier.align(Alignment.Center), exoPlayer, isBuffering)
 
                     Box(
                         modifier = Modifier
@@ -345,7 +442,9 @@ fun VideoController(
                         )
                     }
                 }
+
             }
+
             if (rowItems != null && rowItems.contents.isNotEmpty()) {
                 AnimatedVisibility(
                     modifier = Modifier.align(Alignment.BottomCenter),
