@@ -15,6 +15,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -24,10 +25,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +57,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.PlaybackException
@@ -96,6 +102,8 @@ fun VideoController(
     val rowItems = Global.clickedItemRow
     val lastRowItem = Global.clickedItem
 
+    val scope = rememberCoroutineScope()
+
     var currentTime by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(exoPlayer.duration) }
     var showControls by remember { mutableStateOf(false) }
@@ -115,6 +123,9 @@ fun VideoController(
     var showSeekIndicator by remember { mutableStateOf(false) }
     var totalDragAmount by remember { mutableFloatStateOf(0f) }
     var seekSeconds by remember { mutableIntStateOf(0) }
+    var isLocked by remember { mutableStateOf(false) }
+    var showLockIcon by remember { mutableStateOf(false) }
+    var clickCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(exoPlayer) {
         val listener = object : Player.Listener {
@@ -236,57 +247,86 @@ fun VideoController(
                 }
             }
         }
-        val scope = rememberCoroutineScope()
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onPress = {
-                            try {
-                                awaitRelease()
-                                exoPlayer.setPlaybackSpeed(1f)
-                            } finally {
-                                isPressing = false
+                .run {
+                    if (isLocked) {
+                        clickable {
+                            if (clickCount > 2) {
+                                showLockIcon = !showLockIcon
+                                clickCount = 0
+                            } else {
+                                clickCount += 1
                             }
-                        },
-                        onLongPress = {
-                            exoPlayer.setPlaybackSpeed(2f)
-                            isPressing = true
-                        },
-                        onTap = {
-                            showChannelSelector = false
-                            showControls = !showControls
-                        }
-                    )
-                }
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            if (!showControls && seekSeconds != 0) {
-                                val currentPosition = exoPlayer.currentPosition
-                                val newPosition = currentPosition + (seekSeconds * 1000L)
-                                exoPlayer.seekTo(newPosition.coerceIn(0, exoPlayer.duration))
-                            }
+
                             scope.launch {
-                                delay(200)
-                                showSeekIndicator = false
-                                totalDragAmount = 0f
-                                seekSeconds = 0
-                            }
-                        },
-                        onHorizontalDrag = { _, dragAmount ->
-                            if (!showControls) {
-                                totalDragAmount += dragAmount
-                                val sensitivity = 0.06f
-                                seekSeconds = (totalDragAmount * sensitivity).toInt()
-                                showSeekIndicator = true
+                                delay(1400)
+                                clickCount = 0
                             }
                         }
-                    )
+                    } else this
+                }
+                .run {
+                    if (!isLocked) {
+                        pointerInput(Unit) {
+                            detectTapGestures(
+                                onPress = {
+                                    try {
+                                        awaitRelease()
+                                        exoPlayer.setPlaybackSpeed(1f)
+                                    } finally {
+                                        isPressing = false
+                                    }
+                                },
+                                onLongPress = {
+                                    exoPlayer.setPlaybackSpeed(2f)
+                                    isPressing = true
+                                },
+                                onTap = {
+                                    showChannelSelector = false
+                                    showControls = !showControls
+                                }
+                            )
+                        }
+                    } else this
+                }
+                .run {
+                    if (!isLocked) {
+                        pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onDragEnd = {
+                                    if (!showControls && seekSeconds != 0) {
+                                        val currentPosition = exoPlayer.currentPosition
+                                        val newPosition = currentPosition + (seekSeconds * 1000L)
+                                        exoPlayer.seekTo(
+                                            newPosition.coerceIn(
+                                                0,
+                                                exoPlayer.duration
+                                            )
+                                        )
+                                    }
+                                    scope.launch {
+                                        delay(200)
+                                        showSeekIndicator = false
+                                        totalDragAmount = 0f
+                                        seekSeconds = 0
+                                    }
+                                },
+                                onHorizontalDrag = { _, dragAmount ->
+                                    if (!showControls) {
+                                        totalDragAmount += dragAmount
+                                        val sensitivity = 0.06f
+                                        seekSeconds = (totalDragAmount * sensitivity).toInt()
+                                        showSeekIndicator = true
+                                    }
+                                }
+                            )
+                        }
+                    } else this
                 }
         ) {
-            if (!showControls) {
+            if (!showControls && !isLocked) {
                 GestureAdjuster()
             }
 
@@ -332,6 +372,22 @@ fun VideoController(
                 }
             }
 
+            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                if (showLockIcon) {
+                    IconButton(onClick = {
+                        isLocked = false
+                        showLockIcon = false
+                        showControls = !showControls
+                    }) {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
+            }
+
             if (showControls) {
                 Box(
                     modifier = Modifier
@@ -363,6 +419,7 @@ fun VideoController(
                         }
 
                         Column(
+                            modifier = Modifier.fillMaxWidth(.5f),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -370,6 +427,7 @@ fun VideoController(
                                 Text(
                                     text = item.title!!,
                                     style = MaterialTheme.typography.titleMedium.copy(color = Color.White),
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             }
                             Text(
@@ -379,11 +437,34 @@ fun VideoController(
                         }
                     }
 
-                    VideoPlayerBottom(
-                        exoPlayer,
-                        currentTime,
-                        duration,
-                        onResizeClick = {
+                    VideoPlayerBottom(exoPlayer, currentTime, duration)
+
+                    Row(modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)) {
+                        if (Global.clickedItem?.isLiveTv == true) {
+                            IconButton(onClick = { showErrorDialog = true }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.outline_flag_24),
+                                    contentDescription = null,
+                                    tint = Color.White
+                                )
+                            }
+                        }
+
+                        IconButton(onClick = {
+                            isLocked = true
+                            showLockIcon = false
+                            showControls = false
+                        }) {
+                            Icon(
+                                Icons.Outlined.Lock,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
+
+                        IconButton(onClick = {
                             resizeMode = when (resizeMode) {
                                 AspectRatioFrameLayout.RESIZE_MODE_FIT -> {
                                     subtitlePadding = 140
@@ -402,12 +483,22 @@ fun VideoController(
 
                                 else -> AspectRatioFrameLayout.RESIZE_MODE_FILL
                             }
-                        },
-                        onSettingsClick = { showSettingsDialog = !showSettingsDialog },
-                        onErrorFlag = {
-                            showErrorDialog = true
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_baseline_aspect_ratio_24),
+                                contentDescription = null,
+                                tint = Color.White,
+                            )
                         }
-                    )
+
+                        IconButton(onClick = { showSettingsDialog = !showSettingsDialog }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.rounded_video_settings_24),
+                                contentDescription = null,
+                                tint = Color.White,
+                            )
+                        }
+                    }
 
                     if (showErrorDialog) {
                         InfoDialog(
@@ -442,7 +533,6 @@ fun VideoController(
                         )
                     }
                 }
-
             }
 
             if (rowItems != null && rowItems.contents.isNotEmpty()) {

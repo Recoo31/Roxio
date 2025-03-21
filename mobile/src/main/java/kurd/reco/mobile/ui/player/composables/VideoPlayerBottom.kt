@@ -38,10 +38,7 @@ import kurd.reco.mobile.ui.player.formatTime
 fun VideoPlayerBottom(
     exoPlayer: ExoPlayer,
     currentTime: Long,
-    duration: Long,
-    onResizeClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onErrorFlag: () -> Unit,
+    duration: Long
 ) {
     val interaction = remember { MutableInteractionSource() }
 
@@ -112,33 +109,6 @@ fun VideoPlayerBottom(
                 }
 
                 TimeDisplay(duration)
-            }
-
-        }
-
-        Row(modifier = Modifier.align(Alignment.TopEnd)) {
-            IconButton(onClick = { onErrorFlag() }) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_flag_24),
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
-
-            IconButton(onClick = { onResizeClick() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_aspect_ratio_24),
-                    contentDescription = null,
-                    tint = Color.White,
-                )
-            }
-
-            IconButton(onClick = { onSettingsClick() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.rounded_video_settings_24),
-                    contentDescription = null,
-                    tint = Color.White,
-                )
             }
         }
     }

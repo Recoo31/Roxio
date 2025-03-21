@@ -186,22 +186,17 @@ fun FavoritesScreen(
             }
 
             is Resource.Loading -> {
-                if (isClicked) {
+                if (isClicked || !pluginLoaded) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                            .clickable { },
+                            .background(MaterialTheme.colorScheme.background),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
                 }
             }
-        }
-
-        if (!pluginLoaded) {
-            CircularProgressIndicator()
         }
 
         if (showFavoriteDialog && currentFavoriteItem != null) {
