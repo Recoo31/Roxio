@@ -12,6 +12,7 @@ import kurd.reco.core.EncryptionUtil
 import kurd.reco.core.HttpClient.httpClient
 import kurd.reco.core.SGCheck
 import kurd.reco.core.api.ApiUtils.requests
+import kurd.reco.core.api.ApiUtils.requestsWithDpi
 import kotlin.reflect.KClass
 
 sealed class Resource<out T> {
@@ -50,11 +51,15 @@ object ApiUtils {
     }
 
     val requests: Requests by lazy {
-        Requests(responseParser = responseParser, baseClient = httpClient)
+        Requests(responseParser = responseParser, baseClient = httpClient())
+    }
+    val requestsWithDpi: Requests by lazy {
+        Requests(responseParser = responseParser, baseClient = httpClient(true))
     }
 }
 
 val app = requests
+val appWithDpi = requestsWithDpi
 
 object Api {
     private var apiData: Array<String>? = null

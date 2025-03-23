@@ -12,6 +12,7 @@ import kurd.reco.core.api.Api.API_URL
 import kurd.reco.core.api.Api.CORS_PROXY
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.app
+import kurd.reco.core.api.appWithDpi
 import kurd.reco.core.data.AuthLoginResponse
 import kurd.reco.core.data.AuthTokenResponse
 
@@ -34,7 +35,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("$CORS_PROXY/$API_URL/auth/login", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
+                val response = appWithDpi.post("$API_URL/auth/login", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
                 if (response.rememberToken != null) {
                     loginState.setSuccess(response.rememberToken)
                 } else {
@@ -56,7 +57,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = app.post("$CORS_PROXY/$API_URL/auth/token", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthTokenResponse>()
+                val response = appWithDpi.post("$API_URL/auth/token", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthTokenResponse>()
                 if (response.accessToken != null) {
                     accessToken.setSuccess(response.accessToken)
                 } else {

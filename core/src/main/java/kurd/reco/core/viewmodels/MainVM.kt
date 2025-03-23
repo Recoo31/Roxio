@@ -107,7 +107,9 @@ class MainVM(
         context.startActivity(installIntent)
     }
 
-    fun downloadPlugins(url: String, context: Context) {
+    fun downloadPlugins(urlS: String, context: Context) {
+        val url = if (urlS.contains("http")) urlS else "https://raw.githubusercontent.com/Recoo31/Roxio-Test-Plugin/refs/heads/main/$urlS.json"
+
         viewModelScope.launch(Dispatchers.IO) {
             downloadPlugins(url, pluginDao, context.filesDir.path)
             withContext(Dispatchers.Main) {

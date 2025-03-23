@@ -1,8 +1,8 @@
 package kurd.reco.mobile
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,13 +35,13 @@ import kurd.reco.core.FridaUtil
 import kurd.reco.core.Global
 import kurd.reco.core.Global.showPluginDialog
 import kurd.reco.core.viewmodels.MainVM
-import kurd.reco.core.SGCheck
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
-import kurd.reco.core.api.model.DrmDataModel
-import kurd.reco.core.api.model.PlayDataModel
+import kurd.reco.core.api.app
+import kurd.reco.core.api.appWithDpi
 import kurd.reco.core.plugin.PluginManager
+import kurd.reco.core.viewmodels.ByeDpiProxyVM
 import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.common.AppUpdateDialog
 import kurd.reco.mobile.ui.plugin.PluginDialog
@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
 
             val mainVM: MainVM = koinInject()
             val settingsDataStore: SettingsDataStore = koinInject()
+            val proxyVM: ByeDpiProxyVM = koinInject()
             FridaUtil.isFridaEnabled(context)
 
             val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(true)

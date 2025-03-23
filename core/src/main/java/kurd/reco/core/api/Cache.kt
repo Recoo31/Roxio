@@ -12,9 +12,9 @@ object Cache {
     private val headers = mapOf("Authorization" to "${User.accessToken}")
 
     suspend fun checkCache(id: String): CacheDataModelRoot {
-        val url = "$CORS_PROXY/$API_URL/cache/api/getcache/$id"
+        val url = "$API_URL/cache/api/getcache/$id"
         return try {
-            app.get(url, headers, timeout = 2L).parsed<CacheDataModelRoot>()
+            appWithDpi.get(url, headers, timeout = 2L).parsed<CacheDataModelRoot>()
         } catch (t: Throwable) {
             t.printStackTrace()
             CacheDataModelRoot(false, null)
@@ -22,7 +22,7 @@ object Cache {
     }
 
     suspend fun saveToCache(id: String, playData: PlayDataModel) {
-        val url = "$CORS_PROXY/$API_URL/cache/api/setcache"
+        val url = "$API_URL/cache/api/setcache"
         val requestData = mapOf(
             "id" to id,
             "urls" to playData.urls,
@@ -31,14 +31,14 @@ object Cache {
             "subtitles" to playData.subtitles,
             "stream_headers" to playData.streamHeaders
         )
-        val response = app.post(url,  headers, json = requestData)
+        val response = appWithDpi.post(url,  headers, json = requestData)
         AppLog.d("Cache", "saveToCache: $response")
     }
 
     suspend fun deleteCache(id: String) {
-        val url = "$CORS_PROXY/$API_URL/cache/api/delete/$id"
+        val url = "$API_URL/cache/api/delete/$id"
         try {
-            val response = app.get(url, headers).parsed<DeletedCache>()
+            val response = appWithDpi.get(url, headers).parsed<DeletedCache>()
             if (response.status) {
                 AppLog.i("Cache", "Cache cache deleted | $id")
             } else {

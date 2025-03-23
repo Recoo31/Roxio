@@ -74,7 +74,7 @@ object DrmStuff {
     }
 
     private suspend fun sendToCDRM(pssh: String, drmData: DrmDataModel): String? {
-        val api = "$CORS_PROXY/$API_URL/cdn/"
+        val api = "$API_URL/cdn/"
 
         val jsonData = mapOf(
             "PSSH" to pssh,
@@ -86,7 +86,7 @@ object DrmStuff {
             "Proxy" to ""
         )
 
-        val response = app.post(api, json = jsonData)
+        val response = appWithDpi.post(api, json = jsonData)
 
         return try {
             val message = response.parsed<CDRMResponse>().message.replace("\n", "")
@@ -97,13 +97,13 @@ object DrmStuff {
     }
 
     private suspend fun getCacheDrm(pssh: String): String? {
-        val url = "$CORS_PROXY/$API_URL/cdn/cache"
+        val url = "$API_URL/cdn/cache"
         val jsonData = mapOf(
             "PSSH" to pssh
         )
 
         return try {
-            val response = app.post(url, json = jsonData, timeout = 2000L)
+            val response = appWithDpi.post(url, json = jsonData, timeout = 2000L)
             val message = response.parsed<CDRMResponse>().message
             if (message == "Not found") return null
             message.replace("\n", "")
