@@ -2,6 +2,10 @@ package kurd.reco.core.api
 
 import androidx.annotation.Keep
 import kurd.reco.core.api.model.DetailScreenModel
+import kurd.reco.core.api.model.Discover
+import kurd.reco.core.api.model.DiscoverCategory
+import kurd.reco.core.api.model.DiscoverFilter
+import kurd.reco.core.api.model.DiscoverItemsResponse
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.PagerDataClass
@@ -22,4 +26,9 @@ import kurd.reco.core.api.model.SeriesDataModel
     var useCache: Boolean
     var categoryList: List<String>?
     var seeMore: Boolean
+
+    // Discover related methods
+    var discoverCategories: List<DiscoverCategory>?
+    var discoverFilters: List<DiscoverFilter>?
+    suspend fun getDiscoverItems(discover: Discover): Resource<DiscoverItemsResponse>
 }

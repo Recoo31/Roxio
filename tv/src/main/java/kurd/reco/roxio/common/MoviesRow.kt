@@ -55,12 +55,8 @@ import androidx.compose.ui.unit.sp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.data.ItemDirection
 
-
-enum class ItemDirection(val aspectRatio: Float) {
-    Vertical(10.5f / 16f),
-    Horizontal(16f / 9f);
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

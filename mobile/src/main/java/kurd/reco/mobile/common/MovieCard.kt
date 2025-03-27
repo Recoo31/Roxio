@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,24 +29,29 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.valentinilk.shimmer.shimmer
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.data.ItemDirection
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MovieCard(
     item: HomeItemModel,
     showTitle: Boolean = true,
+    itemDirection: ItemDirection = ItemDirection.Vertical,
     onLongPress: () -> Unit = {},
     onItemClick: () -> Unit
 ) {
     val itemModifier = if (item.isLiveTv) {
         Modifier.sizeIn(minHeight = 90.dp, maxWidth = 200.dp)
     } else {
-        Modifier.sizeIn(maxHeight = 200.dp, maxWidth = 150.dp, minHeight = 90.dp)
+        when (itemDirection) {
+            ItemDirection.Vertical -> Modifier.sizeIn(maxHeight = 200.dp, maxWidth = 150.dp, minHeight = 90.dp)
+            ItemDirection.Horizontal -> Modifier.aspectRatio(itemDirection.aspectRatio).sizeIn(maxHeight = 150.dp, maxWidth = 250.dp, minHeight = 90.dp)
+        }
     }
 
     Column(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(4.dp)
             .combinedClickable(
                 onClick = onItemClick,
                 onLongClick = onLongPress
@@ -57,8 +63,8 @@ fun MovieCard(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = itemModifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(18.dp))
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
         )
 
         if (!item.title.isNullOrEmpty() && showTitle) {
@@ -66,7 +72,10 @@ fun MovieCard(
                 text = item.title!!,
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .widthIn(max = 165.dp),
+                    .widthIn(max = when (itemDirection) {
+                        ItemDirection.Vertical -> 165.dp
+                        ItemDirection.Horizontal -> 250.dp
+                    }),
                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center,

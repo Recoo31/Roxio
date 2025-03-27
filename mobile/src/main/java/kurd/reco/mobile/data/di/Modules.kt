@@ -4,6 +4,7 @@ import kurd.reco.core.viewmodels.AuthVM
 import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.core.viewmodels.DetailVM
+import kurd.reco.core.viewmodels.DiscoverVM
 import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.mobile.ui.search.SearchVM
 import org.koin.android.ext.koin.androidContext
@@ -17,6 +18,7 @@ val viewModelModule = module {
     viewModel { DetailVM(get()) }
     single { SearchVM(get()) }
     viewModel { AuthVM() }
+    single { DiscoverVM(get()) }
 }
 
 //val exoplayerModule = module {

@@ -1,5 +1,6 @@
 package kurd.reco.mobile
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -22,9 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.DiscoverScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.FavoritesScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenRootDestination
 import com.ramcosta.composedestinations.generated.destinations.SearchScreenDestination
@@ -36,13 +41,19 @@ import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 
 enum class NavigationBarDestination(
     val direction: DirectionDestinationSpec,
-    val icon: ImageVector,
-    val label: String
+    val icon: ImageVector? = null,
+    val label: String,
+    @DrawableRes val resourceId: Int? = null
 ) {
     Home(
         direction = HomeScreenRootDestination,
         icon = Icons.Default.Home,
         label = "Home"
+    ),
+    Discover(
+        direction = DiscoverScreenDestination,
+        resourceId = R.drawable.outline_explore_24,
+        label = "Discover"
     ),
     Search(
         direction = SearchScreenDestination,
@@ -87,7 +98,7 @@ fun BottomBar(
                         launchSingleTop = true
                     }
                 },
-                icon = { Icon(destination.icon, contentDescription = destination.label) },
+                icon = { Icon(destination.icon ?: ImageVector.vectorResource(destination.resourceId!!), contentDescription = destination.label) },
                 label = { Text(destination.label, style = MaterialTheme.typography.labelMedium) },
             )
         }
@@ -111,7 +122,7 @@ fun SideBar(
                             launchSingleTop = true
                         }
                     },
-                    icon = { Icon(destination.icon, contentDescription = destination.label) },
+                    icon = { Icon(destination.icon ?: ImageVector.vectorResource(destination.resourceId!!), contentDescription = destination.label) },
                     label = {}
                 )
             }

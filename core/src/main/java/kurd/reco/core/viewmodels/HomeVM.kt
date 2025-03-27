@@ -46,6 +46,7 @@ class HomeVM(private val pluginManager: PluginManager) : ViewModel() {
                         pluginManager.getSelectedPlugin().getAccessToken(it)
                     }
                 }
+                //Resource.Success(emptyList<HomeScreenModel>())
 
                 pluginManager.getSelectedPlugin().getHomeScreenItems()
             }.getOrElse {
