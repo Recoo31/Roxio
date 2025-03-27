@@ -48,10 +48,10 @@ import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootD
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.data.ItemDirection
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.FavoriteDialog
-import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.rememberChildPadding
 import kurd.reco.roxio.toMovieList

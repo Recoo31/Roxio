@@ -58,6 +58,7 @@ import kurd.reco.core.Global
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
+import kurd.reco.core.data.ItemDirection
 import kurd.reco.core.data.db.watched.WatchedItemDao
 import kurd.reco.core.viewmodels.HomeVM
 import kurd.reco.roxio.PlayerActivity
@@ -66,7 +67,6 @@ import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.CustomLinearProgressIndicator
 import kurd.reco.roxio.common.Error
 import kurd.reco.roxio.common.FavoriteDialog
-import kurd.reco.roxio.common.ItemDirection
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.defaultBorder
 import kurd.reco.roxio.ui.detail.MultiSourceDialog

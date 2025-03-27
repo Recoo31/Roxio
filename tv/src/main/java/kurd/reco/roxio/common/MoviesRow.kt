@@ -22,6 +22,7 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -141,17 +142,20 @@ fun MoviesRowItem(
     var isFocused by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val screenHeight = configuration.screenHeightDp.dp
 
-    val imageWidth = if (itemDirection == ItemDirection.Vertical) screenWidth / 6 else screenWidth * 0.5f
-    val imageHeight = if (itemDirection == ItemDirection.Vertical) imageWidth * 1.5f else imageWidth * 0.6f
+    val imageWidth =
+        if (itemDirection == ItemDirection.Vertical) screenWidth / 6 else screenWidth * 0.5f
+    val imageHeight =
+        if (itemDirection == ItemDirection.Vertical) imageWidth * 1.5f else imageWidth * 0.6f
+
+    val maxTextWidth = screenWidth * 0.16f
 
     MovieCard(
         onClick = { onMovieSelected(movie) },
         onLongClick = { onLongClick(movie) },
         title = {
             MoviesRowItemText(
-                modifier = Modifier.widthIn(max = imageWidth),
+                modifier = Modifier.widthIn(max = maxTextWidth),
                 showItemTitle = showItemTitle,
                 isItemFocused = isFocused,
                 movie = movie,
@@ -167,16 +171,22 @@ fun MoviesRowItem(
             .then(modifier)
     ) {
         MoviesRowItemImage(
-            modifier = Modifier.run {
-                if (movie.isLiveTv) height(
-                    height = imageHeight / 2,
-                ) else sizeIn(
-                    minWidth = imageWidth * 0.75f,
-                    maxWidth = imageWidth,
-                    minHeight = imageHeight * 0.75f,
-                    maxHeight = imageHeight
-                )
-            },
+            modifier = Modifier
+                .run {
+                    if (movie.isLiveTv) height(
+                        height = imageHeight / 2,
+                    ) else if (itemDirection == ItemDirection.Vertical) sizeIn(
+                        minWidth = imageWidth * 0.75f,
+                        maxWidth = imageWidth,
+                        minHeight = imageHeight * 0.75f,
+                        maxHeight = imageHeight
+                    ) else this
+                }
+                .run {
+                    if (itemDirection == ItemDirection.Horizontal) {
+                        aspectRatio(ItemDirection.Horizontal.aspectRatio)
+                    } else this
+                },
             showIndexOverImage = showIndexOverImage,
             movie = movie,
             index = index
@@ -226,7 +236,6 @@ private fun MoviesRowItemImage(
 }
 
 
-
 @Composable
 fun MoviesRowItemText(
     showItemTitle: Boolean,
@@ -239,6 +248,7 @@ fun MoviesRowItemText(
             targetValue = if (isItemFocused) 1f else 0f,
             label = "",
         )
+
         Text(
             text = movie.title!!,
             style = MaterialTheme.typography.bodyMedium.copy(
