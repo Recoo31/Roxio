@@ -45,7 +45,7 @@ import kurd.reco.core.api.Resource
 import kurd.reco.core.copyText
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.ErrorShower
-import kurd.reco.mobile.data.ErrorModel
+import kurd.reco.core.data.ErrorModel
 import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>(start = true)

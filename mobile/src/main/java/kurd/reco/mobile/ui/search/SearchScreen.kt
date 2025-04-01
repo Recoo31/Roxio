@@ -55,21 +55,33 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.valentinilk.shimmer.shimmer
-import kurd.reco.core.api.model.SearchModel
+import kurd.reco.core.Global
+import kurd.reco.core.Global.errorModel
+import kurd.reco.core.SettingsDataStore
+import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.mobile.R
+import kurd.reco.core.data.ErrorModel
+import kurd.reco.mobile.common.VideoPlaybackHandler
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>
 @Composable
 fun SearchScreen(
     navigator: DestinationsNavigator,
-    viewModel: SearchVM = koinInject()
+    viewModel: SearchVM = koinInject(),
+    settingsDataStore: SettingsDataStore = koinInject()
 ) {
     val searchList = viewModel.searchList
     val selectedFilter = viewModel.filterType
+
     val searchText by viewModel.searchTextState.collectAsStateWithLifecycle()
+    val clickedItem by viewModel.clickedItem.state.collectAsStateWithLifecycle()
+    val externalPlayer by settingsDataStore.externalPlayer.collectAsStateWithLifecycle("")
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    var isClicked by remember { mutableStateOf(false) }
     var isFilterMenuExpanded by remember { mutableStateOf(false) }
+
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
     val isWideScreen = screenWidth > 600
@@ -138,7 +150,6 @@ fun SearchScreen(
                         onSelect = { viewModel.filterType = it },
                         onDismiss = { isFilterMenuExpanded = false }
                     )
-
                 }
             }
 
@@ -150,7 +161,7 @@ fun SearchScreen(
             if (isWideScreen) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = (screenWidth / 3).dp)
-                    ) {
+                ) {
                     if (isLoading) {
                         items(3) { ShimmerSearchItem() }
                     } else {
@@ -175,12 +186,19 @@ fun SearchScreen(
                     } else {
                         items(filteredList) { item ->
                             SearchItem(item) {
-                                navigator.navigate(
-                                    DetailScreenRootDestination(
-                                        item.id.toString(),
-                                        item.isSeries
+                                isClicked = !isClicked
+
+                                if (item.isLiveTv) {
+                                    viewModel.getUrl(item.id, item.title)
+                                    Global.clickedItem = item
+                                } else {
+                                    navigator.navigate(
+                                        DetailScreenRootDestination(
+                                            item.id.toString(),
+                                            item.isSeries
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }
@@ -188,11 +206,13 @@ fun SearchScreen(
             }
         }
 
-//        if (!pluginLoaded) {
-//            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
-//                CircularProgressIndicator()
-//            }
-//        }
+        VideoPlaybackHandler(
+            clickedItem = clickedItem,
+            isClicked = isClicked,
+            externalPlayer = externalPlayer,
+            clearClickedItem = { viewModel.clearClickedItem() },
+            onSuccess = { isClicked = false }
+        )
     }
 }
 
@@ -253,7 +273,6 @@ fun FilterMenuItem(
     )
 }
 
-
 @Composable
 fun ShimmerSearchItem() {
     ElevatedCard(
@@ -287,10 +306,9 @@ fun ShimmerSearchItem() {
     }
 }
 
-
 @Composable
 fun SearchItem(
-    item: SearchModel,
+    item: HomeItemModel,
     onCLick: () -> Unit = {}
 ) {
     ElevatedCard(
@@ -301,17 +319,19 @@ fun SearchItem(
         }
     ) {
         Column(Modifier.padding(horizontal = 8.dp)) {
-            Text(
-                item.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            item.title?.let {
+                Text(
+                    text = it,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
             AsyncImage(
-                model = item.image,
+                model = item.poster,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -320,7 +340,6 @@ fun SearchItem(
                     .padding(bottom = 8.dp)
                     .clip(MaterialTheme.shapes.medium),
             )
-
         }
     }
 }

@@ -1,4 +1,4 @@
-package kurd.reco.mobile.data
+package kurd.reco.core.data
 
 data class ErrorModel(
     val errorText: String,

@@ -75,7 +75,6 @@ fun PluginDialog(
     }
 
     AlertDialog(
-        modifier = Modifier.fillMaxHeight(0.85f),
         onDismissRequest = { onDismiss() },
         text = {
             Column {

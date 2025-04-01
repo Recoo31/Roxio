@@ -1,9 +1,9 @@
 package kurd.reco.core.api
 
 import kurd.reco.core.api.model.DetailScreenModel
+import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.PlayDataModel
-import kurd.reco.core.api.model.SearchModel
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -23,7 +23,7 @@ class ProviderTester(private val provider: RemoteRepo) {
         println("$color[$timestamp] $message$RESET")
     }
 
-    suspend fun testSearch(query: String, verbose: Boolean = false): List<SearchModel> {
+    suspend fun testSearch(query: String, verbose: Boolean = false): List<HomeItemModel> {
         log("\n\n========== testSearch ==========\nStarting search with query: \"$query\"\n", BLUE)
         val responses = provider.search(query)
         log("Response count: ${responses.size}, Query: \"$query\"\n", GREEN)

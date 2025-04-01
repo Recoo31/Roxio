@@ -23,8 +23,6 @@ import androidx.tv.material3.Border
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ShapeDefaults
 import kurd.reco.core.api.model.HomeItemModel
-import kurd.reco.core.api.model.SearchModel
-
 
 @Immutable
 data class Padding(
@@ -62,19 +60,6 @@ fun defaultBorder(width: Dp = 4.dp, color: Color = MaterialTheme.colorScheme.pri
     ),
     shape = shape
 )
-
-
-fun List<SearchModel>.toMovieList(): List<HomeItemModel> {
-    return this.map {
-        HomeItemModel(
-            id = it.id.toString(),
-            title = it.title,
-            poster = it.image,
-            isLiveTv = false,
-            isSeries = it.isSeries
-        )
-    }
-}
 
 fun extractDominantColor(drawable: Drawable?, defaultColor: Color, onColorExtracted: (Color) -> Unit) {
     if (drawable is BitmapDrawable) {

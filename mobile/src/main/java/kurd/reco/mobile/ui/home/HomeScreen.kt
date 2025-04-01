@@ -1,9 +1,7 @@
 package kurd.reco.mobile.ui.home
 
-import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -63,7 +60,6 @@ import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.data.db.watched.WatchedItemDao
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.core.viewmodels.HomeVM
-import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.CategorySheet
 import kurd.reco.mobile.common.ErrorShower
@@ -71,9 +67,9 @@ import kurd.reco.mobile.common.FavoriteDialog
 import kurd.reco.mobile.common.MovieCard
 import kurd.reco.mobile.common.MovieCategorySelector
 import kurd.reco.mobile.common.ShimmerMovieCard
-import kurd.reco.mobile.data.ErrorModel
+import kurd.reco.mobile.common.VideoPlaybackHandler
+import kurd.reco.core.data.ErrorModel
 import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
-import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>
@@ -109,6 +105,7 @@ fun HomeScreenRoot(
                 errorText = errorModel.errorText,
                 onRetry = {
                     errorModel = errorModel.copy(isError = false)
+                    viewModel.loadMovies()
                 },
                 onDismiss = { errorModel = errorModel.copy(isError = false) }
             )
@@ -175,19 +172,6 @@ fun HomeScreen(
 
     LazyColumn(state = lazyListState) {
         item {
-            viewModel.getCategories()?.let { list ->
-                MovieCategorySelector(
-                    modifier = Modifier.fillMaxWidth(),
-                    categories = list
-                ) {
-                    viewModel.getCategoryItems(it)
-                    categoryTitle = it
-                    showCategorySheet = !showCategorySheet
-                }
-            }
-        }
-
-        item {
             viewModel.getPagerList()?.let { list ->
                 ViewPager(list) {
                     navigator.navigate(
@@ -208,7 +192,7 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.recently_watched),
+                        text = stringResource(R.string.continue_watching),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
                         modifier = Modifier.padding(16.dp),
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.54f),
@@ -222,7 +206,7 @@ fun HomeScreen(
                             .size(24.dp),
                         onClick = {
                             viewModel.setViewAll(items.map { it.toHomeItemModel() })
-                            categoryTitle = context.getString(R.string.recently_watched)
+                            categoryTitle = context.getString(R.string.continue_watching)
                             showCategorySheet = !showCategorySheet
                         }
                     ) {
@@ -272,9 +256,9 @@ fun HomeScreen(
                                     0f
                                 }
 
-                                if (progress > 0.96f && !item.isSeries) {
-                                    watchedItemDao.deleteWatchedItemById(item.id)
-                                }
+//                                if (progress > 0.96f && !item.isSeries) {
+//                                    watchedItemDao.deleteWatchedItemById(item.id)
+//                                }
 
                                 LinearProgressIndicator(
                                     progress = { progress },
@@ -395,53 +379,13 @@ fun HomeScreen(
         }
     }
 
-    when (val resource = clickedItem) {
-        is Resource.Success -> {
-            LaunchedEffect(resource) {
-                isClicked = false
-
-                val playData = resource.value
-
-                Global.playDataModel = playData
-
-                if (playData.urls.size > 1) {
-                    showMultiSelect = true
-                } else {
-                    if (externalPlayer.isNotEmpty() && playData.drm == null) {
-                        openVideoWithSelectedPlayer(
-                            context = context,
-                            videoUri = playData.urls[0].second,
-                            playerPackageName = externalPlayer
-                        )
-                    } else {
-                        Global.playDataModel = playData
-                        val intent = Intent(context, PlayerActivity::class.java)
-                        context.startActivity(intent)
-                        viewModel.clearClickedItem()
-                    }
-                }
-            }
-        }
-
-        is Resource.Failure -> {
-            errorModel = ErrorModel(resource.error, true)
-            viewModel.clearClickedItem()
-        }
-
-        is Resource.Loading -> {
-            if (isClicked) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .clickable { },
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-        }
-    }
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isClicked,
+        externalPlayer = externalPlayer,
+        clearClickedItem = { viewModel.clearClickedItem() },
+        onSuccess = { isClicked = false },
+    )
 
     if (fetchForPlayer) {
         isClicked = true

@@ -10,7 +10,6 @@ import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.PagerDataClass
 import kurd.reco.core.api.model.PlayDataModel
-import kurd.reco.core.api.model.SearchModel
 import kurd.reco.core.api.model.SeriesDataModel
 
 @Keep interface RemoteRepo {
@@ -18,7 +17,7 @@ import kurd.reco.core.api.model.SeriesDataModel
     suspend fun getCategoryItems(category: Any): Resource<List<HomeItemModel>>
     suspend fun getDetailScreenItems(id: Any, isSeries: Boolean): Resource<DetailScreenModel>
     suspend fun getUrl(id: Any, title: String?): Resource<PlayDataModel>
-    suspend fun search(query: String): List<SearchModel>
+    suspend fun search(query: String): List<HomeItemModel>
     suspend fun getMore(id: Any): Resource<List<HomeItemModel>>
     fun getAccessToken(token: String)
     var seriesList: List<SeriesDataModel>?

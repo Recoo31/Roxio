@@ -1,8 +1,6 @@
 package kurd.reco.mobile.ui.detail
 
-import android.content.Intent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,10 +56,10 @@ import kurd.reco.core.data.db.favorite.Favorite
 import kurd.reco.core.data.db.favorite.FavoriteDao
 import kurd.reco.core.data.db.plugin.PluginDao
 import kurd.reco.core.viewmodels.DetailVM
-import kurd.reco.mobile.PlayerActivity
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.ErrorShower
-import kurd.reco.mobile.data.ErrorModel
+import kurd.reco.mobile.common.VideoPlaybackHandler
+import kurd.reco.core.data.ErrorModel
 import kurd.reco.mobile.ui.detail.composables.BackImage
 import kurd.reco.mobile.ui.detail.composables.CustomIconButton
 import kurd.reco.mobile.ui.detail.composables.DescriptionSection
@@ -409,48 +407,18 @@ fun DetailScreen(
         }
     }
 
-    when (val resource = clickedItem) {
-        is Resource.Success -> {
-            val playData = resource.value
-
-            Global.playDataModel = if (item.isSeries) {
-                playData.copy(title = "${item.title} | ${selectedEpisode?.title}")
-            } else playData.copy(title = item.title)
-
-            LaunchedEffect(resource) {
-                if (playData.urls.size > 1) {
-                    showMultiSelect = true
-                } else {
-                    val intent = Intent(context, PlayerActivity::class.java)
-                    context.startActivity(intent)
-                    viewModel.clearClickedItem()
-                    isLoading = false
-                }
-            }
-        }
-
-        is Resource.Failure -> {
-            LaunchedEffect(resource) {
-                errorModel = ErrorModel(resource.error, true)
-            }
-        }
-
-        is Resource.Loading -> {
-            if (isLoading) {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize()
-                        .clickable { }
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-        }
-    }
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isLoading,
+        clearClickedItem = {
+            viewModel.clearClickedItem()
+            isLoading = false
+        },
+        onSuccess = { isLoading = false },
+        customTitle = if (item.isSeries) "${item.title} | ${selectedEpisode?.title}" else item.title
+    )
 
     if (fetchForPlayer) {
-
         isLoading = true
         val selectedItem = Global.clickedItem
         selectedItem?.let {

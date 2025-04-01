@@ -189,19 +189,49 @@ fun VideoPlayerScreen(
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
                     if (lastItem != null && !lastItem.isLiveTv) {
-                        watchedItemDao.insertOrUpdateWatchedItem(
-                            WatchedItemModel(
-                                id = lastItem.id.toString(),
-                                title = item.title,
-                                poster = lastItem.poster,
-                                isSeries = lastItem.isSeries,
-                                resumePosition = exoPlayer.currentPosition,
-                                totalDuration = exoPlayer.duration,
-                                pluginId = Global.currentPlugin!!.id,
-                                itemsRow = if (lastItem.isSeries) itemRow
-                                    ?: Global.clickedItemRow else null
+                        val currentPosition = exoPlayer.currentPosition
+                        val duration = exoPlayer.duration
+                        val isCompleted = duration > 0 && currentPosition >= duration * 0.95 // Watched 95%
+
+                        val currentRow = itemRow ?: Global.clickedItemRow
+
+                        if (lastItem.isSeries && isCompleted) {
+                            watchedItemDao.deleteWatchedItemById(lastItem.id.toString()) // Delete the completed one
+
+                            if (currentRow != null) {
+                                val currentIndex = currentRow.contents.indexOfFirst { it.id == lastItem.id }
+                                if (currentIndex != -1 && currentIndex < currentRow.contents.size - 1) {
+                                    // Not the last episode, add the next one
+                                    val nextEpisode = currentRow.contents[currentIndex + 1]
+                                    watchedItemDao.insertOrUpdateWatchedItem(
+                                        WatchedItemModel(
+                                            id = nextEpisode.id.toString(),
+                                            title = nextEpisode.title ?: item.title,
+                                            poster = nextEpisode.poster,
+                                            isSeries = true,
+                                            resumePosition = 0L,
+                                            totalDuration = 0L,
+                                            pluginId = Global.currentPlugin!!.id,
+                                            itemsRow = currentRow
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            // Not completed or not a series, just update progress
+                            watchedItemDao.insertOrUpdateWatchedItem(
+                                WatchedItemModel(
+                                    id = lastItem.id.toString(),
+                                    title = item.title,
+                                    poster = lastItem.poster,
+                                    isSeries = lastItem.isSeries,
+                                    resumePosition = currentPosition,
+                                    totalDuration = duration,
+                                    pluginId = Global.currentPlugin!!.id,
+                                    itemsRow = if (lastItem.isSeries) currentRow else null
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

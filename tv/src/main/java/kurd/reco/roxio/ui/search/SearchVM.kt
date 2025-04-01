@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurd.reco.core.api.model.SearchModel
+import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.plugin.PluginManager
 
 
@@ -34,7 +34,7 @@ class SearchVM(private val pluginManager: PluginManager) : ViewModel() {
     var lastSearchedText: String = ""
         private set
 
-    var searchList by mutableStateOf(emptyList<SearchModel>())
+    var searchList by mutableStateOf(emptyList<HomeItemModel>())
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading

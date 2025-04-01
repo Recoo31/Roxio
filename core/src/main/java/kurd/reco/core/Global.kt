@@ -3,6 +3,7 @@ package kurd.reco.core
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import kurd.reco.core.api.model.DetailScreenModel
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.api.model.HomeScreenModel
 import kurd.reco.core.api.model.PlayDataModel
+import kurd.reco.core.data.ErrorModel
 import kurd.reco.core.data.db.plugin.Plugin
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -31,6 +33,8 @@ object Global {
     var clickedItemRow by mutableStateOf<HomeScreenModel?>(null)
 
     val isDebugMode = BuildConfig.DEBUG
+
+    var errorModel by mutableStateOf(ErrorModel("", false))
 }
 
 object User {

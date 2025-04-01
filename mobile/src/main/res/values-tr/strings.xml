@@ -59,7 +59,7 @@
     <string name="add_fav_desc">" favorilere eklensin mi?"</string>
     <string name="delete_fav">Favorilerden Çıkar</string>
     <string name="add_fav">Favorilere Ekle</string>
-    <string name="recently_watched">Son Izlenenler</string>
+    <string name="continue_watching">Izlemeye devam et</string>
     <string name="update">Güncelle</string>
     <string name="install">Yükle</string>
     <string name="app_update">Uygulama Güncellemesi</string>

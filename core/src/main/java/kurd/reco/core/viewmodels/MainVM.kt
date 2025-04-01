@@ -43,7 +43,6 @@ class MainVM(
 
     fun checkAppUpdate(context: Context) {
         currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return
-        checkInstallAppPermission(context)
         viewModelScope.launch {
             runCatching { app.get(versionLink).parsed<VersionData>() }
                 .onSuccess { response ->
@@ -57,15 +56,15 @@ class MainVM(
     private fun checkInstallAppPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!context.packageManager.canRequestPackageInstalls()) {
-                // Navigate directly to the app's specific permission request section
-                val intent = Intent().apply {
-                    action = Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES
-                    data = Uri.parse("package:${context.packageName}")
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                try {
+                    val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    intent.data = Uri.parse("package:${context.packageName}")
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    // If the intent is not available, try the alternative approach
+                    val intent = Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS)
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
-                Toast.makeText(context, "Please enable 'Install from Unknown Sources' for Roxio", Toast.LENGTH_LONG).show()
-                return
             }
         }
     }
@@ -98,6 +97,8 @@ class MainVM(
     }
 
     fun installUpdate(apkFile: File, context: Context) {
+        checkInstallAppPermission(context)
+
         val apkUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", apkFile)
         val installIntent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(apkUri, "application/vnd.android.package-archive")

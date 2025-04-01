@@ -54,7 +54,6 @@ import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.MoviesRow
 import kurd.reco.roxio.rememberChildPadding
-import kurd.reco.roxio.toMovieList
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -79,9 +78,9 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
     var showFavoriteDialog by remember { mutableStateOf(false) }
 
     val filteredList = when (selectedFilter) {
-        FilterType.MOVIES -> searchList.filter { !it.isSeries }.toMovieList()
-        FilterType.SERIES -> searchList.filter { it.isSeries }.toMovieList()
-        FilterType.BOTH -> searchList.toMovieList()
+        FilterType.MOVIES -> searchList.filter { !it.isSeries }
+        FilterType.SERIES -> searchList.filter { it.isSeries }
+        FilterType.BOTH -> searchList
     }
 
     LaunchedEffect(searchText) {

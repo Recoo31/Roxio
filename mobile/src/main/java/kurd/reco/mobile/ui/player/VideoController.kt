@@ -299,12 +299,17 @@ fun VideoController(
                                     if (!showControls && seekSeconds != 0) {
                                         val currentPosition = exoPlayer.currentPosition
                                         val newPosition = currentPosition + (seekSeconds * 1000L)
-                                        exoPlayer.seekTo(
-                                            newPosition.coerceIn(
-                                                0,
-                                                exoPlayer.duration
+                                        val duration = exoPlayer.duration
+                                        if (duration > 0) {
+                                            exoPlayer.seekTo(
+                                                newPosition.coerceIn(
+                                                    0,
+                                                    duration
+                                                )
                                             )
-                                        )
+                                        } else {
+                                            exoPlayer.seekTo(newPosition.coerceAtLeast(0))
+                                        }
                                     }
                                     scope.launch {
                                         delay(200)
