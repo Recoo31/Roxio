@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.AspectRatio
+import androidx.compose.material.icons.outlined.VideoSettings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -101,9 +103,7 @@ fun VideoPlayerScreen(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val videoPlayerState = rememberVideoPlayerState(hideSeconds = 4)
-    val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(
-        true
-    )
+    val forceHighestQualityEnabled by settingsDataStore.forceHighestQualityEnabled.collectAsStateWithLifecycle(true)
 
     var shouldObserve by remember { mutableStateOf(false) }
 
@@ -444,7 +444,7 @@ fun VideoPlayerControls(
             ) {
                 VideoPlayerControlsIcon(
                     modifier = Modifier.padding(start = 12.dp),
-                    icon = R.drawable.rounded_video_settings_24,
+                    icon = Icons.Outlined.VideoSettings,
                     state = state,
                     isPlaying = isPlaying,
                     contentDescription = "Settings"
@@ -459,7 +459,7 @@ fun VideoPlayerControls(
 
                 VideoPlayerControlsIcon(
                     modifier = Modifier.padding(start = 12.dp),
-                    icon = R.drawable.baseline_aspect_ratio_24,
+                    icon = Icons.Outlined.AspectRatio,
                     state = state,
                     isPlaying = isPlaying
                 ) {

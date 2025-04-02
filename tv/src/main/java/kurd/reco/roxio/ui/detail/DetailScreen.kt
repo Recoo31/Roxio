@@ -66,6 +66,7 @@ import kurd.reco.roxio.PlayerActivity
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.Error
+import kurd.reco.roxio.common.VideoPlaybackHandler
 import org.koin.androidx.compose.koinViewModel
 
 @Destination<RootGraph>
@@ -209,42 +210,15 @@ fun DetailScreen(
             }
         }
 
-        when (val resource = clickedItem) {
-            is Resource.Success -> {
-                val playData = resource.value.copy(
-                    title = if (item.isSeries) "${item.title} | ${selectedEpisode?.title}" else item.title
-                )
-                Global.playDataModel = playData
-
-                LaunchedEffect(resource) {
-                    if (playData.urls.size > 1) {
-                        showMultiSelect = true
-                    } else {
-                        val intent = Intent(context, PlayerActivity::class.java)
-                        context.startActivity(intent)
-                        viewModel.clearClickedItem()
-                        isLoading = false
-                    }
-                }
-            }
-            is Resource.Failure -> {
-                Error(modifier = Modifier.fillMaxSize(), resource.error)
-            }
-            is Resource.Loading -> {
-                if (isLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                }
-            }
-        }
+        VideoPlaybackHandler(
+            clickedItem = clickedItem,
+            isClicked = isLoading,
+            clearClickedItem = { viewModel.clearClickedItem() },
+            onSuccess = { isLoading = false },
+        )
     }
 
     if (fetchForPlayer) {
-
         isLoading = true
         val selectedItem = Global.clickedItem
         selectedItem?.let {

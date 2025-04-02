@@ -12,6 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.Cloud
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.Hd
+import androidx.compose.material.icons.outlined.Subtitles
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +31,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -145,19 +153,19 @@ fun MainSettings(
     }
 
     Column {
-        VideoSettingItem(R.drawable.outline_flag_24, stringResource(R.string.report), focusRequester) {
+        VideoSettingItem(Icons.Outlined.Flag, stringResource(R.string.report), focusRequester) {
             onErrorFlag()
         }
-        VideoSettingItem(R.drawable.cloud, stringResource(R.string.sources_settings), focusRequester) {
+        VideoSettingItem(Icons.Outlined.Cloud, stringResource(R.string.sources_settings), focusRequester) {
             onSettingSelected(SettingsScreen.SOURCES)
         }
-        VideoSettingItem(R.drawable.hd_icon, stringResource(R.string.quality_settings), focusRequester) {
+        VideoSettingItem(Icons.Outlined.Hd, stringResource(R.string.quality_settings), focusRequester) {
             onSettingSelected(SettingsScreen.QUALITY)
         }
-        VideoSettingItem(R.drawable.audio, stringResource(R.string.audio_settings), focusRequester) {
+        VideoSettingItem(Icons.Outlined.Audiotrack, stringResource(R.string.audio_settings), focusRequester) {
             onSettingSelected(SettingsScreen.AUDIO)
         }
-        VideoSettingItem(R.drawable.subtitles, stringResource(R.string.subtitle_settings), focusRequester) {
+        VideoSettingItem(Icons.Outlined.Subtitles, stringResource(R.string.subtitle_settings), focusRequester) {
             onSettingSelected(SettingsScreen.SUBTITLE)
         }
     }
@@ -165,7 +173,7 @@ fun MainSettings(
 
 @Composable
 private fun VideoSettingItem(
-    icon: Int,
+    icon: ImageVector,
     title: String,
     focusRequester: FocusRequester,
     onSettingsClick: () -> Unit
@@ -189,7 +197,7 @@ private fun VideoSettingItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                painter = painterResource(icon),
+                imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -203,7 +211,7 @@ private fun VideoSettingItem(
             )
 
             Icon(
-                painter = painterResource(R.drawable.arrow_right),
+                imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 modifier = Modifier.size(12.dp)

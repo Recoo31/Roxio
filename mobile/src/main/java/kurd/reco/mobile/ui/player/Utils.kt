@@ -97,9 +97,9 @@ fun TrackGroup.getName(trackType: @C.TrackType Int, index: Int): String {
         }
         if (isEmpty()) {
             if (trackType == C.TRACK_TYPE_TEXT) {
-                append("Subtitle Track #${index + 1}")
+                append("Subtitle #${index + 1}")
             } else {
-                append("Audio Track #${index + 1}")
+                append("Audio #${index + 1}")
             }
         }
         if (language != null && language != "und") {

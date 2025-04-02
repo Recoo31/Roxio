@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -42,7 +43,7 @@ fun VideoPlayerControlsIcon(
     modifier: Modifier = Modifier,
     state: VideoPlayerState,
     isPlaying: Boolean,
-    @DrawableRes icon: Int,
+    icon: ImageVector,
     contentDescription: String? = null,
     onClick: () -> Unit = {}
 ) {
@@ -66,7 +67,7 @@ fun VideoPlayerControlsIcon(
         interactionSource = interactionSource
     ) {
         Icon(
-            painter = painterResource(id = icon),
+            imageVector = icon,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),

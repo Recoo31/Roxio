@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +38,7 @@ import kurd.reco.roxio.R
 
 enum class NavigationBarDestination(
     val direction: DirectionDestinationSpec,
-    val icon: ImageVector? = null,
-    @DrawableRes val resourceId: Int? = null,
+    val icon: ImageVector,
     val label: String
 ) {
     Home(
@@ -48,7 +48,7 @@ enum class NavigationBarDestination(
     ),
     Discover(
         direction = DiscoverScreenDestination,
-        resourceId = R.drawable.outline_explore_24,
+        icon = Icons.Outlined.Explore,
         label = "Discover"
     ),
     Search(
@@ -93,7 +93,7 @@ fun RoxioNavigationDrawer(navController: NavController, modifier: Modifier = Mod
                                 launchSingleTop = true
                             }
                         },
-                        leadingContent = { Icon(it.icon ?: ImageVector.vectorResource(it.resourceId!!), contentDescription = it.label) }
+                        leadingContent = { Icon(it.icon, contentDescription = it.label) }
                     ) {
                         Text(text = it.label)
                     }

@@ -16,9 +16,9 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 
 @Composable
-fun FilterMenu(
+fun FilterMenuSearch(
     modifier: Modifier = Modifier,
-    selectedFilter: FilterType,
+    selectedFilter: FilterType? = null,
     onSelect: (FilterType) -> Unit,
     onDismiss: () -> Unit
 ) {

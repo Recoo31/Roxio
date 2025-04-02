@@ -78,7 +78,7 @@ fun VideoPlayerAudio(
 
                 VideoPlayerSettingItem(
                     focusRequester,
-                    text = title.replace("Audio Track #${index+1} -", ""),
+                    text = title.replace("Audio #${index+1} -", ""),
                     isSelect = selected
                 ) {
                     applySelectedTrack(defaultTracks, format.mediaTrackGroup, 0, C.TRACK_TYPE_AUDIO)

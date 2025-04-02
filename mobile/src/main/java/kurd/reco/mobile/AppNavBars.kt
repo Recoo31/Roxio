@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -41,9 +42,8 @@ import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 
 enum class NavigationBarDestination(
     val direction: DirectionDestinationSpec,
-    val icon: ImageVector? = null,
-    val label: String,
-    @DrawableRes val resourceId: Int? = null
+    val icon: ImageVector,
+    val label: String
 ) {
     Home(
         direction = HomeScreenRootDestination,
@@ -52,7 +52,7 @@ enum class NavigationBarDestination(
     ),
     Discover(
         direction = DiscoverScreenDestination,
-        resourceId = R.drawable.outline_explore_24,
+        icon = Icons.Outlined.Explore,
         label = "Discover"
     ),
     Search(
@@ -98,7 +98,7 @@ fun BottomBar(
                         launchSingleTop = true
                     }
                 },
-                icon = { Icon(destination.icon ?: ImageVector.vectorResource(destination.resourceId!!), contentDescription = destination.label) },
+                icon = { Icon(destination.icon, contentDescription = destination.label) },
                 label = { Text(destination.label, style = MaterialTheme.typography.labelMedium) },
             )
         }
@@ -122,7 +122,7 @@ fun SideBar(
                             launchSingleTop = true
                         }
                     },
-                    icon = { Icon(destination.icon ?: ImageVector.vectorResource(destination.resourceId!!), contentDescription = destination.label) },
+                    icon = { Icon(destination.icon, contentDescription = destination.label) },
                     label = {}
                 )
             }

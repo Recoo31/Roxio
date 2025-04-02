@@ -17,6 +17,9 @@
 package kurd.reco.roxio.ui.player.composables
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +61,7 @@ fun VideoPlayerSeeker(
     ) {
         VideoPlayerControlsIcon(
             modifier = Modifier.focusRequester(focusRequester),
-            icon = if (!isPlaying) R.drawable.round_play_arrow_24 else R.drawable.round_pause_24,
+            icon = if (!isPlaying) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
             onClick = { onPlayPauseToggle(!isPlaying) },
             state = state,
             isPlaying = isPlaying,

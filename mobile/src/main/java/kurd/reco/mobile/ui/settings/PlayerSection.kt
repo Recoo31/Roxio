@@ -18,7 +18,7 @@ import kurd.reco.mobile.ui.settings.composables.SettingSliderItem
 fun PlayerSection(settingsDataStore: SettingsDataStore) {
     var openPlayerSelection by remember { mutableStateOf(false) }
     val currentPlayer by settingsDataStore.externalPlayer.collectAsState(initial = "")
-    val savedSubtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 16f)
+    val savedSubtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 21f)
     val forceHighestQuality by settingsDataStore.forceHighestQualityEnabled.collectAsState(initial = true)
     val context = LocalContext.current
 

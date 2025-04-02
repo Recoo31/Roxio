@@ -68,6 +68,7 @@ import kurd.reco.roxio.common.CustomLinearProgressIndicator
 import kurd.reco.roxio.common.Error
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.MoviesRow
+import kurd.reco.roxio.common.VideoPlaybackHandler
 import kurd.reco.roxio.defaultBorder
 import kurd.reco.roxio.ui.detail.MultiSourceDialog
 import org.koin.compose.koinInject
@@ -115,8 +116,6 @@ fun HandleHome(
     val lazyListState = rememberLazyListState()
 
     var isClicked by remember { mutableStateOf(false) }
-    var loadedItemCount by rememberSaveable { mutableIntStateOf(2) }
-    val scope = rememberCoroutineScope()
     var showFavoriteDialog by remember { mutableStateOf(false) }
     val clickedItem by viewModel.clickedItem.state.collectAsStateWithLifecycle()
     val watchedItems by watchedItemDao.getAllWatchedItems().collectAsState(emptyList())
@@ -340,40 +339,12 @@ fun HandleHome(
         )
     }
 
-    when (val resource = clickedItem) {
-        is Resource.Success -> {
-            val playData = resource.value
-            Global.playDataModel = playData
-
-            LaunchedEffect(resource) {
-                if (playData.urls.size > 1) {
-                    showMultiSelect = true
-                } else {
-                    val intent = Intent(context, PlayerActivity::class.java)
-                    context.startActivity(intent)
-                    viewModel.clearClickedItem()
-                    isClicked = false
-                }
-            }
-        }
-
-        is Resource.Failure -> {
-            Error(modifier = Modifier.fillMaxSize(), resource.error)
-        }
-
-        is Resource.Loading -> {
-            if (isClicked) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            }
-        }
-    }
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isClicked,
+        clearClickedItem = { viewModel.clearClickedItem() },
+        onSuccess = { isClicked = false },
+    )
 
     if (fetchForPlayer) {
         isClicked = true

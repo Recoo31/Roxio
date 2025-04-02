@@ -17,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +59,7 @@ fun PluginDialog(
     var pluginToDelete by remember { mutableStateOf<Plugin?>(null) }
     val textTitle = if (isDeleteMode) stringResource(R.string.delete_plugin) else stringResource(R.string.select_plugin)
     val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(initial = pluginManager.getAllPlugins())
-    var plugins = pluginsState.filter { it.active }
+    var plugins = pluginsState.filter { it.active && (it.image != null || showHiddenPlugins) }
 
     if (showAddDialog) {
         DownloadDialog(viewModel) { showAddDialog = false }
@@ -107,7 +109,7 @@ fun PluginDialog(
                         onClick = { showHiddenPlugins = !showHiddenPlugins },
                     ) {
                         Icon(
-                            painterResource(if (showHiddenPlugins) R.drawable.outline_remove_eye_24 else R.drawable.baseline_remove_eye_24),
+                            if (showHiddenPlugins) Icons.Outlined.RemoveRedEye else Icons.Default.RemoveRedEye,
                             contentDescription = null
                         )
                     }
@@ -151,6 +153,7 @@ fun PluginDialog(
                                 )
                             } else if (showHiddenPlugins) {
                                 Text(
+                                    modifier = Modifier.padding(8.dp),
                                     text = plugin.name,
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary,

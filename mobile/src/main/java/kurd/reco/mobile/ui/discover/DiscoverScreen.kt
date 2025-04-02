@@ -27,7 +27,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ViewAgenda
@@ -239,7 +241,7 @@ private fun DiscoverHeader(
                 if (hasFilters) {
                     IconButton(onClick = onFilterClick) {
                         Icon(
-                            painterResource(R.drawable.ic_baseline_filter_list_24),
+                            Icons.Default.FilterList,
                             contentDescription = "Filter"
                         )
                     }
@@ -502,7 +504,7 @@ private fun FilterItem(
                 style = MaterialTheme.typography.bodyLarge
             )
             Icon(
-                painter = painterResource(R.drawable.ic_baseline_chevron_right_24),
+                imageVector = Icons.AutoMirrored.Default.ArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -1,12 +1,10 @@
-package kurd.reco.mobile.common
+package kurd.reco.roxio.common
 
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,20 +15,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
+import androidx.tv.material3.MaterialTheme
 import kurd.reco.core.Global
 import kurd.reco.core.Global.errorModel
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.data.ErrorModel
-import kurd.reco.mobile.PlayerActivity
-import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
-import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
+import kurd.reco.roxio.PlayerActivity
+import kurd.reco.roxio.ui.detail.MultiSourceDialog
 
 @Composable
 fun VideoPlaybackHandler(
     clickedItem: Resource<PlayDataModel>,
     isClicked: Boolean,
-    externalPlayer: String = "",
     clearClickedItem: () -> Unit,
     onSuccess: () -> Unit = {},
     customTitle: String? = null
@@ -42,25 +39,17 @@ fun VideoPlaybackHandler(
         is Resource.Success -> {
             LaunchedEffect(clickedItem) {
                 val playData = clickedItem.value
-                
+
                 Global.playDataModel = customTitle?.let {
-                    playData.copy(title = it) 
+                    playData.copy(title = it)
                 } ?: playData
 
                 if (playData.urls.size > 1) {
                     showMultiSelect = true
                 } else {
-                    if (externalPlayer.isNotEmpty() && playData.drm == null) {
-                        openVideoWithSelectedPlayer(
-                            context = context,
-                            videoUri = playData.urls[0].second,
-                            playerPackageName = externalPlayer
-                        )
-                    } else {
-                        val intent = Intent(context, PlayerActivity::class.java)
-                        context.startActivity(intent)
-                        clearClickedItem()
-                    }
+                    val intent = Intent(context, PlayerActivity::class.java)
+                    context.startActivity(intent)
+                    clearClickedItem()
                 }
                 onSuccess()
             }
@@ -90,7 +79,7 @@ fun VideoPlaybackHandler(
 
     if (showMultiSelect) {
         Dialog(
-            onDismissRequest = { 
+            onDismissRequest = {
                 showMultiSelect = false
                 clearClickedItem()
             }
@@ -99,7 +88,7 @@ fun VideoPlaybackHandler(
                 Global.playDataModel = it
                 showMultiSelect = false
                 clearClickedItem()
-                
+
                 val intent = Intent(context, PlayerActivity::class.java)
                 context.startActivity(intent)
                 clearClickedItem()
@@ -107,4 +96,4 @@ fun VideoPlaybackHandler(
             }
         }
     }
-} 
+}

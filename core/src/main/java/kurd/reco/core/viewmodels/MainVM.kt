@@ -109,8 +109,9 @@ class MainVM(
     }
 
     fun downloadPlugins(url: String, context: Context) {
+        val uri = if (url.startsWith("http")) url else "https://raw.githubusercontent.com/Recoo31/RoxioPlugins/main/$url.json"
         viewModelScope.launch(Dispatchers.IO) {
-            downloadPlugins(url, pluginDao, context.filesDir.path)
+            downloadPlugins(uri, pluginDao, context.filesDir.path)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Plugins Downloaded", Toast.LENGTH_SHORT).show()
             }

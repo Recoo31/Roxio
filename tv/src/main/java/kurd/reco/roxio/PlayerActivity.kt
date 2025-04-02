@@ -25,7 +25,11 @@ class PlayerActivity : ComponentActivity() {
                             Global.clickedItem = clickedItem
                             finish()
                         },
-                        onBackPressed = { finish() }
+                        onBackPressed = {
+                            Global.fetchForPlayer = false
+                            Global.clickedItem = null
+                            finishAndRemoveTask()
+                        }
                     )
                 }
             }

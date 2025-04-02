@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,12 +50,14 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kurd.reco.core.Global
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.core.data.ItemDirection
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.MoviesRow
+import kurd.reco.roxio.common.VideoPlaybackHandler
 import kurd.reco.roxio.rememberChildPadding
 import org.koin.compose.koinInject
 
@@ -66,6 +71,8 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
     val selectedFilter = viewModel.filterType
     val searchState = viewModel.searchFieldState
 
+    val clickedItem by viewModel.clickedItem.state.collectAsStateWithLifecycle()
+
     var isFilterMenuExpanded by remember { mutableStateOf(false) }
     val childPadding = rememberChildPadding()
     val tfInteractionSource = remember { MutableInteractionSource() }
@@ -76,6 +83,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
     var showSettings by remember { mutableStateOf(false) }
     var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
     var showFavoriteDialog by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(false) }
 
     val filteredList = when (selectedFilter) {
         FilterType.MOVIES -> searchList.filter { !it.isSeries }
@@ -208,7 +216,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                         onClick = { isFilterMenuExpanded = !isFilterMenuExpanded }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_filter_list_24),
+                            Icons.Default.FilterList,
                             contentDescription = null
                         )
                     }
@@ -217,7 +225,7 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
             }
             if (isFilterMenuExpanded) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    FilterMenu(
+                    FilterMenuSearch(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp, top = 16.dp),
@@ -250,13 +258,20 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
                         .padding(top = childPadding.top * 2),
                     movieList = filteredList,
                     itemDirection = ItemDirection.Horizontal,
-                    onMovieSelected = {
-                        navigator.navigate(
-                            DetailScreenRootDestination(
-                                id = it.id.toString(),
-                                isSeries = it.isSeries
+                    onMovieSelected = { item ->
+                        isClicked = !isClicked
+
+                        if (item.isLiveTv) {
+                            viewModel.getUrl(item.id, item.title)
+                            Global.clickedItem = item
+                        } else {
+                            navigator.navigate(
+                                DetailScreenRootDestination(
+                                    item.id.toString(),
+                                    item.isSeries
+                                )
                             )
-                        )
+                        }
                     },
                     onLongClick = {
                         currentFavoriteItem = it
@@ -266,6 +281,13 @@ fun SearchScreen(viewModel: SearchVM = koinInject(), navigator: DestinationsNavi
             }
         }
     }
+
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isClicked,
+        clearClickedItem = { viewModel.clearClickedItem() },
+        onSuccess = { isClicked = false },
+    )
 
     if (showFavoriteDialog && currentFavoriteItem != null) {
         FavoriteDialog(

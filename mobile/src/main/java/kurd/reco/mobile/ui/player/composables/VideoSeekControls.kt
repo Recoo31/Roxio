@@ -91,7 +91,7 @@ fun VideoSeekControls(modifier: Modifier = Modifier, exoPlayer: ExoPlayer, isLoa
             )
         }
 
-        Spacer(modifier = Modifier.padding(horizontal = 40.dp))
+        Spacer(modifier = Modifier.padding(horizontal = 80.dp))
 
         IconButton(
             onClick = {
@@ -118,7 +118,7 @@ fun VideoSeekControls(modifier: Modifier = Modifier, exoPlayer: ExoPlayer, isLoa
 
         }
 
-        Spacer(modifier = Modifier.padding(horizontal = 40.dp))
+        Spacer(modifier = Modifier.padding(horizontal = 80.dp))
 
         Box(contentAlignment = Alignment.Center) {
             IconButton(

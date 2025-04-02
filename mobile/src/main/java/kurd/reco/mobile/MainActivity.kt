@@ -10,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -131,7 +133,7 @@ class MainActivity : ComponentActivity() {
                                 text = { Text(text = lastPlugin?.name ?: "None") },
                                 icon = {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.ic_baseline_filter_list_24),
+                                        imageVector = Icons.Default.FilterList,
                                         contentDescription = null,
                                     )
                                 },

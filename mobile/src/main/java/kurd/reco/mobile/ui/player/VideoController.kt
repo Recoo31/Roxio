@@ -31,8 +31,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.OutlinedFlag
+import androidx.compose.material.icons.outlined.AspectRatio
+import androidx.compose.material.icons.outlined.FastForward
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.VideoSettings
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -118,7 +124,7 @@ fun VideoController(
     )
     var isPressing by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
-    val subtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 16f)
+    val subtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 21f)
     var isBuffering by remember { mutableStateOf(true) }
     var showSeekIndicator by remember { mutableStateOf(false) }
     var totalDragAmount by remember { mutableFloatStateOf(0f) }
@@ -372,7 +378,7 @@ fun VideoController(
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                         Text("2x", color = Color.White)
-                        Icon(painterResource(R.drawable.baseline_fast_forward_24), contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.FastForward, contentDescription = null, tint = Color.White)
                     }
                 }
             }
@@ -412,6 +418,9 @@ fun VideoController(
                         IconButton(
                             onClick = {
                                 exoPlayer.release()
+                                Global.clickedItem = null
+                                Global.clickedItemRow = null
+                                Global.fetchForPlayer = false
                                 (context as? Activity)?.finishAndRemoveTask()
                             },
                             modifier = Modifier.align(Alignment.TopStart)
@@ -450,7 +459,7 @@ fun VideoController(
                         if (Global.clickedItem?.isLiveTv == true) {
                             IconButton(onClick = { showErrorDialog = true }) {
                                 Icon(
-                                    painter = painterResource(R.drawable.outline_flag_24),
+                                    Icons.Outlined.Flag,
                                     contentDescription = null,
                                     tint = Color.White
                                 )
@@ -490,7 +499,7 @@ fun VideoController(
                             }
                         }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_aspect_ratio_24),
+                                Icons.Outlined.AspectRatio,
                                 contentDescription = null,
                                 tint = Color.White,
                             )
@@ -498,7 +507,7 @@ fun VideoController(
 
                         IconButton(onClick = { showSettingsDialog = !showSettingsDialog }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.rounded_video_settings_24),
+                                Icons.Outlined.VideoSettings,
                                 contentDescription = null,
                                 tint = Color.White,
                             )

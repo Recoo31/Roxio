@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.Brightness5
+import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -132,9 +136,9 @@ fun LevelOverlay(modifier: Modifier = Modifier, isVolume: Boolean, level: String
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val icon = if (isVolume) R.drawable.outline_volume_up_24 else R.drawable.outline_brightness_7_24
+            val icon = if (isVolume) Icons.AutoMirrored.Outlined.VolumeUp else Icons.Outlined.Brightness5
 
-            Icon(painter = painterResource(icon), contentDescription = null)
+            Icon(icon, contentDescription = null)
             Text(text = level, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
         }
     }

@@ -15,7 +15,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurd.reco.core.AppLog
+import kurd.reco.core.ResourceState
+import kurd.reco.core.api.Cache.checkCache
+import kurd.reco.core.api.Cache.saveToCache
+import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.plugin.PluginManager
 
 
@@ -24,7 +30,9 @@ enum class FilterType {
 }
 
 class SearchVM(private val pluginManager: PluginManager) : ViewModel() {
+    private val TAG = "SearchVM"
     val searchFieldState = TextFieldState()
+    val clickedItem = ResourceState<PlayDataModel>(Resource.Loading)
 
     @OptIn(FlowPreview::class)
     val searchTextState = snapshotFlow { searchFieldState.text }
@@ -55,5 +63,39 @@ class SearchVM(private val pluginManager: PluginManager) : ViewModel() {
                 _isLoading.value = false
             }
         }
+    }
+
+    fun getUrl(id: Any, title: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val useCache = pluginManager.getSelectedPlugin().useCache
+            try {
+                if (useCache) {
+                    val resp = checkCache(id.toString())
+                    if (resp.status) {
+                        AppLog.d(TAG, "getUrl: Cache found")
+                        clickedItem.setSuccess(resp.data!!.convertPlayDataModel())
+                    } else {
+                        AppLog.i(TAG, "getUrl: Cache not found")
+                        pluginManager.getSelectedPlugin().getUrl(id, title).also {
+                            clickedItem.update(it)
+                            if (it is Resource.Success) {
+                                saveToCache(id.toString(), it.value)
+                            }
+                        }
+                    }
+                } else {
+                    AppLog.i(TAG, "getUrl: Doesn't using cache")
+                    pluginManager.getSelectedPlugin().getUrl(id, title).also {
+                        clickedItem.update(it)
+                    }
+                }
+            } catch (t: Throwable) {
+                clickedItem.handleError(t, TAG)
+            }
+        }
+    }
+
+    fun clearClickedItem() {
+        clickedItem.update(Resource.Loading)
     }
 }

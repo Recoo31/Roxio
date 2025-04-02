@@ -8,7 +8,7 @@
 
 // Critical API data that will be embedded in the binary
 static const char* ENC_API_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/bmrNnZy6kQP4loOsh6T6Br2i2itjMfjdOlFpOJrnc0bvVaMaK6YriI0m0nEWbTZ54=";
-static const char* ENC_PLUGIN_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/Z6lAm199kzu8dsrEjGSbcUtQivaBnGiNxjq0fWA1m/kWt8S25RtWAqSCErUMsa/V+0M1sJXJFdAle0qmTeM/wD";
+static const char* ENC_PLUGIN_URL = "eT+HecDjd4Z0VpLCjNbCJRmpea/pjx5pi0uV6zlNp/adu2bJnma9Uh4fKJemF+rJnUTEotSQQkpUDuoNzVnYm7QzWwlckV0CV7SqZN4z/AM=";
 
 void th(JNIEnv *env, const char* message) {
     jclass throwableClass = env->FindClass("java/lang/Throwable");

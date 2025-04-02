@@ -57,7 +57,7 @@ class SettingsDataStore(private val context: Context) {
 
     val subtitleSize: Flow<Float> = context.dataStore.data
         .map {
-            it[SUBTITLE_SIZE] ?: 12f
+            it[SUBTITLE_SIZE] ?: 21f
         }
 
     fun setSubtitleSize(size: Float) = savePreference(SUBTITLE_SIZE, size)

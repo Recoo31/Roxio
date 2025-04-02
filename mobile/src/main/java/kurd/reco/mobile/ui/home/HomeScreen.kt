@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -52,6 +54,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kurd.reco.core.Global
+import kurd.reco.core.Global.errorModel
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.HomeItemModel
@@ -79,7 +82,6 @@ fun HomeScreenRoot(
     pluginManager: PluginManager = koinInject(),
     navigator: DestinationsNavigator
 ) {
-    var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
     val movieList by viewModel.moviesList.state.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -130,7 +132,6 @@ fun HomeScreen(
     val externalPlayer by settingsDataStore.externalPlayer.collectAsState("")
     val watchedItems by watchedItemDao.getAllWatchedItems().collectAsState(emptyList())
 
-    var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
     var isClicked by remember { mutableStateOf(false) }
     val isThereSeeMore = remember { viewModel.isThereSeeMore() }
     val lazyListState = rememberLazyListState()
@@ -211,7 +212,7 @@ fun HomeScreen(
                         }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.arrow_right),
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = "See More",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -319,7 +320,7 @@ fun HomeScreen(
                     }
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.arrow_right),
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "See More",
                         tint = MaterialTheme.colorScheme.primary
                     )

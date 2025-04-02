@@ -7,6 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Audiotrack
+import androidx.compose.material.icons.outlined.Cloud
+import androidx.compose.material.icons.outlined.Hd
+import androidx.compose.material.icons.outlined.Subtitles
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -52,19 +57,19 @@ fun SettingsDialog(
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.outlinedCardColors().copy(containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
         ) {
-            VideoSettingItem(R.drawable.cloud, stringResource(R.string.sources_settings)) {
+            VideoSettingItem(Icons.Outlined.Cloud, stringResource(R.string.sources_settings)) {
                 selectedSetting = "Sources"
                 onSettingsDismiss = false
             }
-            VideoSettingItem(R.drawable.hd_icon, stringResource(R.string.quality_settings)) {
+            VideoSettingItem(Icons.Outlined.Hd, stringResource(R.string.quality_settings)) {
                 selectedSetting = "Quality"
                 onSettingsDismiss = false
             }
-            VideoSettingItem(R.drawable.audio, stringResource(R.string.audio_settings)) {
+            VideoSettingItem(Icons.Outlined.Audiotrack, stringResource(R.string.audio_settings)) {
                 selectedSetting = "Audio"
                 onSettingsDismiss = false
             }
-            VideoSettingItem(R.drawable.subtitles, stringResource(R.string.subtitle_settings)) {
+            VideoSettingItem(Icons.Outlined.Subtitles, stringResource(R.string.subtitle_settings)) {
                 selectedSetting = "Subtitle"
                 onSettingsDismiss = false
             }

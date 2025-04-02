@@ -258,7 +258,7 @@ fun MoviesRowItemText(
             modifier = modifier
                 .alpha(movieNameAlpha)
                 .fillMaxWidth()
-                .padding(top = 16.dp),
+                .padding(top = 16.dp, bottom = 8.dp),
         )
     }
 }
