@@ -21,7 +21,13 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,6 +47,25 @@ fun VideoPlayerBottom(
     duration: Long
 ) {
     val interaction = remember { MutableInteractionSource() }
+    var sliderPosition by remember { mutableFloatStateOf(currentTime.toFloat()) }
+    var isSliding by remember { mutableStateOf(false) }
+
+    // Update slider position when not sliding
+    LaunchedEffect(currentTime) {
+        if (!isSliding) {
+            sliderPosition = currentTime.toFloat()
+        }
+    }
+
+    val onSeekBarValueChange: (Float) -> Unit = { value ->
+        sliderPosition = value
+        isSliding = true
+    }
+
+    val onSeekBarValueChangeFinished: () -> Unit = {
+        isSliding = false
+        exoPlayer.seekTo(sliderPosition.toLong())
+    }
 
     Box(
         modifier = Modifier
@@ -55,7 +80,7 @@ fun VideoPlayerBottom(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TimeDisplay(currentTime)
+                TimeDisplay(if (isSliding) sliderPosition.toLong() else currentTime)
 
                 if (duration > 0) {
                     val trackHeight = 2.dp
@@ -65,8 +90,9 @@ fun VideoPlayerBottom(
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp, end = 8.dp),
-                        value = currentTime.toFloat(),
-                        onValueChange = { exoPlayer.seekTo(it.toLong()) },
+                        value = sliderPosition,
+                        onValueChange = onSeekBarValueChange,
+                        onValueChangeFinished = onSeekBarValueChangeFinished,
                         valueRange = 0f..duration.toFloat(),
                         interactionSource = interaction,
                         colors = SliderDefaults.colors(

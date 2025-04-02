@@ -203,8 +203,8 @@ fun HomeScreen(
 
                     IconButton(
                         modifier = Modifier
-                            .padding(end = 16.dp)
-                            .size(24.dp),
+                            .padding(end = 4.dp)
+                            .size(36.dp),
                         onClick = {
                             viewModel.setViewAll(items.map { it.toHomeItemModel() })
                             categoryTitle = context.getString(R.string.continue_watching)
@@ -213,6 +213,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            modifier = Modifier.size(36.dp),
                             contentDescription = "See More",
                             tint = MaterialTheme.colorScheme.primary
                         )
@@ -307,8 +308,8 @@ fun HomeScreen(
 
                 IconButton(
                     modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(24.dp),
+                        .padding(end = 4.dp)
+                        .size(36.dp),
                     onClick = {
                         if (isThereSeeMore && movie.id != null) {
                             viewModel.getViewAll(movie.id!!)
@@ -321,6 +322,7 @@ fun HomeScreen(
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        modifier = Modifier.size(36.dp),
                         contentDescription = "See More",
                         tint = MaterialTheme.colorScheme.primary
                     )

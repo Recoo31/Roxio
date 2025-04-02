@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,7 +28,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -59,6 +62,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -92,6 +96,19 @@ import kurd.reco.mobile.ui.player.composables.VideoSeekControls
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
+
+// Helper function to format time
+private fun formatDuration(millis: Long): String {
+    val hours = TimeUnit.MILLISECONDS.toHours(millis)
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+    return if (hours > 0) {
+        String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
+}
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -124,7 +141,7 @@ fun VideoController(
     )
     var isPressing by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
-    val subtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 21f)
+    val subtitleSize by settingsDataStore.subtitleSize.collectAsState(initial = 16f)
     var isBuffering by remember { mutableStateOf(true) }
     var showSeekIndicator by remember { mutableStateOf(false) }
     var totalDragAmount by remember { mutableFloatStateOf(0f) }
@@ -338,27 +355,38 @@ fun VideoController(
                 }
         ) {
             if (!showControls && !isLocked) {
-                GestureAdjuster()
+                GestureAdjuster(modifier = Modifier.fillMaxSize())
             }
 
             AnimatedVisibility(
                 visible = showSeekIndicator && !showControls,
-                modifier = Modifier.align(Alignment.Center),
-                enter = slideInVertically { it } + fadeIn(),
-                exit = slideOutVertically { it } + fadeOut()
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(y = (-80).dp),
+                enter = fadeIn(animationSpec = tween(150)),
+                exit = fadeOut(animationSpec = tween(150))
             ) {
+                val scale by animateFloatAsState(
+                    targetValue = if (showSeekIndicator) 1f else 0.8f,
+                    animationSpec = tween(durationMillis = 200), label = "SeekTextScale"
+                )
+
                 Box(
                     modifier = Modifier
-                        .background(
-                            color = Color.Black.copy(alpha = 0.5f),
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .padding(horizontal = 24.dp, vertical = 12.dp),
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
+                    val currentPosition = exoPlayer.currentPosition
+                    val targetTimeMillis = (currentPosition + (seekSeconds * 1000L)).coerceAtLeast(0L)
+                    val formattedTargetTime = formatDuration(targetTimeMillis)
+                    val formattedSeekSeconds = "${if (seekSeconds >= 0) "+" else ""}${seekSeconds}s"
+
                     Text(
-                        text = "${if (seekSeconds > 0) "+" else ""}${seekSeconds}s",
-                        style = MaterialTheme.typography.titleMedium
+                        text = "$formattedTargetTime [$formattedSeekSeconds]",
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            color = Color.White
+                        ),
+                        modifier = Modifier.graphicsLayer(scaleX = scale, scaleY = scale)
                     )
                 }
             }
@@ -442,6 +470,7 @@ fun VideoController(
                                     text = item.title!!,
                                     style = MaterialTheme.typography.titleMedium.copy(color = Color.White),
                                     overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
                                 )
                             }
                             Text(
