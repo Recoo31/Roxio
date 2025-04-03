@@ -99,10 +99,6 @@ fun VideoPlaybackHandler(
                 Global.playDataModel = it
                 showMultiSelect = false
                 clearClickedItem()
-                
-                val intent = Intent(context, PlayerActivity::class.java)
-                context.startActivity(intent)
-                clearClickedItem()
                 onSuccess()
             }
         }
