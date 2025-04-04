@@ -142,6 +142,42 @@ fun DetailScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorModel by remember { mutableStateOf(ErrorModel("", false)) }
 
+    val onPlayClick = {
+        isLoading = true
+        Global.clickedItem = HomeItemModel(
+            id = item.id,
+            title = item.title,
+            poster = item.image,
+            isSeries = false,
+            isLiveTv = false
+        )
+        viewModel.getUrl(item.id, item.title)
+    }
+
+    val onEpisodeClick: (SeriesItem) -> Unit = { clicked ->
+        isLoading = true
+        viewModel.getUrl(clicked.id, clicked.title)
+
+        val episodes = viewModel.seriesList?.get(selectedSeason)?.episodes ?: emptyList()
+        val contents = episodes.map {
+            HomeItemModel(
+                id = it.id,
+                title = it.title,
+                poster = it.poster,
+                isSeries = true,
+                isLiveTv = false
+            )
+        }
+        Global.clickedItem = HomeItemModel(
+            id = clicked.id,
+            title = clicked.title,
+            poster = clicked.poster,
+            isSeries = true,
+            isLiveTv = false
+        )
+        Global.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
+        selectedEpisode = clicked
+    }
 
     if (errorModel.isError) {
         ErrorShower(
@@ -217,17 +253,7 @@ fun DetailScreen(
                                 }
                             } else {
                                 Button(
-                                    onClick = {
-                                        isLoading = true
-                                        Global.clickedItem = HomeItemModel(
-                                            id = item.id,
-                                            title = item.title,
-                                            poster = item.image,
-                                            isSeries = false,
-                                            isLiveTv = false
-                                        )
-                                        viewModel.getUrl(item.id, item.title)
-                                    },
+                                    onClick = onPlayClick,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp)
@@ -247,26 +273,7 @@ fun DetailScreen(
                             val episodes = season[selectedSeason].episodes
                             items(episodes) { episode ->
                                 SeasonItem(item = episode) { clicked ->
-                                    isLoading = true
-                                    viewModel.getUrl(clicked.id, clicked.title)
-
-                                    val contents = episodes.map {
-                                        HomeItemModel(
-                                            id = it.id,
-                                            title = it.title,
-                                            poster = it.poster,
-                                            isSeries = true,
-                                            isLiveTv = false
-                                        )
-                                    }
-                                    Global.clickedItem = HomeItemModel(
-                                        id = clicked.id,
-                                        title = clicked.title,
-                                        poster = clicked.poster,
-                                        isSeries = true,
-                                        isLiveTv = false
-                                    )
-                                    Global.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
+                                    onEpisodeClick(clicked)
                                     selectedEpisode = episode
                                 }
                             }
@@ -309,50 +316,20 @@ fun DetailScreen(
 
                         items(episodes) { episode ->
                             SeasonItem(item = episode) { clicked ->
-                                isLoading = true
-                                viewModel.getUrl(clicked.id, clicked.title)
-
-                                val contents = episodes.map {
-                                    HomeItemModel(
-                                        id = it.id,
-                                        title = it.title,
-                                        poster = it.poster,
-                                        isSeries = true,
-                                        isLiveTv = false
-                                    )
-                                }
-                                Global.clickedItem = HomeItemModel(
-                                    id = clicked.id,
-                                    title = clicked.title,
-                                    poster = clicked.poster,
-                                    isSeries = true,
-                                    isLiveTv = false
-                                )
-                                Global.clickedItemRow = HomeScreenModel(context.getString(R.string.episodes), contents)
-                                selectedEpisode = episode
+                                onEpisodeClick(clicked)
                             }
                         }
                     }
                 } else {
                     item {
                         Button(
-                            onClick = {
-                                isLoading = true
-                                Global.clickedItem = HomeItemModel(
-                                    id = item.id,
-                                    title = item.title,
-                                    poster = item.image,
-                                    isSeries = false,
-                                    isLiveTv = false
-                                )
-                                viewModel.getUrl(item.id, item.title)
-                            },
+                            onClick = onPlayClick,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         ) {
                             Text(
-                                text = "Play",
+                                text = stringResource(R.string.play_text),
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -414,7 +391,7 @@ fun DetailScreen(
             viewModel.clearClickedItem()
             isLoading = false
         },
-        onSuccess = { isLoading = false },
+        onDone = { isLoading = false },
         customTitle = if (item.isSeries) "${item.title} | ${selectedEpisode?.title}" else item.title
     )
 

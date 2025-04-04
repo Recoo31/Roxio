@@ -21,7 +21,7 @@ android {
         minSdk = 22
         targetSdk = 35
         versionCode = 3
-        versionName = "1.2"
+        versionName = "1.3"
         vectorDrawables {
             useSupportLibrary = true
         }

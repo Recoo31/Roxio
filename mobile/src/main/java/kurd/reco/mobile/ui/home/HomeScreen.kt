@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,7 +67,6 @@ import kurd.reco.mobile.common.CategorySheet
 import kurd.reco.mobile.common.ErrorShower
 import kurd.reco.mobile.common.FavoriteDialog
 import kurd.reco.mobile.common.MovieCard
-import kurd.reco.mobile.common.MovieCategorySelector
 import kurd.reco.mobile.common.ShimmerMovieCard
 import kurd.reco.mobile.common.VideoPlaybackHandler
 import kurd.reco.core.data.ErrorModel
@@ -387,7 +385,7 @@ fun HomeScreen(
         isClicked = isClicked,
         externalPlayer = externalPlayer,
         clearClickedItem = { viewModel.clearClickedItem() },
-        onSuccess = { isClicked = false },
+        onDone = { isClicked = false },
     )
 
     if (fetchForPlayer) {

@@ -1,5 +1,6 @@
 package kurd.reco.roxio.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -35,6 +37,7 @@ fun FavoriteDialog(
     val isFavorited = favoriteDao.getFavoriteById(item.id.toString()) != null
 
     TvAlertDialog(
+        modifier = Modifier.background(Color.Black.copy(alpha = 0.6f)),
         onDismiss = onDismiss,
         title = if (isFavorited) stringResource(R.string.delete_fav) else stringResource(R.string.add_fav),
         message = {

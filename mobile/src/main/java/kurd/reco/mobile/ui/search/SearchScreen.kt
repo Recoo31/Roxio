@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -57,11 +56,9 @@ import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootD
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.valentinilk.shimmer.shimmer
 import kurd.reco.core.Global
-import kurd.reco.core.Global.errorModel
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.model.HomeItemModel
 import kurd.reco.mobile.R
-import kurd.reco.core.data.ErrorModel
 import kurd.reco.mobile.common.VideoPlaybackHandler
 import org.koin.compose.koinInject
 
@@ -212,7 +209,7 @@ fun SearchScreen(
             isClicked = isClicked,
             externalPlayer = externalPlayer,
             clearClickedItem = { viewModel.clearClickedItem() },
-            onSuccess = { isClicked = false }
+            onDone = { isClicked = false }
         )
     }
 }

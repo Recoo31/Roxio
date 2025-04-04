@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +48,7 @@ fun CustomTextField(
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     focusRequester: FocusRequester = remember { FocusRequester() },
+    surfaceContainerColor: Color = MaterialTheme.colorScheme.surface,
     leadingIcon: @Composable (() -> Unit)? = null,
     onFocusChange: ((Boolean) -> Unit)? = null,
 ) {
@@ -57,7 +59,10 @@ fun CustomTextField(
         shape = ClickableSurfaceDefaults.shape(shape = ShapeDefaults.ExtraSmall),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.1f),
         tonalElevation = 2.dp,
-        onClick = { focusRequester.requestFocus() }
+        onClick = { focusRequester.requestFocus() },
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = surfaceContainerColor,
+        )
     ) {
         Row(
             modifier = Modifier
@@ -86,7 +91,7 @@ fun CustomTextField(
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions,
                     singleLine = singleLine,
-                    maxLines = maxLines
+                    maxLines = maxLines,
                 )
 
                 if (value.isEmpty() && !isFocused) {

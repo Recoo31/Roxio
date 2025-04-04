@@ -83,7 +83,7 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
                         is Resource.Success -> {
                             val data = response.value
                             val newItems = data.items
-                            hasMore = data.hasMore
+                            hasMore = newItems.isNotEmpty()
                             currentPage = data.nextPage ?: (currentPage + 1)
                             itemDirection = data.itemDirection
 
@@ -111,7 +111,10 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
 
                             Resource.Success(currentItems)
                         }
-                        is Resource.Failure -> response
+                        is Resource.Failure -> {
+                            hasMore = false
+                            response
+                        }
                         Resource.Loading -> Resource.Loading
                     }
                 }.getOrElse {

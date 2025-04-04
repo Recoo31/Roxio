@@ -13,6 +13,7 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
     val isDarkModeEnabled by settingsDataStore.darkThemeEnabled.collectAsState(false)
     val isMaterialThemeEnabled by settingsDataStore.materialThemeEnabled.collectAsState(false)
     val showTitleEnabled by settingsDataStore.showTitleEnabled.collectAsState(true)
+    val showMorePluginsEnabled by settingsDataStore.showMorePluginsEnabled.collectAsState(false)
     //val useVpnEnabled by settingsDataStore.useVpnEnabled.collectAsState(false)
 
     SettingCard(
@@ -34,6 +35,14 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
         description = stringResource(R.string.show_title_desc),
         isChecked = showTitleEnabled,
         onCheckedChange = { settingsDataStore.setShowTitle(it) }
+    )
+
+    SettingCard(
+        title = "Show More Plugins",
+        isChecked = showMorePluginsEnabled,
+        onClick = {
+            settingsDataStore.showMorePlugins(!showMorePluginsEnabled)
+        }
     )
 
 //    SettingCard(

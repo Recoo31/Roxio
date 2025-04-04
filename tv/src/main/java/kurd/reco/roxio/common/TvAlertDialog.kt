@@ -27,6 +27,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun TvAlertDialog(
+    modifier: Modifier = Modifier,
     title: String,
     message: @Composable () -> Unit,
     onConfirm: () -> Unit,
@@ -38,9 +39,8 @@ fun TvAlertDialog(
     BackHandler(onBack = onDismiss)
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.6f)),
+        modifier = modifier
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Surface(

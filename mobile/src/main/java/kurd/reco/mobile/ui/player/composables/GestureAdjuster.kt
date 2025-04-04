@@ -144,10 +144,6 @@ fun LevelOverlay(modifier: Modifier = Modifier, isVolume: Boolean, level: Float)
     ) {
         Column(
             modifier = Modifier
-                .background(
-                    Color.Black.copy(alpha = 0.5f),
-                    shape = MaterialTheme.shapes.medium
-                )
                 .padding(vertical = 16.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)

@@ -39,11 +39,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.data.db.plugin.Plugin
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.mobile.R
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 private val TAG = "PluginBottomSheet"
 
@@ -51,15 +53,19 @@ private val TAG = "PluginBottomSheet"
 fun PluginDialog(
     viewModel: MainVM = koinViewModel(),
     pluginManager: PluginManager = koinViewModel(),
+    settingsDataStore: SettingsDataStore = koinInject(),
     onDismiss: () -> Unit
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var isDeleteMode by remember { mutableStateOf(false) }
-    var showHiddenPlugins by remember { mutableStateOf(false) }
     var pluginToDelete by remember { mutableStateOf<Plugin?>(null) }
+
     val textTitle = if (isDeleteMode) stringResource(R.string.delete_plugin) else stringResource(R.string.select_plugin)
+
+    val showMorePluginsEnabled by settingsDataStore.showMorePluginsEnabled.collectAsState(false)
     val pluginsState by pluginManager.getAllPluginsFlow().collectAsState(initial = pluginManager.getAllPlugins())
-    var plugins = pluginsState.filter { it.active && (it.image != null || showHiddenPlugins) }
+
+    var plugins = pluginsState.filter { it.active && (it.image != null || showMorePluginsEnabled) }
 
     if (showAddDialog) {
         DownloadDialog(viewModel) { showAddDialog = false }
@@ -105,14 +111,14 @@ fun PluginDialog(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_plugin))
                     }
-                    IconButton(
-                        onClick = { showHiddenPlugins = !showHiddenPlugins },
-                    ) {
-                        Icon(
-                            if (showHiddenPlugins) Icons.Outlined.RemoveRedEye else Icons.Default.RemoveRedEye,
-                            contentDescription = null
-                        )
-                    }
+//                    IconButton(
+//                        onClick = { settingsDataStore.showMorePlugins(!showMorePluginsEnabled) },
+//                    ) {
+//                        Icon(
+//                            if (showMorePluginsEnabled) Icons.Outlined.RemoveRedEye else Icons.Default.RemoveRedEye,
+//                            contentDescription = null
+//                        )
+//                    }
                 }
 
                 LazyVerticalGrid(
@@ -151,7 +157,7 @@ fun PluginDialog(
                                         .padding(8.dp)
                                         .size(64.dp)
                                 )
-                            } else if (showHiddenPlugins) {
+                            } else if (showMorePluginsEnabled) {
                                 Text(
                                     modifier = Modifier.padding(8.dp),
                                     text = plugin.name,

@@ -146,8 +146,7 @@ fun DiscoverScreen(
                 hasFilters = discoverFilters.isNotEmpty(),
                 onCategorySelected = viewModel::selectCategory,
                 onSubCategorySelected = viewModel::selectSubCategory,
-                onFilterClick = { showFilterMenu = true },
-                onNavigateBack = { navigator.navigateUp() }
+                onFilterClick = { showFilterMenu = true }
             )
         }
 
@@ -201,8 +200,7 @@ private fun DiscoverHeader(
     hasFilters: Boolean,
     onCategorySelected: (DiscoverCategory) -> Unit,
     onSubCategorySelected: (DiscoverSubCategory) -> Unit,
-    onFilterClick: () -> Unit,
-    onNavigateBack: () -> Unit
+    onFilterClick: () -> Unit
 ) {
     val categoriesListState = rememberLazyListState()
     val subCategoriesListState = rememberLazyListState()
@@ -232,11 +230,6 @@ private fun DiscoverHeader(
     Column {
         TopAppBar(
             title = { Text("Discover") },
-            navigationIcon = {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-            },
             actions = {
                 if (hasFilters) {
                     IconButton(onClick = onFilterClick) {

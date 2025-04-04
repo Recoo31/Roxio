@@ -103,6 +103,7 @@ class MainActivity : ComponentActivity() {
                 var currentPlugin by homeVM.selectedPlugin
 
                 LaunchedEffect(Unit) {
+                    mainVM.checkAppUpdate(context)
                     currentPlugin = lastPlugin
                 }
 
@@ -144,10 +145,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-
-                    LaunchedEffect(Unit) {
-                        mainVM.checkAppUpdate(context)
-                    }
 
                     if (mainVM.showUpdateDialog) {
                         AppUpdateDialog(mainVM) {

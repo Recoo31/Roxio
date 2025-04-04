@@ -24,6 +24,7 @@ class SettingsDataStore(private val context: Context) {
         val SHOW_TITLE = booleanPreferencesKey("show_title")
         val USE_VPN = booleanPreferencesKey("use_vpn")
         val FORCE_HIGHEST_QUALITY = booleanPreferencesKey("force_highest_quality")
+        val SHOW_MORE_PLUGINS = booleanPreferencesKey("show_more_plugins")
     }
 
     private fun <T> savePreference(key: Preferences.Key<T>, value: T) {
@@ -80,4 +81,9 @@ class SettingsDataStore(private val context: Context) {
         .map { it[FORCE_HIGHEST_QUALITY] ?: true }
 
     fun setForceHighestQuality(enabled: Boolean) = savePreference(FORCE_HIGHEST_QUALITY, enabled)
+
+    val showMorePluginsEnabled: Flow<Boolean> = context.dataStore.data
+        .map { it[SHOW_MORE_PLUGINS] ?: false }
+
+    fun showMorePlugins(enabled: Boolean) = savePreference(SHOW_MORE_PLUGINS, enabled)
 }

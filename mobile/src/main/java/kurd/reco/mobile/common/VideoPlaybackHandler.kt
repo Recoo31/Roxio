@@ -32,7 +32,7 @@ fun VideoPlaybackHandler(
     isClicked: Boolean,
     externalPlayer: String = "",
     clearClickedItem: () -> Unit,
-    onSuccess: () -> Unit = {},
+    onDone: () -> Unit = {},
     customTitle: String? = null
 ) {
     val context = LocalContext.current
@@ -62,7 +62,7 @@ fun VideoPlaybackHandler(
                         clearClickedItem()
                     }
                 }
-                onSuccess()
+                onDone()
             }
         }
 
@@ -70,6 +70,7 @@ fun VideoPlaybackHandler(
             LaunchedEffect(clickedItem) {
                 errorModel = ErrorModel(clickedItem.error, true)
                 clearClickedItem()
+                onDone()
             }
         }
 
@@ -99,7 +100,7 @@ fun VideoPlaybackHandler(
                 Global.playDataModel = it
                 showMultiSelect = false
                 clearClickedItem()
-                onSuccess()
+                onDone()
             }
         }
     }
