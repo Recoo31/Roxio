@@ -111,6 +111,16 @@ class MainVM(
     fun downloadPlugins(url: String, context: Context) {
         val uri = if (url.startsWith("http")) url else "https://raw.githubusercontent.com/Recoo31/RoxioPlugins/main/$url.json"
         viewModelScope.launch(Dispatchers.IO) {
+            // Delete old plugins
+            val existingPlugins = pluginDao.getAllPlugins()
+                .filter { it.downloadUrl == "https://raw.githubusercontent.com/Recoo31/Roxio-Test-Plugin/refs/heads/main/version.json" }
+
+            existingPlugins.forEach { plugin ->
+                pluginDao.deletePlugin(plugin.id)
+                File(plugin.filePath).delete()
+            }
+            
+            // Download new plugins
             downloadPlugins(uri, pluginDao, context.filesDir.path)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Plugins Downloaded", Toast.LENGTH_SHORT).show()

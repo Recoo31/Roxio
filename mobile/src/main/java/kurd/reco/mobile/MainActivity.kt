@@ -83,9 +83,8 @@ class MainActivity : ComponentActivity() {
                         context,
                         getString(R.string.downloading_main_plugins),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
-                    downloadMainPlugins(mainVM, context)
+                    ).show()
+                    mainVM.downloadPlugins(PLUGIN_URL, context)
                 }
             }
 
@@ -174,9 +173,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun downloadMainPlugins(viewModel: MainVM, context: Context) {
-        viewModel.downloadPlugins(PLUGIN_URL, context)
-    }
-
 }

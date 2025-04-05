@@ -40,7 +40,33 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
 
     var discoverFilters by mutableStateOf<List<DiscoverFilter>>(emptyList())
 
+    private var currentPluginId: String? = null
+
+    private fun resetState() {
+        categories = emptyList()
+        selectedCategory = null
+        selectedSubCategory = null
+        currentFilter = null
+        discoverFilters = emptyList()
+        currentPage = 1
+        hasMore = false
+        currentItems = emptyList()
+        discoverItems.setLoading()
+    }
+
+    private fun checkAndHandlePluginChange() {
+        val plugin = pluginManager.getLastSelectedPlugin()
+        val pluginId = plugin?.id
+        
+        // Only reset and reload if the plugin has changed
+        if (pluginId != currentPluginId) {
+            resetState()
+            currentPluginId = pluginId
+        }
+    }
+
     fun loadCategories() {
+        checkAndHandlePluginChange()
         try {
             categories = pluginManager.getSelectedPlugin().discoverCategories ?: emptyList()
         } catch (t: Throwable) {
@@ -57,6 +83,11 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
     }
 
     private fun loadDiscoverItems(categoryId: String, subCategoryId: String? = null, filter: String? = null, isLoadMore: Boolean = false) {
+        // Check for plugin changes before loading items
+        if (!isLoadMore) {
+            checkAndHandlePluginChange()
+        }
+        
         if (isLoadMore && (!hasMore || isLoadingMore)) return
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -83,7 +114,7 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
                         is Resource.Success -> {
                             val data = response.value
                             val newItems = data.items
-                            hasMore = newItems.isNotEmpty()
+                            hasMore = data.hasMore
                             currentPage = data.nextPage ?: (currentPage + 1)
                             itemDirection = data.itemDirection
 
