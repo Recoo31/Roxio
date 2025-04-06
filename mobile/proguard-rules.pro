@@ -28,8 +28,10 @@
 -keep class com.lagradost.nicehttp.** { *; }
 -keep class okhttp3.** { *; }
 -keep class com.fasterxml.jackson.** { *; }
+-keep class org.jsoup.** { *; }
+-keep class org.jspecify.annotations.** { *; }
 
-
+-dontwarn org.jspecify.annotations.NullMarked
 -dontwarn com.oracle.svm.core.annotate.Delete
 -dontwarn com.oracle.svm.core.annotate.Substitute
 -dontwarn com.oracle.svm.core.annotate.TargetClass

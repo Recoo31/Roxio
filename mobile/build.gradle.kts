@@ -107,6 +107,7 @@ dependencies {
     // For Http Request
     implementation(libs.nicehttp)
     implementation(libs.jackson.module.kotlin)
+    testImplementation("com.squareup.okhttp3:okhttp-dnsoverhttps:5.0.0-alpha.14")
 
     // Image Loading
     //implementation(libs.landscapist.glide)
