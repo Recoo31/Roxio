@@ -46,9 +46,9 @@ class HomeVM(private val pluginManager: PluginManager) : ViewModel() {
                         pluginManager.getSelectedPlugin().getAccessToken(it)
                     }
                 }
-                Resource.Success(emptyList<HomeScreenModel>())
+                //Resource.Success(emptyList<HomeScreenModel>())
 
-                //pluginManager.getSelectedPlugin().getHomeScreenItems()
+                pluginManager.getSelectedPlugin().getHomeScreenItems()
             }.getOrElse {
                 val message = it.localizedMessage
                 if (message == "StandaloneCoroutine was cancelled") return@getOrElse Resource.Loading
