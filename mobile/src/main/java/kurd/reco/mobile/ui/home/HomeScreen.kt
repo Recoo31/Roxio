@@ -70,7 +70,7 @@ import kurd.reco.mobile.common.MovieCard
 import kurd.reco.mobile.common.ShimmerMovieCard
 import kurd.reco.mobile.common.VideoPlaybackHandler
 import kurd.reco.core.data.ErrorModel
-import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
+import kurd.reco.mobile.common.MultiSourceDialog
 import org.koin.compose.koinInject
 
 @Destination<RootGraph>
@@ -184,6 +184,7 @@ fun HomeScreen(
             if (watchedItems.isNotEmpty()) {
                 val items = watchedItems
                     .filter { it.pluginId == Global.currentPlugin?.id }
+                    .reversed()
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

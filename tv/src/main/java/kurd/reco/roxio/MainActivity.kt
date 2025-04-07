@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                     if (currentPlugin == null) {
                         currentPlugin = lastPlugin
                     }
-                    mainVM.checkAppUpdate(context)
+                    mainVM.checkAppUpdate(context, isMobile = false)
                 }
 
                 LaunchedEffect(lastPlugin) {

@@ -23,7 +23,6 @@ import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.data.ErrorModel
 import kurd.reco.mobile.PlayerActivity
-import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
 import kurd.reco.mobile.ui.player.openVideoWithSelectedPlayer
 
 @Composable

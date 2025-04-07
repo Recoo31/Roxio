@@ -40,7 +40,7 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
     SettingCard(
         title = "Show More Plugins",
         isChecked = showMorePluginsEnabled,
-        onClick = {
+        onCheckedChange = {
             settingsDataStore.showMorePlugins(!showMorePluginsEnabled)
         }
     )

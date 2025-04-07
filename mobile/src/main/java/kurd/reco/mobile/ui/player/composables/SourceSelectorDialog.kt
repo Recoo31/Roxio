@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.media3.exoplayer.ExoPlayer
 import kurd.reco.core.Global
+import kurd.reco.core.removeWatermark
 import kurd.reco.mobile.R
 import kurd.reco.mobile.ui.player.createMediaItem
 
@@ -64,7 +65,7 @@ fun SourceSelectorDialog(
                                 onDismiss()
                             }
                         )
-                        Text(text = item.first, modifier = Modifier.padding(4.dp))
+                        Text(text = item.first.removeWatermark(), modifier = Modifier.padding(4.dp))
                     }
                 }
             }

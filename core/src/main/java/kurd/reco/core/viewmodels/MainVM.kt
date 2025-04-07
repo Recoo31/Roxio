@@ -16,8 +16,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kurd.reco.core.api.Api.PLUGIN_URL
 import kurd.reco.core.api.app
-import kurd.reco.core.data.VersionData
+import kurd.reco.core.data.UpdateResponse
 import kurd.reco.core.data.db.plugin.DeletedPlugin
 import kurd.reco.core.data.db.plugin.DeletedPluginDao
 import kurd.reco.core.data.db.plugin.Plugin
@@ -37,18 +38,20 @@ class MainVM(
     var changeLog: List<String> = emptyList()
     private var appLink: String? = null
 
-    private val versionLink = "https://raw.githubusercontent.com/Recoo31/Roxio/refs/heads/master/version.json"
+    private val versionLink = "https://raw.githubusercontent.com/Recoo31/apis/refs/heads/main/version.json"
 
     //var useVpn by mutableStateOf(false)
 
-    fun checkAppUpdate(context: Context) {
+    fun checkAppUpdate(context: Context, isMobile: Boolean) {
         currentVersion = getCurrentAppVersion(context).toDoubleOrNull() ?: return
         viewModelScope.launch {
-            runCatching { app.get(versionLink).parsed<VersionData>() }
+            runCatching { app.get(versionLink).parsed<UpdateResponse>() }
                 .onSuccess { response ->
-                    changeLog = response.changeLog
-                    appLink = response.downloadUrl
-                    if (response.version > currentVersion) showUpdateDialog = true
+                    if (currentVersion < (if (isMobile) response.versions.mobile else response.versions.tv)) {
+                        changeLog = response.changeLog
+                        appLink = if (isMobile) response.downloads.mobile else response.downloads.tv
+                        showUpdateDialog = true
+                    }
                 }
         }
     }
@@ -108,19 +111,24 @@ class MainVM(
         context.startActivity(installIntent)
     }
 
-    fun downloadPlugins(url: String, context: Context) {
-        val uri = if (url.startsWith("http")) url else "https://raw.githubusercontent.com/Recoo31/RoxioPlugins/main/$url.json"
+    fun checkOldPlugins(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Delete old plugins
             val existingPlugins = pluginDao.getAllPlugins()
                 .filter { it.downloadUrl == "https://raw.githubusercontent.com/Recoo31/Roxio-Test-Plugin/refs/heads/main/version.json" }
 
-            existingPlugins.forEach { plugin ->
-                pluginDao.deletePlugin(plugin.id)
-                File(plugin.filePath).delete()
+            if (existingPlugins.isNotEmpty()) {
+                existingPlugins.forEach { plugin ->
+                    pluginDao.deletePlugin(plugin.id)
+                    File(plugin.filePath).delete()
+                }
+                downloadPlugins(PLUGIN_URL, context)
             }
-            
-            // Download new plugins
+        }
+    }
+
+    fun downloadPlugins(url: String, context: Context) {
+        val uri = if (url.startsWith("http")) url else "https://raw.githubusercontent.com/Recoo31/RoxioPlugins/main/$url.json"
+        viewModelScope.launch(Dispatchers.IO) {
             downloadPlugins(uri, pluginDao, context.filesDir.path)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Plugins Downloaded", Toast.LENGTH_SHORT).show()

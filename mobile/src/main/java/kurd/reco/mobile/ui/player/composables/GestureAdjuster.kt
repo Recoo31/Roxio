@@ -103,7 +103,7 @@ fun GestureAdjuster(
                             },
                             onVerticalDrag = { change, dragAmount ->
                                 change.consume()
-                                val volumeChange = dragAmount / 600f
+                                val volumeChange = dragAmount / 500f
                                 volumeLevel = (volumeLevel - volumeChange).coerceIn(0f, 1f)
                                 adjustVolume(context, volumeLevel)
                                 showVolumeOverlay = true
@@ -167,7 +167,7 @@ fun LevelOverlay(modifier: Modifier = Modifier, isVolume: Boolean, level: Float)
             Box(
                 modifier = Modifier
                     .width(6.dp)
-                    .height(128.dp)
+                    .height(144.dp)
                     .background(Color.Gray.copy(alpha = 0.5f), shape = MaterialTheme.shapes.small)
             ) {
                 Box(

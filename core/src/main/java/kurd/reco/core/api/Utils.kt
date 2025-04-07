@@ -9,6 +9,7 @@ import com.lagradost.nicehttp.Requests
 import com.lagradost.nicehttp.ResponseParser
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.EncryptionUtil
+import kurd.reco.core.Global.isDebugMode
 import kurd.reco.core.HttpClient.httpClient
 import kurd.reco.core.SGCheck
 import kurd.reco.core.api.ApiUtils.requests

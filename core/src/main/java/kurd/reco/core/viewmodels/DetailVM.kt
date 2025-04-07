@@ -41,9 +41,9 @@ class DetailVM(private val pluginManager: PluginManager) : ViewModel() {
             try {
                 pluginManager.getSelectedPlugin().getUrl(id, title).also {
                     clickedItem.update(it)
-                    if (Global.currentPlugin?.id?.matches(Regex("filmbol|emby")) == true) {
+/*                    if (Global.currentPlugin?.id?.matches(Regex("filmbol|emby")) == true) {
                         AppLog.i("DetailVM", "$it")
-                    }
+                    }*/
                 }
             } catch (t: Throwable) {
                 clickedItem.handleError(t, TAG)

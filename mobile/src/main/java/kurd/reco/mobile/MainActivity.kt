@@ -87,6 +87,7 @@ class MainActivity : ComponentActivity() {
                     ).show()
                     mainVM.downloadPlugins(PLUGIN_URL, context)
                 }
+                mainVM.checkOldPlugins(context)
             }
 
 
@@ -103,7 +104,7 @@ class MainActivity : ComponentActivity() {
                 var currentPlugin by homeVM.selectedPlugin
 
                 LaunchedEffect(Unit) {
-                    mainVM.checkAppUpdate(context)
+                    mainVM.checkAppUpdate(context, isMobile = true)
                     currentPlugin = lastPlugin
                 }
 

@@ -1,4 +1,4 @@
-package kurd.reco.mobile.ui.detail.composables
+package kurd.reco.mobile.common
 
 import android.content.Context
 import android.content.Intent
@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kurd.reco.core.api.model.PlayDataModel
+import kurd.reco.core.removeWatermark
 import kurd.reco.mobile.PlayerActivity
 
 @Composable
@@ -59,7 +60,7 @@ fun MultiSourceDialog(
                         }
                     )
                     Text(
-                        text = item.first,
+                        text = item.first.removeWatermark(),
                         modifier = Modifier.padding(4.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )

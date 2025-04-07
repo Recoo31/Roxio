@@ -64,7 +64,7 @@ import kurd.reco.mobile.ui.detail.composables.BackImage
 import kurd.reco.mobile.ui.detail.composables.CustomIconButton
 import kurd.reco.mobile.ui.detail.composables.DescriptionSection
 import kurd.reco.mobile.ui.detail.composables.MovieDetails
-import kurd.reco.mobile.ui.detail.composables.MultiSourceDialog
+import kurd.reco.mobile.common.MultiSourceDialog
 import kurd.reco.mobile.ui.detail.composables.SeasonItem
 import kurd.reco.mobile.ui.detail.composables.SeasonsSelector
 import org.koin.androidx.compose.koinViewModel

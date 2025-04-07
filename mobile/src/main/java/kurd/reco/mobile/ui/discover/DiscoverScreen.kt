@@ -26,19 +26,9 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ViewAgenda
-import androidx.compose.material.icons.filled.ViewColumn
-import androidx.compose.material.icons.filled.ViewComfy
-import androidx.compose.material.icons.filled.ViewDay
-import androidx.compose.material.icons.filled.ViewHeadline
-import androidx.compose.material.icons.filled.ViewModule
-import androidx.compose.material.icons.filled.ViewStream
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -72,6 +62,8 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenRootDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kurd.reco.core.AppLog
+import kurd.reco.core.Global
+import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.DiscoverCategory
 import kurd.reco.core.api.model.DiscoverFilter
@@ -81,6 +73,7 @@ import kurd.reco.core.data.ItemDirection
 import kurd.reco.core.viewmodels.DiscoverVM
 import kurd.reco.mobile.R
 import kurd.reco.mobile.common.MovieCard
+import kurd.reco.mobile.common.VideoPlaybackHandler
 import kurd.reco.mobile.ui.rememberForwardingScrollConnection
 import org.koin.compose.koinInject
 
@@ -88,14 +81,18 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscoverScreen(
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    viewModel: DiscoverVM = koinInject(),
+    settingsDataStore: SettingsDataStore = koinInject(),
 ) {
-    val viewModel: DiscoverVM = koinInject()
     val configuration = LocalConfiguration.current.screenWidthDp.dp
     val isWideScreen = configuration > 600.dp
 
-    val categories = viewModel.categories
     val discoverItems by viewModel.discoverItems.state.collectAsState()
+    val clickedItem by viewModel.clickedItem.state.collectAsState()
+    val externalPlayer by settingsDataStore.externalPlayer.collectAsState("")
+
+    val categories = viewModel.categories
     val selectedCategory = viewModel.selectedCategory
     val selectedSubCategory = viewModel.selectedSubCategory
     val discoverFilters = viewModel.discoverFilters
@@ -103,9 +100,10 @@ fun DiscoverScreen(
 
     val gridState = rememberLazyGridState()
     var showFilterMenu by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(false) }
 
     val lazyListState = rememberLazyListState()
-    val nestedScrollConnection = rememberForwardingScrollConnection(lazyListState)
+    val nestedScrollConnection = rememberForwardingScrollConnection(lazyListState, scrollFactor = 0.8f)
 
     // Monitor scroll position for pagination
     val shouldLoadMore = remember {
@@ -145,7 +143,7 @@ fun DiscoverScreen(
         }
     }
 
-    LazyColumn(state = lazyListState) {
+    LazyColumn(state = lazyListState, modifier = Modifier.nestedScroll(nestedScrollConnection)) {
         item {
             DiscoverHeader(
                 categories = categories,
@@ -165,19 +163,25 @@ fun DiscoverScreen(
                 }
                 else -> {
                     DiscoverContent(
-                        modifier = Modifier.nestedScroll(nestedScrollConnection),
                         discoverItems = discoverItems,
                         isLoadingMore = viewModel.isLoadingMore,
                         itemDirection = itemDirection,
                         isWideScreen = isWideScreen,
                         gridState = gridState,
                         onItemClick = { item ->
-                            navigator.navigate(
-                                DetailScreenRootDestination(
-                                    item.id.toString(),
-                                    item.isSeries
+                            isClicked = !isClicked
+
+                            if (item.isLiveTv) {
+                                viewModel.getUrl(item.id, item.title)
+                                Global.clickedItem = item
+                            } else {
+                                navigator.navigate(
+                                    DetailScreenRootDestination(
+                                        item.id.toString(),
+                                        item.isSeries
+                                    )
                                 )
-                            )
+                            }
                         }
                     )
                 }
@@ -185,6 +189,13 @@ fun DiscoverScreen(
         }
     }
 
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isClicked,
+        externalPlayer = externalPlayer,
+        clearClickedItem = { viewModel.clearClickedItem() },
+        onDone = { isClicked = false },
+    )
     // Filter dialog
     if (showFilterMenu) {
         FilterDialog(
@@ -212,7 +223,7 @@ private fun DiscoverHeader(
 ) {
     val categoriesListState = rememberLazyListState()
     val subCategoriesListState = rememberLazyListState()
-    
+
     // Scroll to selected category
     LaunchedEffect(selectedCategory) {
         selectedCategory?.let { category ->
@@ -222,7 +233,7 @@ private fun DiscoverHeader(
             }
         }
     }
-    
+
     // Scroll to selected subcategory
     LaunchedEffect(selectedSubCategory) {
         selectedSubCategory?.let { subCategory ->

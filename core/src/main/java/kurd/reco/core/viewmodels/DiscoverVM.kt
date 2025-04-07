@@ -10,12 +10,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.AppLog
 import kurd.reco.core.ResourceState
+import kurd.reco.core.api.Cache.checkCache
+import kurd.reco.core.api.Cache.saveToCache
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.model.Discover
 import kurd.reco.core.api.model.DiscoverCategory
 import kurd.reco.core.api.model.DiscoverFilter
 import kurd.reco.core.api.model.DiscoverSubCategory
 import kurd.reco.core.api.model.HomeItemModel
+import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.data.ItemDirection
 import kurd.reco.core.plugin.PluginManager
 
@@ -24,6 +27,7 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
 
     var categories by mutableStateOf<List<DiscoverCategory>>(emptyList())
     val discoverItems = ResourceState<List<HomeItemModel>>(Resource.Loading)
+    val clickedItem = ResourceState<PlayDataModel>(Resource.Loading)
 
     var selectedCategory by mutableStateOf<DiscoverCategory?>(null)
     var selectedSubCategory by mutableStateOf<DiscoverSubCategory?>(null)
@@ -192,4 +196,37 @@ class DiscoverVM(private val pluginManager: PluginManager) : ViewModel() {
             )
         }
     }
+
+    fun getUrl(id: Any, title: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val selectedPlugin = pluginManager.getSelectedPlugin()
+            val useCache = selectedPlugin.useCache
+            try {
+                if (useCache) {
+                    val resp = checkCache(id.toString())
+                    if (resp.status) {
+                        AppLog.d(TAG, "getUrl: Cache found")
+                        clickedItem.setSuccess(resp.data!!.convertPlayDataModel())
+                    } else {
+                        AppLog.i(TAG, "getUrl: Cache not found")
+                        selectedPlugin.getUrl(id, title).also {
+                            clickedItem.update(it)
+                            if (it is Resource.Success) {
+                                saveToCache(id.toString(), it.value)
+                            }
+                        }
+                    }
+                } else {
+                    AppLog.i(TAG, "getUrl: Doesn't using cache")
+                    selectedPlugin.getUrl(id, title).also {
+                        clickedItem.update(it)
+                    }
+                }
+            } catch (t: Throwable) {
+                clickedItem.handleError(t, TAG)
+            }
+        }
+    }
+
+    fun clearClickedItem() = clickedItem.update(Resource.Loading)
 } 

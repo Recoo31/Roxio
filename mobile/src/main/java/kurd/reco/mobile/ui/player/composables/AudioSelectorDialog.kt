@@ -23,6 +23,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import kurd.reco.core.removeWatermark
 import kurd.reco.mobile.R
 import kurd.reco.mobile.ui.player.applySelectedTrack
 import kurd.reco.mobile.ui.player.getName
@@ -68,7 +69,7 @@ fun AudioSelectorDialog(
                             }
                         )
                         Text(
-                            text = format.mediaTrackGroup.getName(trackName, index),
+                            text = format.mediaTrackGroup.getName(trackName, index).removeWatermark(),
                             modifier = Modifier.padding(4.dp)
                         )
                     }

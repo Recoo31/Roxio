@@ -70,8 +70,13 @@ object HttpClient {
             if (!isDebugMode && (proxyHost != null && proxyHost.isNotEmpty() || isVpnDetectedSimple())) {
                 exitProcess(0)
             }
-
-            chain.proceed(request)
+            
+            return@addInterceptor try {
+                chain.proceed(request)
+            } catch (t: Exception) {
+                t.printStackTrace()
+                chain.proceed(request)
+            }
         }.build()
 }
 

@@ -25,6 +25,7 @@ import androidx.media3.common.C
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import kurd.reco.core.removeWatermark
 import kurd.reco.mobile.R
 import kurd.reco.mobile.ui.player.applySelectedTrack
 import kurd.reco.mobile.ui.player.getName
@@ -104,7 +105,7 @@ fun SubtitleSelectorDialog(
                                 onDismiss()
                             }
                         )
-                        Text(text = trackGroup.mediaTrackGroup.getName(trackName, index))
+                        Text(text = trackGroup.mediaTrackGroup.getName(trackName, index).removeWatermark())
                     }
                 }
             }
