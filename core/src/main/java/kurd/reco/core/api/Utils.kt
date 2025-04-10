@@ -9,11 +9,12 @@ import com.lagradost.nicehttp.Requests
 import com.lagradost.nicehttp.ResponseParser
 import kotlinx.coroutines.runBlocking
 import kurd.reco.core.EncryptionUtil
+import kurd.reco.core.Global
 import kurd.reco.core.Global.isDebugMode
-import kurd.reco.core.HttpClient.httpClient
 import kurd.reco.core.SGCheck
 import kurd.reco.core.api.ApiUtils.requests
 import kurd.reco.core.api.ApiUtils.requestsWithDpi
+import kurd.reco.core.api.HttpClient.httpClient
 import kotlin.reflect.KClass
 
 sealed class Resource<out T> {
@@ -60,7 +61,8 @@ object ApiUtils {
 }
 
 val app = requests
-val appWithDpi = requestsWithDpi
+val appWithDpi = requestsWithDpi // for plugins
+val localApp = if (Global.platform == "mobile") requestsWithDpi else requests // i dont know its working in tv
 
 object Api {
     private var apiData: Array<String>? = null
@@ -107,4 +109,5 @@ object Api {
     }
     val API_URL = getApiUrl()
     val PLUGIN_URL = getPluginUrl()
+    val ROXIO_API = if (Global.platform == "mobile") API_URL else "$CORS_PROXY/$API_URL"
 }

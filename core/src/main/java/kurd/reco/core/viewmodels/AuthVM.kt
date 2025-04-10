@@ -10,9 +10,10 @@ import kurd.reco.core.ResourceState
 import kurd.reco.core.SGCheck
 import kurd.reco.core.api.Api.API_URL
 import kurd.reco.core.api.Api.CORS_PROXY
+import kurd.reco.core.api.Api.ROXIO_API
 import kurd.reco.core.api.Resource
 import kurd.reco.core.api.app
-import kurd.reco.core.api.appWithDpi
+import kurd.reco.core.api.localApp
 import kurd.reco.core.data.AuthLoginResponse
 import kurd.reco.core.data.AuthTokenResponse
 
@@ -35,7 +36,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = appWithDpi.post("$API_URL/auth/login", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
+                val response = localApp.post("$ROXIO_API/auth/login", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthLoginResponse>()
                 if (response.rememberToken != null) {
                     loginState.setSuccess(response.rememberToken)
                 } else {
@@ -57,7 +58,7 @@ class AuthVM: ViewModel() {
             )
 
             try {
-                val response = appWithDpi.post("$API_URL/auth/token", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthTokenResponse>()
+                val response = localApp.post("$ROXIO_API/auth/token", mapOf("app-md" to appSignature), json = jsonData).parsed<AuthTokenResponse>()
                 if (response.accessToken != null) {
                     accessToken.setSuccess(response.accessToken)
                 } else {

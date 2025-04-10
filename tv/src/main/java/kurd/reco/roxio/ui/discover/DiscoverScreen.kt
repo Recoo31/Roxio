@@ -61,6 +61,7 @@ import kurd.reco.roxio.R
 import kurd.reco.roxio.common.CircularProgressIndicator
 import kurd.reco.roxio.common.FavoriteDialog
 import kurd.reco.roxio.common.MoviesRowItem
+import kurd.reco.roxio.common.VideoPlaybackHandler
 import kurd.reco.roxio.ui.search.FilterMenuSearch
 import org.koin.compose.koinInject
 
@@ -71,19 +72,22 @@ fun DiscoverScreen(
 ) {
     val viewModel: DiscoverVM = koinInject()
 
-    val categories = viewModel.categories
     val discoverItems by viewModel.discoverItems.state.collectAsState()
+    val clickedItem by viewModel.clickedItem.state.collectAsState()
+
+    val categories = viewModel.categories
     val selectedCategory = viewModel.selectedCategory
     val selectedSubCategory = viewModel.selectedSubCategory
     val discoverFilters = viewModel.discoverFilters
     val itemDirection = viewModel.itemDirection
 
+    val focusRequester = remember { FocusRequester() }
+    val gridState = rememberLazyGridState()
+
     var currentFavoriteItem by remember { mutableStateOf<HomeItemModel?>(null) }
     var showFavoriteDialog by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
     var isCategoryHaveFocus by remember { mutableStateOf(false) }
-
-    val gridState = rememberLazyGridState()
+    var isClicked by remember { mutableStateOf(false) }
     var showFilterMenu by remember { mutableStateOf(false) }
 
     val shouldLoadMore = remember {
@@ -236,8 +240,19 @@ fun DiscoverScreen(
                                 index = index,
                                 itemDirection = itemDirection,
                                 onMovieSelected = {
-                                    Global.clickedItem = item
-                                    navigator.navigate(DetailScreenRootDestination(item.id.toString(), item.isSeries))
+                                    isClicked = !isClicked
+
+                                    if (item.isLiveTv) {
+                                        viewModel.getUrl(item.id, item.title)
+                                        Global.clickedItem = item
+                                    } else {
+                                        navigator.navigate(
+                                            DetailScreenRootDestination(
+                                                item.id.toString(),
+                                                item.isSeries
+                                            )
+                                        )
+                                    }
                                 },
                                 onLongClick = {
                                     currentFavoriteItem = it
@@ -266,6 +281,13 @@ fun DiscoverScreen(
             }
         }
     }
+
+    VideoPlaybackHandler(
+        clickedItem = clickedItem,
+        isClicked = isClicked,
+        clearClickedItem = { viewModel.clearClickedItem() },
+        onSuccess = { isClicked = false },
+    )
 
     if (showFavoriteDialog && currentFavoriteItem != null) {
         FavoriteDialog(

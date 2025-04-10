@@ -4,6 +4,7 @@ import kurd.reco.core.AppLog
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.API_URL
 import kurd.reco.core.api.Api.CORS_PROXY
+import kurd.reco.core.api.Api.ROXIO_API
 import kurd.reco.core.api.model.CacheDataModelRoot
 import kurd.reco.core.api.model.DeletedCache
 import kurd.reco.core.api.model.PlayDataModel
@@ -12,9 +13,9 @@ object Cache {
     private val headers = mapOf("Authorization" to "${User.accessToken}")
 
     suspend fun checkCache(id: String): CacheDataModelRoot {
-        val url = "$API_URL/cache/api/getcache/$id"
+        val url = "$ROXIO_API/cache/api/getcache/$id"
         return try {
-            appWithDpi.get(url, headers, timeout = 2L).parsed<CacheDataModelRoot>()
+            localApp.get(url, headers, timeout = 2L).parsed<CacheDataModelRoot>()
         } catch (t: Throwable) {
             t.printStackTrace()
             CacheDataModelRoot(false, null)
@@ -22,7 +23,7 @@ object Cache {
     }
 
     suspend fun saveToCache(id: String, playData: PlayDataModel) {
-        val url = "$API_URL/cache/api/setcache"
+        val url = "$ROXIO_API/cache/api/setcache"
         val requestData = mapOf(
             "id" to id,
             "urls" to playData.urls,
@@ -31,14 +32,14 @@ object Cache {
             "subtitles" to playData.subtitles,
             "stream_headers" to playData.streamHeaders
         )
-        val response = appWithDpi.post(url,  headers, json = requestData)
+        val response = localApp.post(url, headers, json = requestData)
         AppLog.d("Cache", "saveToCache: $response")
     }
 
     suspend fun deleteCache(id: String) {
-        val url = "$API_URL/cache/api/delete/$id"
+        val url = "$ROXIO_API/cache/api/delete/$id"
         try {
-            val response = appWithDpi.get(url, headers).parsed<DeletedCache>()
+            val response = localApp.get(url, headers).parsed<DeletedCache>()
             if (response.status) {
                 AppLog.i("Cache", "Cache cache deleted | $id")
             } else {

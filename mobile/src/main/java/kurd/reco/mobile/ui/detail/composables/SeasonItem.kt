@@ -45,7 +45,9 @@ fun SeasonItem(item: SeriesItem, onClick: (SeriesItem) -> Unit) {
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Box(
                 modifier = Modifier

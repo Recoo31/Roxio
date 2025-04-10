@@ -38,46 +38,11 @@ object Global {
     val isDebugMode = BuildConfig.DEBUG
 
     var errorModel by mutableStateOf(ErrorModel("", false))
+    lateinit var platform: String
 }
 
 object User {
     var accessToken by mutableStateOf<String?>(null)
-}
-
-object HttpClient {
-
-    private fun OkHttpClient.Builder.addQuad9Dns() = (
-            addGenericDns(
-                "https://dns.quad9.net/dns-query",
-                // https://www.quad9.net/service/service-addresses-and-features
-                listOf(
-                    "9.9.9.9",
-                    "149.112.112.112",
-                )
-            ))
-
-    fun httpClient(dpi: Boolean = false): OkHttpClient = OkHttpClient.Builder()
-        .apply {
-            if (dpi) {
-                proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", 8118)))
-                addQuad9Dns()
-            }
-        }
-        .addInterceptor { chain ->
-            val request: Request = chain.request()
-            val proxyHost = System.getProperty("http.proxyHost")
-
-            if (!isDebugMode && (proxyHost != null && proxyHost.isNotEmpty() || isVpnDetectedSimple())) {
-                exitProcess(0)
-            }
-            
-            return@addInterceptor try {
-                chain.proceed(request)
-            } catch (t: Exception) {
-                t.printStackTrace()
-                chain.proceed(request)
-            }
-        }.build()
 }
 
 object SGCheck {

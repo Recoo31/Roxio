@@ -40,8 +40,6 @@ import kurd.reco.core.viewmodels.MainVM
 import kurd.reco.core.SettingsDataStore
 import kurd.reco.core.User
 import kurd.reco.core.api.Api.PLUGIN_URL
-import kurd.reco.core.api.app
-import kurd.reco.core.api.appWithDpi
 import kurd.reco.core.plugin.PluginManager
 import kurd.reco.core.viewmodels.ByeDpiProxyVM
 import kurd.reco.core.viewmodels.HomeVM
@@ -58,6 +56,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             Firebase.crashlytics.isCrashlyticsCollectionEnabled = !Global.isDebugMode
+            Global.platform = "mobile"
 
             val mainVM: MainVM = koinInject()
             val settingsDataStore: SettingsDataStore = koinInject()
