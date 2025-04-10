@@ -1,11 +1,14 @@
 package kurd.reco.mobile.ui.player.composables
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
@@ -44,7 +50,8 @@ import kurd.reco.mobile.ui.player.formatTime
 fun VideoPlayerBottom(
     exoPlayer: ExoPlayer,
     currentTime: Long,
-    duration: Long
+    duration: Long,
+    bufferedPosition: Long
 ) {
     val interaction = remember { MutableInteractionSource() }
     var sliderPosition by remember { mutableFloatStateOf(currentTime.toFloat()) }
@@ -63,9 +70,16 @@ fun VideoPlayerBottom(
     }
 
     val onSeekBarValueChangeFinished: () -> Unit = {
+        if (duration > 0) {
+            exoPlayer.seekTo(sliderPosition.toLong())
+        }
         isSliding = false
-        exoPlayer.seekTo(sliderPosition.toLong())
     }
+
+    val activeTrackColor = Color.White
+    val inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+    val bufferedTrackColor = Color.White.copy(alpha = 0.5f)
+    val thumbColor = Color.White
 
     Box(
         modifier = Modifier
@@ -83,53 +97,61 @@ fun VideoPlayerBottom(
                 TimeDisplay(if (isSliding) sliderPosition.toLong() else currentTime)
 
                 if (duration > 0) {
-                    val trackHeight = 2.dp
+                    val trackHeight = 3.dp
                     val thumbSize = DpSize(15.dp, 15.dp)
+
+                    val sliderValue = if (isSliding) sliderPosition else currentTime.toFloat()
+
+                    val coercedSliderValue = sliderValue.coerceIn(0f, duration.toFloat())
+                    val coercedBufferedValue = bufferedPosition.toFloat().coerceIn(0f, duration.toFloat())
 
                     Slider(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 8.dp, end = 8.dp),
-                        value = sliderPosition,
+                            .padding(horizontal = 8.dp),
+                        value = coercedSliderValue,
                         onValueChange = onSeekBarValueChange,
                         onValueChangeFinished = onSeekBarValueChangeFinished,
                         valueRange = 0f..duration.toFloat(),
                         interactionSource = interaction,
-                        colors = SliderDefaults.colors(
-                            thumbColor = Color.White,
-                            activeTrackColor = Color.White,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.2f)
-                        ),
                         thumb = {
-                            val modifier =
-                                Modifier
+                            SliderDefaults.Thumb(
+                                interactionSource = interaction,
+                                modifier = Modifier
                                     .size(thumbSize)
                                     .shadow(1.dp, CircleShape, clip = false)
                                     .indication(
                                         interactionSource = interaction,
                                         indication = ripple(bounded = false, radius = 20.dp)
-                                    )
-                            SliderDefaults.Thumb(
-                                interactionSource = interaction,
-                                modifier = modifier,
-                                colors = SliderDefaults.colors(
-                                    thumbColor = Color.White,
-                                )
+                                    ),
+                                colors = SliderDefaults.colors(thumbColor = thumbColor)
                             )
                         },
-                        track = {
-                            val modifier = Modifier.height(trackHeight)
-                            SliderDefaults.Track(
-                                sliderState = it,
-                                modifier = modifier,
-                                thumbTrackGapSize = 0.dp,
-                                trackInsideCornerSize = 0.dp,
-                                drawStopIndicator = null,
-                                colors = SliderDefaults.colors(
-                                    activeTrackColor = Color.White,
-                                    inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                        track = { sliderState ->
+                            val activeFraction = if (duration > 0) (sliderState.value / duration) else 0f
+                            val bufferedFraction = if (duration > 0) (coercedBufferedValue / duration) else 0f
+
+                            Box(
+                                modifier = Modifier
+                                    .height(trackHeight)
+                                    .fillMaxWidth()
+                                    .background(inactiveTrackColor)
+                            ) {
+                                // Buffered portion
+                                Box(
+                                    modifier = Modifier
+                                        .height(trackHeight)
+                                        .fillMaxWidth(bufferedFraction.coerceIn(0f, 1f))
+                                        .background(bufferedTrackColor)
                                 )
-                            )
+                                // Active portion (played)
+                                Box(
+                                    modifier = Modifier
+                                        .height(trackHeight)
+                                        .fillMaxWidth(activeFraction.coerceIn(0f, 1f))
+                                        .background(activeTrackColor)
+                                )
+                            }
                         }
                     )
                 }

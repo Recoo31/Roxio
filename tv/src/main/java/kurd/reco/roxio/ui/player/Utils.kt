@@ -23,6 +23,8 @@ import kurd.reco.core.api.model.DrmDataModel
 import kurd.reco.core.api.model.PlayDataModel
 import kurd.reco.core.api.model.SubtitleDataModel
 import java.util.Locale
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 
 @OptIn(UnstableApi::class)
 fun createHttpDataSourceFactory(headers: Map<String, String>): HttpDataSource.Factory {
@@ -236,3 +238,15 @@ fun Modifier.ifElse(
     ifTrueModifier: Modifier,
     ifFalseModifier: Modifier = Modifier
 ): Modifier = ifElse({ condition }, ifTrueModifier, ifFalseModifier)
+
+
+fun formatDuration(duration: Duration): String {
+    if (duration <= ZERO) return "00:00"
+    return duration.toComponents { hours, minutes, seconds, _ ->
+        if (hours > 0) {
+            String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format(Locale.US, "%02d:%02d", minutes, seconds)
+        }
+    }
+}

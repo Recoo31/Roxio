@@ -63,8 +63,10 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import io.github.anilbeesetti.nextlib.media3ext.ffdecoder.NextRenderersFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kurd.reco.core.AppLog
 import kurd.reco.core.Global
 import kurd.reco.core.SettingsDataStore
@@ -250,6 +252,7 @@ fun VideoPlayerScreen(
     var resizeMode by remember { mutableIntStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT) }
     var isBuffering by remember { mutableStateOf(false) }
     var isInitialLoading by remember { mutableStateOf(true) }
+    var bufferedPosition by remember { mutableLongStateOf(exoPlayer.bufferedPosition) }
 
     // TODO: Update in a more thoughtful manner
 
@@ -296,9 +299,12 @@ fun VideoPlayerScreen(
         }
         exoPlayer.addListener(listener)
         while (true) {
-            delay(300)
-            contentCurrentPosition = exoPlayer.currentPosition
-            isPlaying = exoPlayer.isPlaying
+            withContext(Dispatchers.Main) {
+                contentCurrentPosition = exoPlayer.currentPosition
+                bufferedPosition = exoPlayer.bufferedPosition
+                isPlaying = exoPlayer.isPlaying
+            }
+            delay(300L)
         }
     }
 
@@ -375,6 +381,7 @@ fun VideoPlayerScreen(
                     item,
                     isPlaying,
                     contentCurrentPosition,
+                    bufferedPosition,
                     exoPlayer,
                     videoPlayerState,
                     focusRequester,
@@ -396,6 +403,7 @@ fun VideoPlayerControls(
     item: PlayDataModel,
     isPlaying: Boolean,
     contentCurrentPosition: Long,
+    bufferedPosition: Long,
     exoPlayer: ExoPlayer,
     state: VideoPlayerState,
     focusRequester: FocusRequester,
@@ -486,6 +494,7 @@ fun VideoPlayerControls(
                 focusRequester,
                 state,
                 isPlaying,
+                bufferedPosition,
                 onPlayPauseToggle,
                 onSeek = { exoPlayer.seekTo(exoPlayer.duration.times(it).toLong()) },
                 contentProgress = contentCurrentPosition.milliseconds,

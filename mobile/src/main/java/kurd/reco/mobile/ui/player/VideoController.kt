@@ -129,6 +129,7 @@ fun VideoController(
 
     var currentTime by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(exoPlayer.duration) }
+    var bufferedPosition by remember { mutableLongStateOf(exoPlayer.bufferedPosition) }
     var showControls by remember { mutableStateOf(false) }
     var videoSize by remember { mutableStateOf(exoPlayer.videoSize) }
     var showSettingsDialog by remember { mutableStateOf(false) }
@@ -197,8 +198,9 @@ fun VideoController(
         }
         exoPlayer.addListener(listener)
         while (true) {
-            currentTime = withContext(Dispatchers.Main) {
-                exoPlayer.currentPosition
+            withContext(Dispatchers.Main) {
+                currentTime = exoPlayer.currentPosition
+                bufferedPosition = exoPlayer.bufferedPosition
             }
             delay(1000L)
         }
@@ -480,7 +482,7 @@ fun VideoController(
                         }
                     }
 
-                    VideoPlayerBottom(exoPlayer, currentTime, duration)
+                    VideoPlayerBottom(exoPlayer, currentTime, duration, bufferedPosition)
 
                     Row(modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -565,7 +567,6 @@ fun VideoController(
                             }
                         )
                     }
-
 
                     if (showSettingsDialog) {
                         SettingsDialog(

@@ -21,40 +21,41 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import kurd.reco.roxio.R
 import kurd.reco.roxio.common.VideoPlayerState
+import kurd.reco.roxio.ui.player.formatDuration
+import java.util.Locale
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.ZERO
 
 @Composable
 fun VideoPlayerSeeker(
     focusRequester: FocusRequester,
     state: VideoPlayerState,
     isPlaying: Boolean,
+    bufferedPosition: Long,
     onPlayPauseToggle: (Boolean) -> Unit,
     onSeek: (Float) -> Unit,
     contentProgress: Duration,
     contentDuration: Duration
 ) {
-    val contentProgressString =
-        contentProgress.toComponents { h, m, s, _ ->
-            if (h > 0) {
-                "$h:${m.padStartWith0()}:${s.padStartWith0()}"
-            } else {
-                "${m.padStartWith0()}:${s.padStartWith0()}"
-            }
-        }
-    val contentDurationString =
-        contentDuration.toComponents { h, m, s, _ ->
-            if (h > 0) {
-                "$h:${m.padStartWith0()}:${s.padStartWith0()}"
-            } else {
-                "${m.padStartWith0()}:${s.padStartWith0()}"
-            }
-        }
+    val durationMillis = contentDuration.inWholeMilliseconds
+
+    val currentProgressFloat = if (durationMillis > 0) {
+        (contentProgress.inWholeMilliseconds.toFloat() / durationMillis).coerceIn(0f, 1f)
+    } else 0f
+
+    val bufferedProgressFloat = if (durationMillis > 0) {
+        (bufferedPosition.toFloat() / durationMillis).coerceIn(0f, 1f)
+    } else 0f
+
+    val contentProgressString = remember(contentProgress) { formatDuration(contentProgress) }
+    val contentDurationString = remember(contentDuration) { formatDuration(contentDuration) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -69,12 +70,12 @@ fun VideoPlayerSeeker(
         )
         VideoPlayerControllerText(text = contentProgressString)
         VideoPlayerControllerIndicator(
-            progress = (contentProgress / contentDuration).toFloat(),
+            progress = currentProgressFloat,
+            bufferedProgress = bufferedProgressFloat,
             onSeek = onSeek,
-            state = state
+            state = state,
+            contentDuration = contentDuration
         )
         VideoPlayerControllerText(text = contentDurationString)
     }
 }
-
-private fun Number.padStartWith0() = this.toString().padStart(2, '0')
