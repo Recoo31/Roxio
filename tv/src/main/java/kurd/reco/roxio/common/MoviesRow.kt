@@ -101,7 +101,7 @@ fun MoviesRow(
                         firstItem
                     }
             ) {
-                itemsIndexed(movieState, key = { _, movie -> movie.id }) { index, movie ->
+                itemsIndexed(movieState, key = { index, movie -> "$index-${movie.id}" }) { index, movie ->
                     val itemModifier = if (index == 0) {
                         Modifier.focusRequester(firstItem)
                     } else {
