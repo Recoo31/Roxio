@@ -149,33 +149,34 @@ fun DiscoverScreen(
                 }
             }
 
-            Column(modifier = Modifier.padding(end = 64.dp).align(Alignment.TopEnd)) {
-                IconButton(
-                    onClick = { showFilterMenu = !showFilterMenu }
-                ) {
-                    Icon(
-                        Icons.Default.FilterList,
-                        contentDescription = null
-                    )
-                }
+            if (discoverFilters.isNotEmpty()) {
+                Column(modifier = Modifier.padding(end = 64.dp).align(Alignment.TopEnd)) {
+                    IconButton(
+                        onClick = { showFilterMenu = !showFilterMenu }
+                    ) {
+                        Icon(
+                            Icons.Default.FilterList,
+                            contentDescription = null
+                        )
+                    }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                if (showFilterMenu && discoverFilters.isNotEmpty()) {
-                    LazyColumn {
-                        items(discoverFilters) {
-                            FilterItem(
-                                filter = it,
-                                onClick = {
-                                    viewModel.applyFilter(it.id)
-                                    showFilterMenu = false
-                                }
-                            )
+                    if (showFilterMenu) {
+                        LazyColumn {
+                            items(discoverFilters) {
+                                FilterItem(
+                                    filter = it,
+                                    onClick = {
+                                        viewModel.applyFilter(it.id)
+                                        showFilterMenu = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
-
         }
 
         // SubCategories if available

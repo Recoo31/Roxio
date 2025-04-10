@@ -24,22 +24,11 @@ fun GeneralSection(settingsDataStore: SettingsDataStore) {
     val showMorePluginsEnabled by settingsDataStore.showMorePluginsEnabled.collectAsState(false)
     //val useVpnEnabled by settingsDataStore.useVpnEnabled.collectAsState(false)
 
-    if (showAddDialog) {
-        DownloadDialog { showAddDialog = false }
-    }
-
     SettingCard(
         title = stringResource(R.string.dark_theme),
         description = stringResource(R.string.dark_theme_desc),
         isChecked = isDarkModeEnabled,
         onClick = { settingsDataStore.setDarkMode(!isDarkModeEnabled) }
-    )
-
-    SettingCard(
-        title = "Download Plugin",
-        onClick = {
-            showAddDialog = !showAddDialog
-        }
     )
 
     SettingCard(
