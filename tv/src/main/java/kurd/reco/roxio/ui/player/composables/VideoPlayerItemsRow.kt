@@ -122,7 +122,7 @@ fun VideoPlayerItemsRow(
                         glow = CardDefaults.glow(
                             focusedGlow = Glow(
                                 elevation = 16.dp,
-                                elevationColor = MaterialTheme.colorScheme.secondary
+                                elevationColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                             )
                         ),
                         border = CardDefaults.border(
@@ -145,7 +145,7 @@ fun VideoPlayerItemsRow(
                         glow = CardDefaults.glow(
                             focusedGlow = Glow(
                                 elevation = 16.dp,
-                                elevationColor = MaterialTheme.colorScheme.secondary
+                                elevationColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                             )
                         ),
                         border = CardDefaults.border(

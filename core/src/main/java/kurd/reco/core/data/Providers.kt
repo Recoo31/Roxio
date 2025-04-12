@@ -16,7 +16,7 @@ fun provideDatabase(application: Application): PluginDatabase =
         application,
         PluginDatabase::class.java,
         "plugin_database"
-    ).allowMainThreadQueries().addMigrations(MIGRATION_2_3).build()
+    ).allowMainThreadQueries().build()
 
 fun providePluginDao(pluginDataBase: PluginDatabase): PluginDao = pluginDataBase.pluginDao()
 

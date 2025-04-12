@@ -16,6 +16,8 @@ import kurd.reco.core.api.app
 import kurd.reco.core.api.localApp
 import kurd.reco.core.data.AuthLoginResponse
 import kurd.reco.core.data.AuthTokenResponse
+import kurd.reco.core.Global
+import kurd.reco.core.R
 
 class AuthVM: ViewModel() {
     var loginState = ResourceState<String>(Resource.Loading)
@@ -27,7 +29,23 @@ class AuthVM: ViewModel() {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun login(username: String, password: String, hwid: String) {
+    fun validateLoginInput(context: Context, username: String, password: String): String? {
+        return when {
+            username.isEmpty() || password.isEmpty() -> context.getString(R.string.enter_username_and_password)
+            Global.loginTryCount >= 6 -> context.getString(R.string.too_many_attempts)
+            else -> null
+        }
+    }
+
+    fun login(context: Context, username: String, password: String, hwid: String) {
+        val validationError = validateLoginInput(context, username, password)
+        if (validationError != null) {
+            loginState.setFailure(validationError)
+            return
+        }
+
+        Global.loginTryCount++
+
         viewModelScope.launch(Dispatchers.IO) {
             val jsonData = mapOf(
                 "username" to username.replace("\t", ""),

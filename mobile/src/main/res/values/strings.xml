@@ -5,8 +5,6 @@
     <string name="downloading_main_plugins">Downloading Main Plugins…</string>
     <string name="play_text">Play</string>
     <string name="episodes">Episodes</string>
-    <string name="enter_username_and_password">Please enter username and password</string>
-    <string name="too_many_attempts">Too many login attempts</string>
     <string name="reload_stream">Yayın Yenilensin mi?</string>
     <string name="reload_stream_desc">Yayında sorun oluşmadıkça lütfen bu butona basmayınız.</string>
     <string name="select_audio">Select Audio</string>
@@ -65,4 +63,5 @@
     <string name="app_update">App Update</string>
     <string name="new_version_available">New version available</string>
     <string name="change_log">Change Log:</string>
+    <string name="dmca_text">Roxio is a open source app and serves as a “hosting provider” as defined by Law No. 5651. Under the relevant legislation, application management has no obligation to monitor unlawful content.</string>
 </resources>

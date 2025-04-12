@@ -61,7 +61,6 @@ dependencies {
     //Room-DB
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.media3.database)

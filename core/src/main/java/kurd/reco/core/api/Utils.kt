@@ -62,7 +62,7 @@ object ApiUtils {
 
 val app = requests
 val appWithDpi = requestsWithDpi // for plugins
-val localApp = if (Global.platform == "mobile") requestsWithDpi else requests // i dont know its working in tv
+val localApp = if (Global.platform == "mobile" && !isDebugMode) requestsWithDpi else requests // i dont know its working in tv
 
 object Api {
     private var apiData: Array<String>? = null

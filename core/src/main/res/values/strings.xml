@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_username_and_password">Please enter username and password</string>
+    <string name="too_many_attempts">Too many login attempts</string>
+</resources>

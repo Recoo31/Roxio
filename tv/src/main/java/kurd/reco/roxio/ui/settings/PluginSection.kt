@@ -88,99 +88,96 @@ fun PluginSection(
         )
     }
 
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                onClick = { showAddDialog = true },
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
+    LazyHorizontalGrid(
+        rows = GridCells.Fixed(4),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(filteredPlugins) { plugin ->
+            val isSelected = plugin.id == selectedPlugin?.id
+            val base = MaterialTheme.colorScheme.primary
+            var baseColor by remember { mutableStateOf(base) }
 
-            IconButton(
-                onClick = { isDeleteMode = !isDeleteMode },
-            ) {
-                Icon(
-                    imageVector = if (isDeleteMode) Icons.Default.Delete else Icons.Default.DeleteOutline,
-                    contentDescription = null
-                )
-            }
-        }
-
-        LazyHorizontalGrid(
-            rows = GridCells.Fixed(4),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(filteredPlugins) { plugin ->
-                val isSelected = plugin.id == selectedPlugin?.id
-                val base = MaterialTheme.colorScheme.primary
-                var baseColor by remember { mutableStateOf(base) }
-
-                Surface(
-                    onClick = {
-                        if (isDeleteMode) {
-                            pluginToDelete = plugin
-                        } else {
-                            pluginManager.selectPlugin(plugin.id)
-                        }
-                    },
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .padding(start = 8.dp),
-                    shape = ClickableSurfaceDefaults.shape(shape = RoundedCornerShape(8.dp)),
-                    colors = ClickableSurfaceDefaults.colors(
-                        containerColor = if (isSelected) baseColor.copy(alpha = 0.5f)
-                        else if (isDeleteMode) MaterialTheme.colorScheme.errorContainer
-                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                    ),
-                    glow = ClickableSurfaceDefaults.glow(
-                        focusedGlow = Glow(
-                            elevation = 36.dp,
-                            elevationColor = baseColor
-                        )
+            Surface(
+                onClick = {
+                    if (isDeleteMode) {
+                        pluginToDelete = plugin
+                    } else {
+                        pluginManager.selectPlugin(plugin.id)
+                    }
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .padding(start = 8.dp),
+                shape = ClickableSurfaceDefaults.shape(shape = RoundedCornerShape(8.dp)),
+                colors = ClickableSurfaceDefaults.colors(
+                    containerColor = if (isSelected) baseColor.copy(alpha = 0.5f)
+                    else if (isDeleteMode) MaterialTheme.colorScheme.errorContainer
+                    else MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                ),
+                glow = ClickableSurfaceDefaults.glow(
+                    focusedGlow = Glow(
+                        elevation = 36.dp,
+                        elevationColor = baseColor.copy(alpha = 0.8f)
                     )
-                ) {
-                    if (plugin.image != null) {
-                        AsyncImage(
-                            model = plugin.image,
-                            contentDescription = plugin.name,
-                            contentScale = ContentScale.Fit,
+                )
+            ) {
+                if (plugin.image != null) {
+                    AsyncImage(
+                        model = plugin.image,
+                        contentDescription = plugin.name,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(128.dp),
+                        onSuccess = { success ->
+                            extractDominantColor(success.result.drawable, base) { color ->
+                                baseColor = color
+                            }
+                        }
+                    )
+                } else if (showMorePluginsEnabled) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            Icons.Default.Extension,
+                            contentDescription = null,
                             modifier = Modifier
                                 .padding(8.dp)
-                                .size(128.dp),
-                            onSuccess = { success ->
-                                extractDominantColor(success.result.drawable, base) { color ->
-                                    baseColor = color
-                                }
-                            }
+                                .size(width = 128.dp, height = 100.dp)
                         )
-                    } else if (showMorePluginsEnabled) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.Extension,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .size(width = 128.dp, height = 100.dp)
-                            )
-                            Text(
-                                text = plugin.name,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        }
+                        Text(
+                            text = plugin.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
                 }
             }
         }
     }
 
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onClick = { showAddDialog = true },
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null)
+        }
+
+        IconButton(
+            onClick = { isDeleteMode = !isDeleteMode },
+        ) {
+            Icon(
+                imageVector = if (isDeleteMode) Icons.Default.Delete else Icons.Default.DeleteOutline,
+                contentDescription = null
+            )
+        }
+    }
 }
 
 @Composable

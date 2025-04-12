@@ -2,6 +2,7 @@ package kurd.reco.roxio.ui.login
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +28,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -105,58 +108,56 @@ fun AuthScreen(navigator: DestinationsNavigator) {
 
     val focusRequester = remember { FocusRequester() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        CustomTextField(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .padding(16.dp),
-            value = username,
-            onValueChange = { username = it },
-            placeholder = stringResource(id = R.string.username),
-            leadingIcon = { Icon(Icons.Default.Person, null, modifier = Modifier.padding(end = 16.dp)) },
-            placeholderStyle = MaterialTheme.typography.titleLarge,
-            focusRequester = focusRequester,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Image(
+            painter = painterResource(R.drawable.roxio_logo),
+            contentDescription = null,
+            modifier = Modifier.padding(16.dp).size(128.dp).align(Alignment.TopCenter)
         )
 
-        CustomTextField(
-            modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .padding(16.dp),
-            value = password,
-            onValueChange = { password = it },
-            placeholder = stringResource(id = R.string.password),
-            leadingIcon = { Icon(Icons.Default.Lock, null, modifier = Modifier.padding(end = 16.dp)) },
-            placeholderStyle = MaterialTheme.typography.titleLarge,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) })
-        )
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomTextField(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .padding(16.dp),
+                value = username,
+                onValueChange = { username = it },
+                placeholder = stringResource(id = R.string.username),
+                leadingIcon = { Icon(Icons.Default.Person, null, modifier = Modifier.padding(end = 16.dp)) },
+                placeholderStyle = MaterialTheme.typography.titleLarge,
+                focusRequester = focusRequester,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            )
 
-        Button(
-            onClick = {
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(context, context.getString(R.string.enter_username_and_password), Toast.LENGTH_SHORT).show()
-                    return@Button
-                } else {
-                    Global.loginTryCount++
+            CustomTextField(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .padding(16.dp),
+                value = password,
+                onValueChange = { password = it },
+                placeholder = stringResource(id = R.string.password),
+                leadingIcon = { Icon(Icons.Default.Lock, null, modifier = Modifier.padding(end = 16.dp)) },
+                placeholderStyle = MaterialTheme.typography.titleLarge,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(FocusDirection.Down) })
+            )
+
+            Button(
+                onClick = {
                     isLoading = true
 
                     viewModel.resetLoginState()
-                    viewModel.login(username, password, androidID)
-                }
-            },
-        ) {
-            Text(stringResource(id = R.string.login))
+                    viewModel.login(context, username, password, androidID)
+                },
+            ) {
+                Text(stringResource(id = R.string.login))
+            }
         }
     }
 

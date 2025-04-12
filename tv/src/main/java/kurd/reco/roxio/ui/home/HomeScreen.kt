@@ -241,6 +241,7 @@ fun HandleHome(
                         ) {
                             Surface(
                                 onClick = {
+                                    isClicked = !isClicked
                                     Global.clickedItem = item.toHomeItemModel()
                                     viewModel.getUrl(item.id, item.title)
                                 },

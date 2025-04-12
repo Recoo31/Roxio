@@ -33,8 +33,8 @@ fun MovieCard(
                 ),
                 glow = ClickableSurfaceDefaults.glow(
                     focusedGlow = Glow(
-                        elevation = 24.dp,
-                        elevationColor = MaterialTheme.colorScheme.primary
+                        elevation = 32.dp,
+                        elevationColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                 ),
                 scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),

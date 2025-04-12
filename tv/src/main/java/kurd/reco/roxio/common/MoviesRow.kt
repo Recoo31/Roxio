@@ -180,7 +180,7 @@ fun MoviesRowItem(
                         maxWidth = imageWidth,
                         minHeight = imageHeight * 0.75f,
                         maxHeight = imageHeight
-                    ) else this
+                    ) else sizeIn(maxHeight = imageHeight)
                 }
                 .run {
                     if (itemDirection == ItemDirection.Horizontal) {
